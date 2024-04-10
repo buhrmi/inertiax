@@ -4,7 +4,7 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds supp
 
 ## What's a Frame?
 
-Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name, it has nothing to do with conventional browser frames.
+Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name and concept, it has nothing to do with conventional browser frames.
 
 By default, hyperlinks and form submissions will render the response within the frame that contains the link or the form. To change the frame in which an Inertia response is rendered, do one of the following:
 
