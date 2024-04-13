@@ -1,4 +1,5 @@
 import { router, setupProgress } from '@inertiajs/core'
+import { render } from 'svelte/server';
 import App from './App.svelte'
 import SSR from './SSR.svelte'
 import store from './store'
@@ -50,7 +51,7 @@ export default async function createInertiaApp({ id = 'app', resolve, setup, pro
   }
 
   if (isServer) {
-    const { html, head, css } = SSR.render({ id, initialPage })
+    const { html, head, css } = render(SSR, { props: {id, initialPage} })
 
     return {
       body: html,

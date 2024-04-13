@@ -1,6 +1,6 @@
 # Inertia with Frames
 
-This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds support for the `<Frame>` component. Frames are currently supported in Svelte and React.
+This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds support for the `<Frame>` component. Frames are currently only supported in Svelte 5 and React.
 
 ## What's a Frame?
 
