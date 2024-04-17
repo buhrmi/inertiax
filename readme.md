@@ -20,7 +20,7 @@ Frames are loaded when the component is mounted. That means, that only the initi
 
 ## Additional features
 
-This fork also adds the following features:
+This fork also adds the following features to make it easy to implement features like infinite scrolling.
 
 ### transformProps and preserveURL
 
