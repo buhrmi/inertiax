@@ -18,6 +18,22 @@ Navigation within frames does not create new history entries. To enable this, a 
 
 Frames are loaded when the component is mounted. That means, that only the initial frame placeholder content will be rendered during SSR.
 
+### Example
+
+```html
+<script>
+import { Frame } from '@inertiajs/svelte'
+</script>
+
+<Frame src="/users/1/edit" id="edit_user">
+  Loading...
+</Frame>
+
+<a href="/users/2/edit" data-target="edit_user">
+  Edit a different user
+</a>
+```
+
 ## Additional features
 
 This fork also adds the following features to make it easy to implement features like infinite scrolling.
@@ -47,7 +63,7 @@ router.reload({
 
 No need for `use:inertia` or `<Link>` tags anymore. All `<a>` tags are automatically handled by Inertia. To opt out, add the `rel="external"` attribute.
 
-### Try locally
+## Try locally
 
 Clone this repo, [build it](https://github.com/inertiajs/inertia/blob/master/.github/CONTRIBUTING.md#packages), and in your `package.json`, link it like this:
 
@@ -63,18 +79,3 @@ Clone this repo, [build it](https://github.com/inertiajs/inertia/blob/master/.gi
 
 Then run `npm install` again.
 
-### Example
-
-```html
-<script>
-import { Frame } from '@inertiajs/svelte'
-</script>
-
-<Frame src="/users/1/edit" id="edit_user">
-  Loading...
-</Frame>
-
-<a href="/users/2/edit" data-target="edit_user">
-  Edit a different user
-</a>
-```
