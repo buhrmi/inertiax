@@ -24,7 +24,7 @@ This fork also adds the following features to make it easy to implement features
 
 ### transformProps and preserveURL
 
-Each `router.visit()` can now take an additional option `transformProps`. This is a function you can use to transform the props before they are stored in the history entry. This makes it easy to implement features like infinite scrolling that can also restore state upon navigation.
+Each `router.visit()` can now take an additional option `transformProps`. This is a function you can use to transform the props before they are stored in the history entry. This makes it easy to implement features like infinite scrolling with state preservation spanning history navigation.
 
 Normally, Inertia replaces the URL when making a call to `router.reload({data: {page: currentPage + 1}})`. This is not desirable when loading additional data for infinite scrolling. That's why `preserveURL` is introduced to preserve the URL when using the Inertia router to load more data.
 
