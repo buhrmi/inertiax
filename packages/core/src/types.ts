@@ -68,8 +68,10 @@ export type Visit = {
   method: Method
   data: RequestPayload
   replace: boolean
+  preserveURL: boolean
   preserveScroll: PreserveStateOption
   preserveState: PreserveStateOption
+  transformProps: (props: PageProps) => void
   only: Array<string>
   headers: Record<string, string>
   errorBag: string | null

@@ -275,6 +275,7 @@ export class Router {
       replace = false,
       preserveScroll = false,
       preserveState = false,
+      preserveURL = false,
       only = [],
       headers = {},
       errorBag = '',
@@ -288,6 +289,7 @@ export class Router {
       onCancel = () => {},
       onSuccess = () => {},
       onError = () => {},
+      transformProps = () => {},
       queryStringArrayFormat = 'brackets',
     }: VisitOptions = {},
   ): void {
@@ -310,11 +312,13 @@ export class Router {
       replace,
       preserveScroll,
       preserveState,
+      preserveURL, 
       only,
       headers,
       errorBag,
       target,
       forceFormData,
+      transformProps,
       queryStringArrayFormat,
       cancelled: false,
       completed: false,
@@ -412,7 +416,10 @@ export class Router {
           responseUrl.hash = requestUrl.hash
           pageResponse.url = responseUrl.href
         }
-        return this.setPage(pageResponse, { target, visitId, replace, preserveScroll, preserveState })
+        if (transformProps) {
+          transformProps(pageResponse.props)
+        }
+        return this.setPage(pageResponse, { target, visitId, replace, preserveScroll, preserveState, preserveURL })
       })
       .then((page: Page) => {
         const errors = page.props.errors || {}
@@ -465,12 +472,14 @@ export class Router {
     {
       visitId = this.createVisitId(),
       replace = false,
+      preserveURL = false,
       preserveScroll = false,
       preserveState = false,
       target = null,
     }: {
       visitId?: VisitId
       replace?: boolean
+      preserveURL?: boolean
       preserveScroll?: PreserveStateOption
       preserveState?: PreserveStateOption
       target?: string | null
@@ -480,6 +489,9 @@ export class Router {
       if (visitId === this.visitId) {
         page.scrollRegions = page.scrollRegions || []
         page.rememberedState = page.rememberedState || {}
+        if (preserveURL) {
+          page.url = window.location.href
+        }
         if (!target || target === '_top' || target === '_parent' || target === 'main') {
           replace = replace || hrefToUrl(page.url).href === window.location.href
           replace ? this.replaceState(page) : this.pushState(page)
@@ -541,7 +553,7 @@ export class Router {
   }
 
   public reload(options: Exclude<VisitOptions, 'preserveScroll' | 'preserveState'> = {}): void {
-    return this.visit(window.location.href, { ...options, preserveScroll: true, preserveState: true })
+    return this.visit(window.location.href, { ...options, preserveScroll: true, preserveState: true, preserveURL: true })
   }
 
   public replace(url: URL | string, options: Exclude<VisitOptions, 'replace'> = {}): void {
