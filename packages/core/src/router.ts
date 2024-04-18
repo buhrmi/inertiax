@@ -133,15 +133,15 @@ export class Router {
   }
 
   protected resetScrollPositions(): void {
-    window.scrollTo(0, 0)
-    this.scrollRegions().forEach((region) => {
-      if (typeof region.scrollTo === 'function') {
-        region.scrollTo(0, 0)
-      } else {
-        region.scrollTop = 0
-        region.scrollLeft = 0
-      }
-    })
+    // window.scrollTo(0, 0)
+    // this.scrollRegions().forEach((region) => {
+    //   if (typeof region.scrollTo === 'function') {
+    //     region.scrollTo(0, 0)
+    //   } else {
+    //     region.scrollTop = 0
+    //     region.scrollLeft = 0
+    //   }
+    // })
     this.saveScrollPositions()
     if (window.location.hash) {
       // We're using a setTimeout() here as a workaround for a bug in the React adapter where the
