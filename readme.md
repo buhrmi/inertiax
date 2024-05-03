@@ -2,7 +2,7 @@
 
 > The **X** stands for eXperimental
 
-This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and serve as proof-of-concept for the Inertia core team.
+This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and serve as proof-of-concept for the Inertia core team. Inertia X currently only supports Svelte 5 and React.
 
 ## Features added
 
