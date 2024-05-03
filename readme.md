@@ -1,8 +1,17 @@
-# Inertia with Frames
+# Inertia X
 
-This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds support for the `<Frame>` component. Frames are currently only supported in Svelte 5 and React.
+> The **X** stands for eXperimental
 
-## What's a Frame?
+This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and serve as proof-of-concept for the Inertia core team.
+
+## Features added
+
+- `<Frame>` component
+- `transformProps` router visit option
+- `preserveURL` router visit option
+- Global click handler
+
+### Frames
 
 Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name and concept, it has nothing to do with conventional browser frames.
 
@@ -18,7 +27,7 @@ Navigation within frames does not create new history entries. To enable this, a 
 
 Frames are loaded when the component is mounted. That means, that only the initial frame placeholder content will be rendered during SSR.
 
-### Example
+#### Example
 
 ```html
 <script>
@@ -33,10 +42,6 @@ import { Frame } from '@inertiajs/svelte'
   Edit a different user
 </a>
 ```
-
-## Additional features
-
-This fork also adds the following features to make it easy to implement features like infinite scrolling.
 
 ### transformProps and preserveURL
 
