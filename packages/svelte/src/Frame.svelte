@@ -22,5 +22,15 @@
 </script>
 
 <div data-inertia-frame-id={id}>
-  <Render {...components} />
+  {#if components}
+    <Render {...components} />
+  {:else}
+    <slot />
+  {/if}
 </div>
+
+<style>
+  div {
+    display: contents;
+  }
+</style>

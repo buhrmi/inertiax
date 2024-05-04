@@ -25,7 +25,7 @@ To target the top (main) frame, use `_top` as the frame ID.
 
 Navigation within frames does not create new history entries. To enable this, a more substantial rewrite of the Inertia router would be required.
 
-Frames are loaded when the component is mounted. That means, that only the initial frame placeholder content will be rendered during SSR.
+During SSR, only the initial placeholder slot will be rendered. The actual content is loaded when the frame component is mounted. You can use this to add loading animations, etc.
 
 #### Example
 
