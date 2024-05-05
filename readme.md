@@ -15,10 +15,10 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 
 Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name and concept, it has nothing to do with conventional browser frames.
 
-By default, hyperlinks and form submissions will render the response within the frame that contains the link or the form. To change the frame in which an Inertia response is rendered, do one of the following:
+When you click on a hyperlink or submit a form within an Inertia frame, the response will be rendered in the frame that triggered the request (sans layout). You can change the frame in which an Inertia response is rendered by doing one of the following:
 
-- Add a `data-target="frame-id"` attribute to an `a` tag.
-- Pass a  `{target: frameId}` to `router.visit()` or `form.submit()`
+- Add an `data-target="frame-id"` attribute to the hyperlink.
+- Pass `{target: frameId}` to `router.visit()` or `form.submit()`
 - Specify the frame ID in an `X-Inertia-Frame` header from the server.
 
 To target the top (main) frame, use `_top` as the frame ID.
