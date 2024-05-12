@@ -1,4 +1,4 @@
-import { createHeadManager, router } from '@inertiajs/core'
+import { createHeadManager, router } from 'inertiax-core'
 import { createElement, useEffect, useMemo, useState } from 'react'
 import HeadContext from './HeadContext'
 import PageContext from './PageContext'

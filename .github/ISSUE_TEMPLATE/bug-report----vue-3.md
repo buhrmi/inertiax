@@ -9,7 +9,7 @@ assignees: ''
 
 ### Version:
 
-- `@inertiajs/vue3` version: #.#.#
+- `inertiax-vue3` version: #.#.#
 
 ### Describe the problem:
 

@@ -6,7 +6,7 @@ import {
   Progress,
   router,
   shouldIntercept,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import { createElement, forwardRef, useCallback } from 'react'
 
 const noop = () => undefined

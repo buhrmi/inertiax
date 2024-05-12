@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import Render, { h } from './Render.svelte'
   import store from './store'
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
   import { setContext } from 'svelte';
 
   export let src

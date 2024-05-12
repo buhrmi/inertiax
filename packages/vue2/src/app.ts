@@ -1,4 +1,4 @@
-import { createHeadManager, Page, router } from '@inertiajs/core'
+import { createHeadManager, Page, router } from 'inertiax-core'
 import { Component, computed, PluginObject, reactive } from 'vue'
 import { ComponentOptions } from 'vue/types/umd'
 import remember from './remember'

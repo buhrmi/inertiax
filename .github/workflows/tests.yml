@@ -35,7 +35,7 @@ jobs:
           cd packages/core && npm run build
           cd ../vue2 && npm run build
 
-      - name: Local-link @inertiajs/core
+      - name: Local-link inertiax-core
         run: cd packages/core && npm link
 
       - name: Local-link @inertiajs/${{ matrix.adapter }}
@@ -45,7 +45,7 @@ jobs:
         run: |
           cd packages/${{ matrix.adapter }}/tests
           npm install
-          npm link "@inertiajs/core" "@inertiajs/${{ matrix.adapter }}"
+          npm link "inertiax-core" "@inertiajs/${{ matrix.adapter }}"
 
       - name: Run Cypress (${{ matrix.browser }} / ${{ matrix.adapter }})
         run: |

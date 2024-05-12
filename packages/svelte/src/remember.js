@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/core'
+import { router } from 'inertiax-core'
 import { onDestroy } from 'svelte'
 import { writable } from 'svelte/store'
 

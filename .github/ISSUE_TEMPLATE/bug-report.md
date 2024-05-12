@@ -9,11 +9,11 @@ assignees: ''
 
 ### Versions:
 
-- `@inertiajs/core` version: #.#.#
-- `@inertiajs/vue2` version: #.#.#
-- `@inertiajs/vue3` version: #.#.#
-- `@inertiajs/react` version: #.#.#
-- `@inertiajs/svelte` version: #.#.#
+- `inertiax-core` version: #.#.#
+- `inertiax-vue2` version: #.#.#
+- `inertiax-vue3` version: #.#.#
+- `inertiax-react` version: #.#.#
+- `inertiax-svelte` version: #.#.#
 
 ### Describe the problem:
 

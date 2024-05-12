@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/core'
+import { router } from 'inertiax-core'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 export default function useRemember<State>(

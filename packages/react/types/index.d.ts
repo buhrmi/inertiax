@@ -1,4 +1,4 @@
-export declare const router: import("@inertiajs/core").Router;
+export declare const router: import("inertiax-core").Router;
 export { default as createInertiaApp } from './createInertiaApp';
 export { default as Head } from './Head';
 export { default as Link, InertiaLinkProps } from './Link';

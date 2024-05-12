@@ -1,4 +1,4 @@
-import { router } from '@inertiajs/core'
+import { router } from 'inertiax-core'
 import isEqual from 'lodash.isequal'
 import cloneDeep from 'lodash.clonedeep'
 import { writable } from 'svelte/store'

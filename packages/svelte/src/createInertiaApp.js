@@ -1,4 +1,4 @@
-import { router, setupProgress } from '@inertiajs/core'
+import { router, setupProgress } from 'inertiax-core'
 import { render } from 'svelte/server';
 import App from './App.svelte'
 import SSR from './SSR.svelte'

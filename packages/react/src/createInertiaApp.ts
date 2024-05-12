@@ -1,4 +1,4 @@
-import { Page, PageProps, PageResolver, setupProgress } from '@inertiajs/core'
+import { Page, PageProps, PageResolver, setupProgress } from 'inertiax-core'
 import { ComponentType, createElement, FunctionComponent, Key, ReactElement, ReactNode } from 'react'
 import { renderToString } from 'react-dom/server'
 import App from './App'

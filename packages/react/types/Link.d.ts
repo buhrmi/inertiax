@@ -1,4 +1,4 @@
-import { FormDataConvertible, Method, PreserveStateOption, Progress } from '@inertiajs/core';
+import { FormDataConvertible, Method, PreserveStateOption, Progress } from 'inertiax-core';
 interface BaseInertiaLinkProps {
     as?: string;
     data?: Record<string, FormDataConvertible>;

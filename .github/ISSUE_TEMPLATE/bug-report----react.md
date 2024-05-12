@@ -9,7 +9,7 @@ assignees: ''
 
 ### Version:
 
-- `@inertiajs/react` version: #.#.#
+- `inertiax-react` version: #.#.#
 
 ### Describe the problem:
 

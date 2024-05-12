@@ -1,5 +1,5 @@
 {
-  "name": "@inertiajs/react",
+  "name": "inertiax-react",
   "version": "1.0.15",
   "license": "MIT",
   "description": "The React adapter for Inertia.js",
@@ -59,7 +59,7 @@
     "react": "^16.9.0 || ^17.0.0 || ^18.0.0"
   },
   "dependencies": {
-    "@inertiajs/core": "1.0.15",
+    "inertiax-core": "1.0.15",
     "lodash.isequal": "^4.5.0"
   }
 }

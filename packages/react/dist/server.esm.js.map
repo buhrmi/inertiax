@@ -1,7 +1,7 @@
 {
   "version": 3,
   "sources": ["../src/server.ts"],
-  "sourcesContent": ["export { default as default } from '@inertiajs/core/server'\n"],
+  "sourcesContent": ["export { default as default } from 'inertiax-core/server'\n"],
   "mappings": "AAAA,OAAoB,WAAXA,MAA0B",
   "names": ["default"]
 }

@@ -1,4 +1,4 @@
-import { Page, PageProps, PageResolver } from '@inertiajs/core';
+import { Page, PageProps, PageResolver } from 'inertiax-core';
 import { ComponentType, FunctionComponent, Key, ReactElement, ReactNode } from 'react';
 import { renderToString } from 'react-dom/server';
 type ReactInstance = ReactElement;

@@ -121,11 +121,11 @@ For changes prior to v1.0.0, see the [legacy releases](https://legacy.inertiajs.
 
 ### Changed
 
-- Renamed `@inertiajs/inertia` library to `@inertiajs/core` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
-- Renamed `@inertiajs/inertia-react` library to `@inertiajs/react` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
-- Renamed `@inertiajs/inertia-svelte` library to `@inertiajs/svelte` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
-- Renamed `@inertiajs/inertia-vue` library to `@inertiajs/vue2` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
-- Renamed `@inertiajs/inertia-vue3` library to `@inertiajs/vue3` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
+- Renamed `@inertiajs/inertia` library to `inertiax-core` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
+- Renamed `@inertiajs/inertia-react` library to `inertiax-react` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
+- Renamed `@inertiajs/inertia-svelte` library to `inertiax-svelte` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
+- Renamed `@inertiajs/inertia-vue` library to `inertiax-vue2` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
+- Renamed `@inertiajs/inertia-vue3` library to `inertiax-vue3` ([#1282](https://github.com/inertiajs/inertia/pull/1282))
 - Merged progress library to core and deprecated `@inertiajs/progress` library ([#1282](https://github.com/inertiajs/inertia/pull/1282), [0b5f773](https://github.com/inertiajs/inertia/commit/0b5f773))
 - Merged server library to core and deprecated `@inertiajs/server` library ([#1282](https://github.com/inertiajs/inertia/pull/1282))
 - Renamed `Inertia` named export to `router` ([#1282](https://github.com/inertiajs/inertia/pull/1282), [e556703](https://github.com/inertiajs/inertia/commit/e556703))

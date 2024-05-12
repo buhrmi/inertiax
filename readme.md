@@ -31,7 +31,7 @@ During SSR, only the initial placeholder slot will be rendered. The actual conte
 
 ```html
 <script>
-import { Frame } from '@inertiajs/svelte'
+import { Frame } from 'inertiax-svelte'
 </script>
 
 <Frame src="/users/1/edit" id="edit_user">
@@ -68,16 +68,20 @@ router.reload({
 
 No need for `use:inertia` or `<Link>` tags anymore. All `<a>` tags are automatically handled by Inertia. To opt out, add the `rel="external"` attribute.
 
-## Try locally
+## Installing
 
-Clone this repo, [build it](https://github.com/inertiajs/inertia/blob/master/.github/CONTRIBUTING.md#packages), and in your `package.json`, link it like this:
+To install, follow the guide on [inertiajs.com](https://inertiajs.com), but replace your `@inertiajs/[package]` imports with the corresponding `inertiax-[package]`.
+
+## Contributing
+
+To link this repo in your project for local development, clone it, then [build it](https://github.com/inertiajs/inertia/blob/master/.github/CONTRIBUTING.md#packages), and in your `package.json`, link it like this:
 
 ```js
 {
   "devDependencies": {
-    '@inertiajs/core': 'file:./repo/packages/core',
-    '@inertiajs/svelte': 'file:./repo/packages/svelte',
-    '@inertiajs/react': 'file:./repo/packages/react'
+    'inertiax-core': 'file:./repo/packages/core',
+    'inertiax-svelte': 'file:./repo/packages/svelte',
+    'inertiax-react': 'file:./repo/packages/react'
   }
 }
 ```
