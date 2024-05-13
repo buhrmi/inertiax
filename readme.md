@@ -27,7 +27,7 @@ To target the top (main) frame, use `_top` as the frame ID.
 
 Props on the `<Frame>` component will be passed on to the rendered Inertia component.
 
-Navigation within frames does not create new history entries. To enable this, a more substantial rewrite of the Inertia router would be required.
+Navigation within frames currently does not create new history entries. This feature might be added in the future.
 
 During SSR, only the initial placeholder slot will be rendered. The actual content is loaded when the frame component is mounted. You can use this to add loading animations, etc.
 
