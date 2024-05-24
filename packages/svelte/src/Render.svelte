@@ -1,9 +1,9 @@
 <script context="module">
-  export const h = (component, props, children) => {
+  export const h = (component, props, nested) => {
     return {
       component,
       ...(props ? { props } : {}),
-      ...(children ? { children } : {}),
+      ...(nested ? { nested } : {}),
     }
   }
 </script>
@@ -11,14 +11,12 @@
 <script>
   import store from './store'
 
-  export let component
-  export let props = {}
-  export let children = []
+  const {component, props = {}, nested = []} = $props()
 </script>
 
 {#if $store.component}
   <svelte:component this={component} {...props}>
-    {#each children as child, index (component && component.length === index ? $store.key : null)}
+    {#each nested as child, index (component && component.length === index ? $store.key : null)}
       <svelte:self {...child} />
     {/each}
   </svelte:component>

@@ -92,7 +92,7 @@ function useForm(...args) {
     },
     submit(method, url, options = {}) {
       const data = transform(this.data())
-      if (frameSrc) data.frameSrc = frameSrc
+      
       const _options = {
         ...options,
         target: typeof(options.target) !== 'undefined' ? options.target : frameId,

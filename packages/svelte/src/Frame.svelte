@@ -5,13 +5,11 @@
   import { router } from 'inertiax-svelte'
   import { setContext } from 'svelte';
 
-  export let src
+  const {children, src, id = Math.random(), ...restProps} = $props()
   
-  export let id = Math.random()
   setContext('inertia:frame-id', id)
-  $: setContext('inertia:frame-src', src)
 
-  $: components = $store.frames?.[id] && h($store.frames[id].component.default, Object.assign({}, $$restProps, $store.frames[id].props))
+  const components = $derived($store.frames?.[id] && h($store.frames[id].component.default, Object.assign({}, restProps, $store.frames[id].props)))
 
   onMount(() => {
     router.visit(src, {
@@ -25,7 +23,7 @@
   {#if components}
     <Render {...components} />
   {:else}
-    <slot />
+    {@render children()}
   {/if}
 </div>
 
