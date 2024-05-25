@@ -5,16 +5,17 @@
   "description": "The Svelte adapter for Inertia.js",
   "contributors": [
     "Jonathan Reinink <jonathan@reinink.ca>",
-    "Pedro Borges <oi@pedroborg.es>"
+    "Pedro Borges <oi@pedroborg.es>",
+    "Stefan Buhrmester <stefan@buhrmi.de"
   ],
   "homepage": "https://inertiajs.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inertiajs/inertia.git",
+    "url": "https://github.com/buhrmi/inertia.git",
     "directory": "packages/svelte"
   },
   "bugs": {
-    "url": "https://github.com/inertiajs/inertia/issues"
+    "url": "https://github.com/buhrmi/inertia/issues"
   },
   "keywords": [
     "svelte"
