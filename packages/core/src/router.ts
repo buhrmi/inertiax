@@ -566,7 +566,7 @@ export class Router {
   }
 
   public reload(options: Exclude<VisitOptions, 'preserveScroll' | 'preserveState'> = {}): void {
-    return this.visit(window.location.href, { ...options, preserveScroll: true, preserveState: true, preserveURL: true })
+    return this.visit(window.location.href, { preserveScroll: true, preserveState: true, preserveURL: true, ...options })
   }
 
   public replace(url: URL | string, options: Exclude<VisitOptions, 'replace'> = {}): void {
