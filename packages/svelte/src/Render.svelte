@@ -1,9 +1,10 @@
 <script context="module">
-  export const h = (component, props, nested) => {
+
+  export const h = (component, props, children) => {
     return {
       component,
       ...(props ? { props } : {}),
-      ...(nested ? { nested } : {}),
+      ...(children ? { children } : {}),
     }
   }
 </script>
@@ -11,13 +12,28 @@
 <script>
   import store from './store'
 
-  const {component, props = {}, nested = []} = $props()
+  let {component, props = {}, children = []} = $props()
+
+  let key = $state(new Date().getTime())
+  
+  let prev = component
+
+  function updateKey(component) {
+    if (prev !== component) {
+      prev = component
+      key = new Date().getTime()
+    }
+  }
+
+  $effect(() => updateKey(component))
 </script>
 
 {#if $store.component}
-  <svelte:component this={component} {...props}>
-    {#each nested as child, index (component && component.length === index ? $store.key : null)}
-      <svelte:self {...child} />
-    {/each}
-  </svelte:component>
+  {#key key}
+    <svelte:component this={component} {...props}>
+      {#each children as child, index (component && component.length === index ? $store.key : null)}
+        <svelte:self {...child} />
+      {/each}
+    </svelte:component>
+  {/key}
 {/if}
