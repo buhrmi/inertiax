@@ -11,6 +11,10 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 - `preserveURL` router visit option
 - Global click handler
 
+## Breaking changes
+
+- The Inertia SSR output does no longer include the `<div id="app" data-server-rendered="true">` wrapper. Rendering of the wrapping `<div>` during SSR is now the responsibility of the backend framework. If you're using Rails, you can use my [inertia-rails form](https://github.com/buhrmi/inertia-rails).
+
 ### Frames
 
 Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name and concept, it has nothing to do with conventional browser frames.
