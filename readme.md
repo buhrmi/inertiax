@@ -13,7 +13,7 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 
 ## Breaking changes
 
-- The Inertia SSR output does no longer include the `<div id="app" data-server-rendered="true">` wrapper. Rendering of the wrapping `<div>` during SSR is now the responsibility of the backend framework. If you're using Rails, you can use my [inertia-rails form](https://github.com/buhrmi/inertia-rails).
+- The Inertia SSR output does no longer include the `<div id="app" data-server-rendered="true">` wrapper. Rendering of the wrapping `<div>` during SSR is now the responsibility of the backend framework. If you're using Rails, you can use my [inertia-rails fork](https://github.com/buhrmi/inertia-rails).
 
 ### Frames
 
