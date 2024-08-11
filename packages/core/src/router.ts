@@ -97,12 +97,25 @@ export class Router {
       if (!anchorElement || anchorElement.rel == 'external' || anchorElement.target == '_blank') return
       
       if (anchorElement.href && anchorElement.href.startsWith(location.origin)) {
+        const href = anchorElement.attributes.getNamedItem('href')?.value
+        const preserveScroll = anchorElement.dataset['preserve-scroll']
+        const preserveState = anchorElement.dataset['preserve-state']
         event.preventDefault()
         event.stopPropagation()
-        this.visit(anchorElement.href, {
-          method: anchorElement.dataset['method'] as Method,
-          target: anchorElement.dataset['target'] || frameId,
-        })
+        if (href?.startsWith('#')) {
+          const page = this.page
+          page.url = anchorElement.href
+          this.setPage(page, {preserveScroll, preserveState}).then(() => {
+            fireNavigateEvent(page)
+          })
+        }
+        else {
+          this.visit(anchorElement.href, {
+            method: anchorElement.dataset['method'] as Method,
+            target: anchorElement.dataset['target'] || frameId,
+            preserveScroll, preserveState
+          })
+        }
       }
     })
   }
