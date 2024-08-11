@@ -10,6 +10,7 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 - `transformProps` router visit option
 - `preserveURL` router visit option
 - Global click handler
+  - Hash handling
 
 ## Breaking changes
 
@@ -72,7 +73,15 @@ router.reload({
 
 ### Global click handler
 
-No need for `use:inertia` or `<Link>` tags anymore. All `<a>` tags are automatically handled by Inertia. To opt out, add the `rel="external"` attribute.
+This version of Inertia installs a global click handler for `<a>` tags. No need for `use:inertia` or `<Link>` tags anymore.
+
+`data-` attributes are mapped to the router visit options, eg `<a href="/orders" data-method="DELETE" data-preserve-scroll="true">`.
+
+To opt out, add the `rel="external"` attribute.
+
+#### Hash handling
+
+Additionally, when an href starts with a hash, eg. `<a href="#orders">`, navigation events are fired, but no server-roundtrip is made. This allows for your own handling of hash paramters to update the UI. If you prefer the default browser behavior, opt out with `rel="external"`.
 
 ## Installing
 
