@@ -4,6 +4,10 @@
 
 This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and serve as proof-of-concept for the Inertia core team. Inertia X currently only supports Svelte 5 and React.
 
+## Breaking changes
+
+- The Inertia SSR output does no longer include the `<div id="app" data-server-rendered="true">` wrapper. Rendering of the wrapping `<div>` during SSR is now the responsibility of the backend framework. If you're using Rails, you can use my [inertia-rails fork](https://github.com/buhrmi/inertia-rails).
+
 ## Features added
 
 - `<Frame>` component
@@ -11,10 +15,6 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 - `preserveURL` router visit option
 - Global click handler
   - Hash handling
-
-## Breaking changes
-
-- The Inertia SSR output does no longer include the `<div id="app" data-server-rendered="true">` wrapper. Rendering of the wrapping `<div>` during SSR is now the responsibility of the backend framework. If you're using Rails, you can use my [inertia-rails fork](https://github.com/buhrmi/inertia-rails).
 
 ### Frames
 
