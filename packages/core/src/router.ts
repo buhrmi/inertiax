@@ -550,7 +550,7 @@ export class Router {
   }
 
   protected handlePopstateEvent(event: PopStateEvent): void {
-    if (event.state !== null) {
+    if (event.state !== null && event.state.component) {
       const page = event.state
       const visitId = this.createVisitId()
       Promise.resolve(this.resolveComponent(page.component)).then((component) => {

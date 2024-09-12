@@ -1,4 +1,5 @@
 import { router, setupProgress } from 'inertiax-core'
+import escape from 'html-escape'
 import { render } from 'svelte/server';
 import App from './App.svelte'
 import store from './store'
@@ -16,47 +17,46 @@ export default async function createInertiaApp({ id = 'app', resolve, setup, pro
     })
   })
 
-  if (!isServer) {
-    router.init({
-      initialPage,
-      resolveComponent,
-      swapComponent: async ({ component, page, preserveState }) => {
-        const targetFrame = page.target
-        if (targetFrame) store.update((current) => ({
-          ...current,
-          frames: { ...current.frames, [targetFrame]: {component, props: page.props} }
-        }))
-        else store.update((current) => ({
-          component,
-          page,
-          frames: current.frames,
-          key: preserveState ? current.key : Date.now(),
-        }))
-      },
-    })
-
-    if (progress) {
-      setupProgress(progress)
-    }
-
-    return setup({
-      el,
-      App,
-      props: {
-        initialPage,
-        resolveComponent,
-      },
-    })
-  }
-
   if (isServer) {
     const { html, head } = render(App)
 
     return {
-      body: html,
+      body: `<div data-server-rendered="true" data-page="${escape(JSON.stringify(initialPage))}">${html}</div>`,
       head: [
         head
       ],
     }
   }
+
+  router.init({
+    initialPage,
+    resolveComponent,
+    swapComponent: async ({ component, page, preserveState }) => {
+      const targetFrame = page.target
+      if (targetFrame) store.update((current) => ({
+        ...current,
+        frames: { ...current.frames, [targetFrame]: {component, props: page.props} }
+      }))
+      else store.update((current) => ({
+        component,
+        page,
+        frames: current.frames,
+        key: preserveState ? current.key : Date.now(),
+      }))
+    },
+  })
+
+  if (progress) {
+    setupProgress(progress)
+  }
+
+  return setup({
+    el,
+    App,
+    props: {
+      initialPage,
+      resolveComponent,
+    },
+  })
+
 }
