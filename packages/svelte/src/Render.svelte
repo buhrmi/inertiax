@@ -12,28 +12,28 @@
 <script>
   import store from './store'
 
-  let {component, props = {}, children = []} = $props()
+  let {component: Component, props = {}, children = []} = $props()
 
   let key = $state(new Date().getTime())
   
-  let prev = component
+  let prev = Component
 
-  function updateKey(component) {
-    if (prev !== component) {
-      prev = component
+  function updateKey(Component) {
+    if (prev !== Component) {
+      prev = Component
       key = new Date().getTime()
     }
   }
 
-  $effect(() => updateKey(component))
+  $effect(() => updateKey(Component))
 </script>
 
 {#if $store.component}
   {#key key}
-    <svelte:component this={component} {...props}>
-      {#each children as child, index (component && component.length === index ? $store.key : null)}
+    <Component {...props}>
+      {#each children as child, index (Component && Component.length === index ? $store.key : null)}
         <svelte:self {...child} />
       {/each}
-    </svelte:component>
+    </Component>
   {/key}
 {/if}
