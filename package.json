@@ -1,6 +1,5 @@
 {
   "name": "inertiax",
-  "private": true,
   "workspaces": [
     "packages/*",
     "playgrounds/*"
