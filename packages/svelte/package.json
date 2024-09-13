@@ -31,5 +31,8 @@
   "dependencies": {
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0"
+  },
+  "devDependencies": {
+    "html-escape": "^2.0.0"
   }
 }

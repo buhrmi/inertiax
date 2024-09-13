@@ -21,7 +21,7 @@ export default async function createInertiaApp({ id = 'app', resolve, setup, pro
     const { html, head } = render(App)
 
     return {
-      body: `<div data-server-rendered="true" data-page="${escape(JSON.stringify(initialPage))}">${html}</div>`,
+      body: `<div data-server-rendered="true" id="${id}" data-page="${escape(JSON.stringify(initialPage))}">${html}</div>`,
       head: [
         head
       ],
