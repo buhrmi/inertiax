@@ -135,7 +135,7 @@ export class Router {
 
   protected saveScrollPositions(): void {
     this.replaceState({
-      ...this.page,
+      ...history.state,
       scrollRegions: Array.from(this.scrollRegions()).map((region) => {
         return {
           top: region.scrollTop,
@@ -143,6 +143,7 @@ export class Router {
         }
       }),
     })
+    
   }
 
   protected resetScrollPositions(): void {
@@ -518,14 +519,13 @@ export class Router {
         if (preserveURL) {
           page.url = window.location.href
         }
-        if (!target || target === '_top' || target === '_parent' || target === 'main') {
+        if (!target || target === '_top' || target === '_parent' || target === 'main') {          
           replace = replace || hrefToUrl(page.url).href === window.location.href
           replace ? this.replaceState(page) : this.pushState(page)
         }
         else {
           page.target = target
         }
-        
         this.swapComponent({ component, page, preserveState }).then(() => {
           if (!preserveScroll) {
             this.resetScrollPositions()
@@ -563,9 +563,10 @@ export class Router {
         }
       })
     } else {
+      if (!this.page.url) return
       const url = hrefToUrl(this.page.url)
       url.hash = window.location.hash
-      this.replaceState({ ...this.page, url: url.href })
+      this.replaceState({ ...history.state, url: url.href })
       this.resetScrollPositions()
     }
   }
@@ -625,7 +626,7 @@ export class Router {
     }
 
     this.replaceState({
-      ...this.page,
+      ...history.state,
       rememberedState: {
         ...this.page?.rememberedState,
         [key]: data,
