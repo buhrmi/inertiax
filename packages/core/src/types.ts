@@ -187,6 +187,7 @@ export type PendingVisit = Visit & {
   completed: boolean
   cancelled: boolean
   interrupted: boolean
+  noProgress: boolean
 }
 
 export type ActiveVisit = PendingVisit &

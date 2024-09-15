@@ -347,6 +347,7 @@ export class Router {
       forceFormData,
       transformProps,
       queryStringArrayFormat,
+      noProgress: false,
       cancelled: false,
       completed: false,
       interrupted: false,
@@ -359,6 +360,8 @@ export class Router {
     if (this.activeVisit) {
       this.cancelVisit(this.activeVisit, { interrupted: true })
     }
+
+    if (visit.target && typeof visit.noProgress == 'undefined') visit.noProgress = true
 
     this.saveScrollPositions()
 
