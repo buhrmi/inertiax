@@ -1,10 +1,9 @@
 <script>
-  import { onMount } from 'svelte'
+  import { onMount, setContext } from 'svelte'
   import Render, { h } from './Render.svelte'
   import store from './store'
   import { router } from 'inertiax-svelte'
-  import { setContext } from 'svelte';
-
+  
   const {children, src, id = Math.random(), ...restProps} = $props()
   
   setContext('inertia:frame-id', id)
@@ -22,7 +21,7 @@
 <div data-inertia-frame-id={id}>
   {#if components}
     <Render {...components} />
-  {:else}
+  {:else if children()}
     {@render children()}
   {/if}
 </div>
