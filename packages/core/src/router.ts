@@ -92,10 +92,12 @@ export class Router {
     document.addEventListener('scroll', debounce(this.handleScrollEvent.bind(this), 100), true)
     document.addEventListener('click', (event) => {
       const target = event.target as Element
+      if (target.closest('[data-inertia-ignore]')) return
+      
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
       if (!anchorElement || anchorElement.rel == 'external' || anchorElement.target == '_blank') return
-      
+
       if (anchorElement.href && anchorElement.href.startsWith(location.origin)) {
         const href = anchorElement.attributes.getNamedItem('href')?.value
         const preserveScroll = anchorElement.dataset['preserve-scroll']
@@ -360,9 +362,7 @@ export class Router {
     if (this.activeVisit) {
       this.cancelVisit(this.activeVisit, { interrupted: true })
     }
-
-    if (visit.target && typeof visit.noProgress == 'undefined') visit.noProgress = true
-
+    
     this.saveScrollPositions()
 
     const visitId = this.createVisitId()
