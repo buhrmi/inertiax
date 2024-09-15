@@ -21,8 +21,8 @@
 <div data-inertia-frame-id={id}>
   {#if components}
     <Render {...components} />
-  {:else if children()}
-    {@render children()}
+  {:else}
+    {@render children?.()}
   {/if}
 </div>
 
