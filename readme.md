@@ -2,7 +2,7 @@
 
 > The **X** stands for eXperimental
 
-This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and are supposed to serve as proof-of-concept for the Inertia core team to demonstrate to them that they are possible (and usefull).
+This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features. These features are experimental in nature and are supposed to serve as proof-of-concept to demonstrate that they are possible and useful.
 
 Inertia X does not require any modifications to the backend adapters. However, the only currently supported fronted framework is Svelte 5 via the `inertiax-svelte` adapter.
 
