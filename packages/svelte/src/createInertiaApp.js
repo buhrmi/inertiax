@@ -33,7 +33,6 @@ export default async function createInertiaApp({ id = 'app', resolve, setup, pro
     resolveComponent,
     swapComponent: async ({ component, page, preserveState }) => {
       const targetFrame = page.target
-      console.log('swapping')
       if (targetFrame) store.update((current) => ({
         ...current,
         frames: { ...current.frames, [targetFrame]: {component, props: page.props} }
