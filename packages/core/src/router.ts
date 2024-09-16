@@ -365,6 +365,8 @@ export class Router {
     
     this.saveScrollPositions()
 
+    if (visit.target) visit.noProgress = true
+
     const visitId = this.createVisitId()
     this.activeVisit = {
       ...visit,
