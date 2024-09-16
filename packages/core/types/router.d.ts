@@ -36,7 +36,7 @@ export declare class Router {
     protected finishVisit(visit: ActiveVisit): void;
     protected resolvePreserveOption(value: PreserveStateOption, page: Page): boolean | string;
     cancel(): void;
-    visit(href: string | URL, { method, data, replace, preserveScroll, preserveState, preserveURL, only, headers, errorBag, forceFormData, target, onCancelToken, onBefore, onStart, onProgress, onFinish, onCancel, onSuccess, onError, transformProps, queryStringArrayFormat, }?: VisitOptions): void;
+    visit(href: string | URL, { method, data, replace, preserveScroll, preserveState, preserveURL, only, headers, errorBag, forceFormData, target, component, hint, onCancelToken, onBefore, onStart, onProgress, onFinish, onCancel, onSuccess, onError, transformProps, queryStringArrayFormat, }?: VisitOptions): void;
     protected setPage(page: Page, { visitId, replace, preserveURL, preserveScroll, preserveState, target, }?: {
         visitId?: VisitId;
         replace?: boolean;
