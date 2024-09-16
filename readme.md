@@ -7,6 +7,8 @@ This is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds addi
 ## Features added
 
 - `<Frame>` component
+- `hint` router visit option
+- `component` router visit option
 - `transformProps` router visit option
 - `preserveURL` router visit option
 - Global click handler
@@ -45,6 +47,14 @@ import { Frame } from 'inertiax-svelte'
   Edit a different user
 </a>
 ```
+
+### `hint` and `component` router visit options
+
+When using `router.visit()`, you can now specify a `hint` component to render while the request is in progress. This is useful for loading indicators, spinners, etc.
+
+When you specify the `component` router visit option, the visit is skipped completely, and instead the specified component is rendered.
+
+You can also specify a hint component on an `<a>` tag like so: `<a href="/users/1" data-hint="users/loading">`.
 
 ### transformProps and preserveURL
 

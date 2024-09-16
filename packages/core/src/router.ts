@@ -96,6 +96,7 @@ export class Router {
       
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
+      const hint = (target.closest('[data-hint]') as HTMLElement)?.dataset.hint
       if (!anchorElement || anchorElement.rel == 'external' || anchorElement.target == '_blank') return
 
       if (anchorElement.href && anchorElement.href.startsWith(location.origin)) {
@@ -115,7 +116,7 @@ export class Router {
           this.visit(anchorElement.href, {
             method: anchorElement.dataset['method'] as Method,
             target: anchorElement.dataset['target'] || frameId,
-            preserveScroll, preserveState
+            hint, preserveScroll, preserveState
           })
         }
       }
@@ -310,6 +311,8 @@ export class Router {
       errorBag = '',
       forceFormData = false,
       target = null,
+      component = null,
+      hint = component,
       onCancelToken = () => {},
       onBefore = () => {},
       onStart = () => {},
@@ -346,6 +349,8 @@ export class Router {
       headers,
       errorBag,
       target,
+      hint,
+      component,
       forceFormData,
       transformProps,
       queryStringArrayFormat,
@@ -389,8 +394,37 @@ export class Router {
         }
       },
     })
-
+    
+    if (hint) {
+      Promise.resolve(this.resolveComponent(hint)).then((component) => {
+        if (target && target !== '_top' && target !== '_parent' && target !== 'main') {          
+          this.swapComponent({ component, page: { ...this.page, target }, preserveState: false })
+        }
+        else {
+          this.swapComponent({ component, page: this.page, preserveState: false })
+        }
+      })
+    }
+    
+    
     fireStartEvent(visit)
+    
+    if (component) {
+      this.page.component = component
+      this.page.url = urlWithoutHash(url).href
+      if (!target || target === '_top' || target === '_parent' || target === 'main') {             
+        replace = replace || hrefToUrl(this.page.url).href === window.location.href
+        replace ? this.replaceState(this.page) : this.pushState(this.page)
+      }
+      if (!preserveScroll) {
+        this.resetScrollPositions()
+      }
+      if (!replace) {
+        fireNavigateEvent(this.page)
+      }
+      return
+    }
+    
     onStart(visit)
 
     Axios({

@@ -77,6 +77,8 @@ export type Visit = {
   errorBag: string | null
   forceFormData: boolean
   target: string | null
+  hint: string | null
+  component: string | null
   queryStringArrayFormat: 'indices' | 'brackets'
 }
 

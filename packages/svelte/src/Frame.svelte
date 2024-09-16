@@ -4,15 +4,16 @@
   import store from './store'
   import { router } from 'inertiax-svelte'
   
-  const {children, src, id = Math.random(), ...restProps} = $props()
+  const {children, src, hint, component, id = Math.random(), ...restProps} = $props()
   
   setContext('inertia:frame-id', id)
-
   const components = $derived($store.frames?.[id] && h($store.frames[id].component.default, Object.assign({}, restProps, $store.frames[id].props)))
-
+  
   onMount(() => {
     router.visit(src, {
-      target: id
+      target: id,
+      hint,
+      component
     })
   })
 
