@@ -397,7 +397,6 @@ export class Router {
     })
     
     if (hint) {
-      console.log('hint', hint)
       Promise.resolve(this.resolveComponent(hint)).then((component) => {
         if (target && target !== '_top' && target !== '_parent' && target !== 'main') {          
           this.swapComponent({ component, page: { ...this.page, target }, preserveState: false })
