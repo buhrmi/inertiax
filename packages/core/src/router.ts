@@ -97,6 +97,7 @@ export class Router {
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
       const hint = (target.closest('[data-hint]') as HTMLElement)?.dataset.hint
+      const component = (target.closest('[data-component]') as HTMLElement)?.dataset.component
       if (!anchorElement || anchorElement.rel == 'external' || anchorElement.target == '_blank') return
 
       if (anchorElement.href && anchorElement.href.startsWith(location.origin)) {
@@ -116,7 +117,7 @@ export class Router {
           this.visit(anchorElement.href, {
             method: anchorElement.dataset['method'] as Method,
             target: anchorElement.dataset['target'] || frameId,
-            hint, preserveScroll, preserveState
+            hint, component, preserveScroll, preserveState
           })
         }
       }
@@ -396,6 +397,7 @@ export class Router {
     })
     
     if (hint) {
+      console.log('hint', hint)
       Promise.resolve(this.resolveComponent(hint)).then((component) => {
         if (target && target !== '_top' && target !== '_parent' && target !== 'main') {          
           this.swapComponent({ component, page: { ...this.page, target }, preserveState: false })
@@ -422,6 +424,7 @@ export class Router {
       if (!replace) {
         fireNavigateEvent(this.page)
       }
+      fireFinishEvent(this.activeVisit)
       return
     }
     
