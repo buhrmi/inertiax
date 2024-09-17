@@ -12,7 +12,6 @@ function useForm(...args) {
   const frameId = getContext('inertia:frame-id')
   
   const frameSrc = frameId && get(inertiaStore).frames[frameId].page.url
-  console.log(frameSrc)
   
   let defaults = cloneDeep(data)
   let cancelToken = null
