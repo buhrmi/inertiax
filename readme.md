@@ -32,6 +32,7 @@ To target the top (main) frame, use `_top` as the frame ID.
 
 - Props on the `<Frame>` component will be passed on to the rendered Inertia component.
 - Navigation within frames currently does not create new history entries. This feature might be added in the future.
+- When submitting a form via `useForm` from inside a <Frame>, a new header `X-Inertia-Frame-Src` is being sent. When there are form errors, redirect the user to that location, instead of using `redirect_back` (because `redirect_back` will redirect the user to the referer, not to the Frame url).
 - During SSR, only the initial placeholder slot will be rendered. The actual content is loaded when the frame component is mounted. You can use this to add loading animations, etc.
 
 #### Example
