@@ -1,15 +1,19 @@
 import { router } from 'inertiax-core'
 import isEqual from 'lodash.isequal'
 import cloneDeep from 'lodash.clonedeep'
-import { writable } from 'svelte/store'
+import { get, writable } from 'svelte/store'
 import { getContext } from 'svelte'
+import inertiaStore from './store'
 
 function useForm(...args) {
   const rememberKey = typeof args[0] === 'string' ? args[0] : null
   const data = (typeof args[0] === 'string' ? args[1] : args[0]) || {}
   const restored = rememberKey ? router.restore(rememberKey) : null
   const frameId = getContext('inertia:frame-id')
-  const frameSrc = getContext('inertia:frame-src')
+  
+  const frameSrc = frameId && get(inertiaStore).frames[frameId].page.url
+  console.log(frameSrc)
+  
   let defaults = cloneDeep(data)
   let cancelToken = null
   let recentlySuccessfulTimeoutId = null
@@ -95,6 +99,9 @@ function useForm(...args) {
       
       const _options = {
         ...options,
+        headers: {
+          'X-Inertia-Frame-Src': frameSrc,
+        },
         target: typeof(options.target) !== 'undefined' ? options.target : frameId,
         onCancelToken: (token) => {
           cancelToken = token
@@ -107,7 +114,7 @@ function useForm(...args) {
           this.setStore('wasSuccessful', false)
           this.setStore('recentlySuccessful', false)
           clearTimeout(recentlySuccessfulTimeoutId)
-
+          
           if (options.onBefore) {
             return options.onBefore(visit)
           }

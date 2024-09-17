@@ -96,6 +96,7 @@ export class Router {
       
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
+
       const hint = (target.closest('[data-hint]') as HTMLElement)?.dataset.hint
       const component = (target.closest('[data-component]') as HTMLElement)?.dataset.component
       if (!anchorElement || anchorElement.rel == 'external' || anchorElement.target == '_blank') return
@@ -399,10 +400,10 @@ export class Router {
     if (hint) {
       Promise.resolve(this.resolveComponent(hint)).then((component) => {
         if (target && target !== '_top' && target !== '_parent' && target !== 'main') {          
-          this.swapComponent({ component, page: { ...this.page, target }, preserveState: false })
+          this.swapComponent({ component, page: { ...this.page, target, url: urlWithoutHash(url).pathname }, preserveState })
         }
         else {
-          this.swapComponent({ component, page: this.page, preserveState: false })
+          this.swapComponent({ component, page: {...this.page, url: urlWithoutHash(url).pathname}, preserveState })
         }
       })
     }
@@ -411,8 +412,6 @@ export class Router {
     fireStartEvent(visit)
     
     if (component) {
-      this.page.component = component
-      this.page.url = urlWithoutHash(url).href
       if (!target || target === '_top' || target === '_parent' || target === 'main') {             
         replace = replace || hrefToUrl(this.page.url).href === window.location.href
         replace ? this.replaceState(this.page) : this.pushState(this.page)

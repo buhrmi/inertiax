@@ -7,6 +7,7 @@
   const {children, src, hint, component, id = Math.random(), ...restProps} = $props()
   
   setContext('inertia:frame-id', id)
+
   const components = $derived($store.frames?.[id] && h($store.frames[id].component.default, Object.assign({}, restProps, $store.frames[id].props)))
   
   onMount(() => {
