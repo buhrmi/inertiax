@@ -23,6 +23,7 @@ Frames can be used to encapsulate an Inertia page within another Inertia page. T
 The `<Frame>` component can take the following props:
 
 - `src` (required): The URL of the Inertia endpoint to load inside the frame
+- `id`: The ID of the frame
 - `hint`: The name of the component that should be displayed while making the request
 - `component`: The name of the component to display in the frame. When you pass this prop no request is made.
 
