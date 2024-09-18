@@ -16,9 +16,15 @@ Inertia X does not require any modifications to the backend adapters. However, t
 - Global click handler
   - Hash handling
 
-### Frames
+### Frame component
 
 Frames can be used to encapsulate an Inertia page within another Inertia page. This is useful for creating modal dialogs, wizards, search sidebars, overlay cards, etc. Don't worry: Besides the name and concept, it has nothing to do with conventional browser frames.
+
+The `<Frame>` component can take the following props:
+
+- `src` (required): The URL of the Inertia endpoint to load inside the frame
+- `hint`: The name of the component that should be displayed while making the request
+- `component`: The name of the component to display in the frame. When you pass this prop no request is made.
 
 When you click on a hyperlink or submit a form within an Inertia frame, the response will be rendered in the frame that triggered the request (sans layout). You can change the frame in which an Inertia response is rendered by doing one of the following:
 
