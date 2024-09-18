@@ -1,6 +1,6 @@
 {
   "name": "inertiax-react",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "license": "MIT",
   "description": "The React adapter for Inertia.js",
   "contributors": [

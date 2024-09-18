@@ -92,7 +92,7 @@ export class Router {
     document.addEventListener('scroll', debounce(this.handleScrollEvent.bind(this), 100), true)
     document.addEventListener('click', (event) => {
       const target = event.target as Element
-      if (target.closest('[data-inertia-ignore]')) return
+      if (event.defaultPrevented || target.closest('[data-inertia-ignore]')) return
       
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
