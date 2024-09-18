@@ -1,5 +1,4 @@
-<script context="module">
-
+<script module>
   export const h = (component, props, children) => {
     return {
       component,
@@ -14,26 +13,25 @@
 
   let {component: Component, props = {}, children = []} = $props()
 
-  let key = $state(new Date().getTime())
+  // let key = $state(new Date().getTime())
   
-  let prev = Component
+  // let prev = Component
 
-  function updateKey(Component) {
-    if (prev !== Component) {
-      prev = Component
-      key = new Date().getTime()
-    }
-  }
+  // function updateKey(Component) {
+  //   if (prev !== Component) {
+  //     console.log('prev: ', prev)
+  //     console.log('new: ', Component)
+  //     prev = Component
+  //     key = new Date().getTime()
+  //   }
+  // }
 
-  $effect(() => updateKey(Component))
+  // $effect(() => updateKey(Component))
 </script>
 
-{#if $store.component}
-  {#key key}
-    <Component {...props}>
-      {#each children as child, index (Component && Component.length === index ? $store.key : null)}
-        <svelte:self {...child} />
-      {/each}
-    </Component>
-  {/key}
-{/if}
+
+<Component {...props}>
+  {#each children as child, index (Component && Component.length === index ? $store.key : null)}
+    <svelte:self {...child} />
+  {/each}
+</Component>
