@@ -427,7 +427,7 @@ export class Router {
     }
     
     onStart(visit)
-    console.log('visit', visit)
+
     Axios({
       method,
       url: urlWithoutHash(url).href,

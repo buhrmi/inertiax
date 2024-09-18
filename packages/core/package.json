@@ -1,6 +1,6 @@
 {
   "name": "inertiax-core",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "license": "MIT",
   "description": "A framework for creating server-driven single page apps.",
   "contributors": [
