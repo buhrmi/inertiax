@@ -100,6 +100,7 @@ function useForm(...args) {
         ...options,
         headers: {
           'X-Inertia-Frame-Src': frameSrc,
+          'X-Inertia': true,
         },
         target: typeof(options.target) !== 'undefined' ? options.target : frameId,
         onCancelToken: (token) => {
