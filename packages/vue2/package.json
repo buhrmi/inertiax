@@ -1,6 +1,6 @@
 {
   "name": "inertiax-vue2",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "license": "MIT",
   "description": "The Vue 2 adapter for Inertia.js",
   "contributors": [
