@@ -16,7 +16,9 @@
     router.visit(src, {
       target: id,
       hint,
-      component
+      component,
+      preserveScroll: true,
+      preserveState: true
     })
   })
 

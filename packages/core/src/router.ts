@@ -93,7 +93,7 @@ export class Router {
     document.addEventListener('click', (event) => {
       const target = event.target as Element
       if (event.defaultPrevented || target.closest('[data-inertia-ignore]')) return
-      
+
       const anchorElement = target.closest('a')
       const frameId = (target.closest('[data-inertia-frame-id]') as HTMLElement)?.dataset.inertiaFrameId
 
@@ -139,16 +139,17 @@ export class Router {
   }
 
   protected saveScrollPositions(): void {
+    const scrollRegions = Array.from(this.scrollRegions()).map((region) => {
+      return {
+        top: region.scrollTop,
+        left: region.scrollLeft,
+      }
+    })
     this.replaceState({
       ...history.state,
-      scrollRegions: Array.from(this.scrollRegions()).map((region) => {
-        return {
-          top: region.scrollTop,
-          left: region.scrollLeft,
-        }
-      }),
+      scrollRegions,
     })
-    
+
   }
 
   protected resetScrollPositions(): void {
@@ -346,7 +347,7 @@ export class Router {
       replace,
       preserveScroll,
       preserveState,
-      preserveURL, 
+      preserveURL,
       only,
       headers,
       errorBag,
@@ -369,7 +370,7 @@ export class Router {
     if (this.activeVisit) {
       this.cancelVisit(this.activeVisit, { interrupted: true })
     }
-    
+
     this.saveScrollPositions()
 
     if (visit.target) visit.noProgress = true
@@ -396,10 +397,10 @@ export class Router {
         }
       },
     })
-    
+
     if (hint) {
       Promise.resolve(this.resolveComponent(hint)).then((component) => {
-        if (target && target !== '_top' && target !== '_parent' && target !== 'main') {          
+        if (target && target !== '_top' && target !== '_parent' && target !== 'main') {
           this.swapComponent({ component, page: { ...this.page, target, url: urlWithoutHash(url).pathname }, preserveState })
         }
         else {
@@ -407,12 +408,12 @@ export class Router {
         }
       })
     }
-    
-    
+
+
     fireStartEvent(visit)
-    
+
     if (component) {
-      if (!target || target === '_top' || target === '_parent' || target === 'main') {             
+      if (!target || target === '_top' || target === '_parent' || target === 'main') {
         replace = replace || hrefToUrl(this.page.url).href === window.location.href
         replace ? this.replaceState(this.page) : this.pushState(this.page)
       }
@@ -425,7 +426,7 @@ export class Router {
       fireFinishEvent(this.activeVisit)
       return
     }
-    
+
     onStart(visit)
 
     Axios({
@@ -471,7 +472,7 @@ export class Router {
         if (only.length && pageResponse.component === this.page.component) {
           pageResponse.props = { ...this.page.props, ...pageResponse.props }
         }
-        
+
         preserveScroll = this.resolvePreserveOption(preserveScroll, pageResponse) as boolean
         preserveState = this.resolvePreserveOption(preserveState, pageResponse)
         if (preserveState && window.history.state?.rememberedState && pageResponse.component === this.page.component) {
@@ -486,6 +487,7 @@ export class Router {
         if (transformProps) {
           transformProps(pageResponse.props)
         }
+
         return this.setPage(pageResponse, { target, visitId, replace, preserveScroll, preserveState, preserveURL })
       })
       .then((page: Page) => {
@@ -559,7 +561,7 @@ export class Router {
         if (preserveURL) {
           page.url = window.location.href
         }
-        if (!target || target === '_top' || target === '_parent' || target === 'main') {          
+        if (!target || target === '_top' || target === '_parent' || target === 'main') {
           replace = replace || hrefToUrl(page.url).href === window.location.href
           replace ? this.replaceState(page) : this.pushState(page)
         }
