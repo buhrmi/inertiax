@@ -13,6 +13,7 @@
     url,
     makeRequest = true,
     
+    children,
     version
   } = $props()
   
@@ -103,7 +104,7 @@
   {#if resolvedProps}
     <Render {...resolvedProps} />
   {:else}
-    <slot />
+    {@render children?.()}
   {/if}
 </div>
 
