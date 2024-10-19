@@ -13,9 +13,9 @@
     props,
     url,
     history = true,
-    makeRequest = true,
     onclick = () => {},
     
+    makeRequest = true,
     children,
     version
   } = $props()
@@ -107,6 +107,8 @@
     const el = event.target.closest('[href]')
     
     if (!el) return
+    if (el.getAttribute('target')) return
+    if (el.getAttribute('download')) return
     
     const href = el.getAttribute('href')
     
@@ -123,7 +125,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div style="display: contents" class="frame" onclick={bothOnclick} bind:this={frame}>
+<div style="display: contents" class={name} onclick={bothOnclick} bind:this={frame}>
   {#if resolvedProps}
     <Render {...resolvedProps} />
   {:else}
