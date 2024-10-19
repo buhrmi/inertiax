@@ -50,8 +50,10 @@ The Frame component is the heart and soul of this version of Inertia. It allows 
 
 #### Things to note
 
-* All navigation (including form submissions) is encapsulated within the Frame component. To "break out" of a Frame, make the request on a different router. Frame components export their router via `frame.router`.
-* When making a request from within a Frame, the `X-Inertia-Referer` header contains the URL of the frame. Use this instead of calling `redirect_back`, if you want to redirect the user back.
+* All navigation (including form submissions) is encapsulated within the frame that initiated the request.
+* To programmatically navigate within a different frame, make the request on the frame's router. Frame components export their router via `frame.router`.
+* The new `X-Inertia-Referer` header contains the URL of the frame that initiated the request. Use this URL instead of calling `redirect_back` on your backend, when you want to redirect the user back to the originating URL.
+* Frame content is wrapped in a `<div>` with `style="display: contents"` and `class="[frame name]"`. The frame's click handler is added on this div.
 
 #### Props
 
