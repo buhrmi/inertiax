@@ -146,11 +146,13 @@ class CurrentPage {
     frame: Frame,
     options: Partial<VisitOptions> = {}
   ): Promise<void> {
-    return this.set(deepmerge(this.page, {
+    return this.set({
+      ...this.page,
       frames: {
+        ...this.page.frames,
         [name]: frame,
       }
-    }, { arrayMerge: (_, s) => s }) as Page,
+    },
     { frame: name, ...options })
   }
     

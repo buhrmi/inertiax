@@ -37,7 +37,6 @@
     initialState: {component, props, url, version},
     swapComponent: async (opts) => {
       ({ component: resolvedComponent, frame: {component, props, url} } = opts);
-      // console.log('swapComponent', name, url, opts.forgetState);
       if (opts.forgetState === true || opts.forgetState === name) key = Date.now();
     },
   })

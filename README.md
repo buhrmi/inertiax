@@ -13,6 +13,10 @@ It contains the following changes:
 
 ## Breaking Changes
 
+### `router.on`
+
+Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[eventname]`. This currently only work for the `finish`, `before`, `start`, and `prefetching` events. For other events, attach your listeners to the document directly, eg `document.addEventListener('inertia:navigate'`).
+
 ### Context instead of imports
 
 Routers and page stores now exist at the Frame level (yes, an Inertia X app has multiple routers, one for each frame). That means, that they are not globally exported anymore. Instead, they are saved in the Svelte context of each Frame:

@@ -24,7 +24,7 @@ class EventHandler {
   }
 
   public onGlobalEvent<TEventName extends GlobalEventNames>(
-    type: TEventName,
+    type: string,
     callback: (event: GlobalEvent<TEventName>) => GlobalEventResult<TEventName>,
   ): VoidFunction {
     const listener = ((event: GlobalEvent<TEventName>) => {

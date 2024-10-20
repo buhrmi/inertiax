@@ -130,7 +130,7 @@ export class Router {
     type: TEventName,
     callback: (event: GlobalEvent<TEventName>) => GlobalEventResult<TEventName>,
   ): VoidFunction {
-    return eventHandler.onGlobalEvent(type, callback)
+    return eventHandler.onGlobalEvent(`${this.frame}:${type}`, callback)
   }
 
   public cancel(): void {

@@ -1,13 +1,14 @@
 import { GlobalEventDetails, GlobalEventNames, GlobalEventTrigger } from './types'
 
 function fireEvent<TEventName extends GlobalEventNames>(
-  name: TEventName,
+  name: string,
   options: CustomEventInit<GlobalEventDetails<TEventName>>,
 ): boolean {
   return document.dispatchEvent(new CustomEvent(`inertia:${name}`, options))
 }
 
 export const fireBeforeEvent: GlobalEventTrigger<'before'> = (visit) => {
+  fireEvent(`${visit.frame}:before`, { detail: { visit } })
   return fireEvent('before', { cancelable: true, detail: { visit } })
 }
 
@@ -20,7 +21,8 @@ export const fireExceptionEvent: GlobalEventTrigger<'exception'> = (exception) =
 }
 
 export const fireFinishEvent: GlobalEventTrigger<'finish'> = (visit) => {
-  return fireEvent('finish', { detail: { visit } })
+  fireEvent(`${visit.frame}:finish`, { detail: { visit } })
+  return fireEvent(`finish`, { detail: { visit } })
 }
 
 export const fireInvalidEvent: GlobalEventTrigger<'invalid'> = (response) => {
@@ -36,6 +38,7 @@ export const fireProgressEvent: GlobalEventTrigger<'progress'> = (progress) => {
 }
 
 export const fireStartEvent: GlobalEventTrigger<'start'> = (visit) => {
+  fireEvent(`${visit.frame}:start`, { detail: { visit } })
   return fireEvent('start', { detail: { visit } })
 }
 
@@ -48,5 +51,6 @@ export const firePrefetchedEvent: GlobalEventTrigger<'prefetched'> = (response, 
 }
 
 export const firePrefetchingEvent: GlobalEventTrigger<'prefetching'> = (visit) => {
+  fireEvent(`${visit.frame}:prefetching`, { detail: { visit } })
   return fireEvent('prefetching', { detail: { visit } })
 }
