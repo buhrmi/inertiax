@@ -99,8 +99,8 @@ export class InitialVisit {
       currentPage.setUrlHash(window.location.hash)
     }
 
-    // currentPage.set(currentPage.get(), { forgetState: false, replace: true }).then(() => {
-    //   fireNavigateEvent(currentPage.get())
-    // })
+    currentPage.set(currentPage.get(), { forgetState: false, replace: true }).then(() => {
+      fireNavigateEvent(currentPage.get())
+    })
   }
 }

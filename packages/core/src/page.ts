@@ -96,11 +96,12 @@ class CurrentPage {
       //   this.fireEventsFor('newComponent')
       // }
 
-      if (this.isFirstPageLoad) {
-        this.fireEventsFor('firstLoad')
-      }
 
-      this.isFirstPageLoad = false
+      if (this.isFirstPageLoad) {
+        this.isFirstPageLoad = false
+        this.fireEventsFor('firstLoad')
+        return
+      }
 
       return this.swap({ components, page, forgetState, frame }).then(() => {
         if (!preserveScroll) {
