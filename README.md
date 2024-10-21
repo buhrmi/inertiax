@@ -30,7 +30,7 @@ To get the context of a parent Frame, use `getContext('inertia:[frame name]))`. 
 
 ### `preserveState` and `preserveScroll`
 
-The `preserveState` router option has been replaced by `forgetState`. It can be `true`, `false`, or the name of a frame. If true, the state of all frames will be forgotten upon navigation. If set to a frame name, only the state of that frame will be forgotten. It defaults to the name of the frame that made the request.
+The `preserveState` router option has been replaced by `forgetState` and can now take a string in addition to a boolean. It now defaults to the name of the frame that made the request. If set to a frame name, the state of that frame will be forgotten after making a request. If set to true, the state of all frames will be forgotten.
 
 The `preserveScroll` option is true by default within non-top frames.
 
