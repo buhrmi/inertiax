@@ -17,10 +17,12 @@ export default async function createInertiaApp({
   
   if (!BROWSER) {
     const { render } = await dynamicImport('svelte/server');
+    const resolvedComponent = await Router.resolveComponent(initialState.component)
     const { html, head } = await (async () => {
       return render(Frame, {
         props: {
           name: "_top",
+          resolvedComponent,
           ...initialState,
         },
       });

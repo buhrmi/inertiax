@@ -14,7 +14,8 @@
     url,
     history = true,
     onclick = () => {},
-    
+  
+    resolvedComponent,
     makeRequest = true,
     children,
     version
@@ -27,7 +28,7 @@
     defaultOnclick(event)
   }
   
-  let resolvedComponent = $state(null)
+  
   let key = $state(null)
   
   export const router = new Router();
@@ -73,6 +74,7 @@
   
   function resolveProps() {
     if (!resolvedComponent) return
+    
     const child = h(resolvedComponent.default, props, [], key);
   
     const layout = renderLayout && resolvedComponent.layout;
