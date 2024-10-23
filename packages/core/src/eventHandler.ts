@@ -99,7 +99,7 @@ class EventHandler {
       return
     }
 
-    this.onMissingHistoryItem()
+    // this.onMissingHistoryItem()
   }
 }
 
