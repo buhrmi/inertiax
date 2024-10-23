@@ -217,7 +217,7 @@ export class Response {
       return true
     }
 
-    if (this.originatingPage.frames[frame].component !== pageResponse.component) {
+    if (this.originatingPage.frames[frame]?.component !== pageResponse.component) {
       // We originated from a component but the response re-directed us,
       // we should respect the redirection and set the page
       return true
@@ -225,7 +225,7 @@ export class Response {
 
     // At this point, if the originating request component is different than the current component,
     // the user has since navigated and we should discard the response
-    if (this.originatingPage.frames[frame].component !== currentPage.frame(frame).component) {
+    if (this.originatingPage.frames[frame]?.component !== currentPage.frame(frame).component) {
       return false
     }
 

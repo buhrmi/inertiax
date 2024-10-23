@@ -51,6 +51,7 @@
     router.visit(url, {
       forgetState: false,
       preserveScroll: true,
+      async: true,
       replace: history || undefined
     })
   }
