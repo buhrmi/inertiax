@@ -1,6 +1,6 @@
 {
   "name": "inertiax-svelte",
-  "version": "5.0.34",
+  "version": "5.0.35",
   "license": "MIT",
   "description": "The Svelte adapter for Inertia X",
   "contributors": [
@@ -44,7 +44,7 @@
     "svelte": "^5.0.0 || ^5.0.0-next.244"
   },
   "dependencies": {
-    "inertiax-core": "^5.0.34",
+    "inertiax-core": "^5.0.35",
     "html-escape": "^2.0.0",
     "lodash": "^4.5.0"
   },

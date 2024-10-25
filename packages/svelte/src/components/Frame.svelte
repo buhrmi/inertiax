@@ -57,8 +57,8 @@
   }
 
   if (component) {
-    Promise.all([Router.resolveComponent(component), router.decryptHistory().catch(() => {})]).then(
-      ([initialComponent]) => {
+    Router.resolveComponent(component).then(
+      (initialComponent) => {
         resolvedComponent = initialComponent
         key = null
       },

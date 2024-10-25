@@ -1,4 +1,4 @@
-import { setupProgress, Router, History } from 'inertiax-core';
+import { setupProgress, Router, history, History } from 'inertiax-core';
 import escape from 'html-escape';
 import Frame from './components/Frame.svelte';
 import { BROWSER } from 'esm-env'
@@ -15,9 +15,13 @@ export default async function createInertiaApp({
   // Router.setVersion(initialState.version);
   Router.resolveComponent = (name) => Promise.resolve(resolve(name));
   
+  const [resolvedComponent] = await Promise.all([
+    Router.resolveComponent(initialState.component),
+    history.decrypt().catch(() => {})
+  ])
+  
   if (!BROWSER) {
     const { render } = await dynamicImport('svelte/server');
-    const resolvedComponent = await Router.resolveComponent(initialState.component)
     const { html, head } = await (async () => {
       return render(Frame, {
         props: {
