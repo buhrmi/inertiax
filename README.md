@@ -10,6 +10,7 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 * A top-level `<Frame>` component is taking the place of the `<App>` component. The `<App>` component has been removed.
 * The structure of the history state has been altered: The `Page` object does not contain props anymore. Instead, it now contains several `Frame` objects that contain the props for each frame.
 * A global click handler
+* Apps now have multiple routers (one per Frame)
 * Svelte 5 only
 
 
@@ -58,7 +59,7 @@ Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[
 
 ### Context instead of imports
 
-Routers and page stores now exist at the Frame level (yes, an Inertia X app has multiple routers, one for each frame). That means, that they are not globally exported anymore. Instead, they are saved in the Svelte context of each Frame:
+Routers and page stores now exist at the Frame level. That means, that they are not globally exported anymore. Instead, they are saved in the Svelte context of each Frame:
 
 ```diff
 -import { router, page } from '@inertiajs/svelte'
