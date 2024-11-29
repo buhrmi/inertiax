@@ -4,12 +4,13 @@ Inertia X Æ A-Xii is an adaptation and (almost) drop-in replacement for the [In
 
 This is a complete rewrite of Inertia X, based on Inertia 2.0. Inertia X started as a proof-of-concept for the `<Frame>` component, but has since graduated into a "real" project. I'm using it myself to build [my startup](https://github.com/buhrmi).
 
-It contains the following changes:
+Compared to Inertia 2.0, Inertia X brings the following new features and changes:
 
 * All state is now saved within `<Frame>` components, leveraging Svelte 5's fine-grained reactivity. The global page store has been removed. 
 * A top-level `<Frame>` component is taking the place of the `<App>` component. The `<App>` component has been removed.
 * The structre of the history state has been altered: The `Page` object does not contain props anymore. Instead, it now contains several `Frame` objects that contain the props for each frame.
 * A global click handler
+* Svelte 5 only
 
 ## Breaking Changes
 
