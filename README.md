@@ -12,32 +12,6 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 * A global click handler
 * Svelte 5 only
 
-## Breaking Changes
-
-### `router.on`
-
-Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[eventname]`. This currently only work for the `finish`, `before`, `start`, and `prefetching` events. For other events, attach your listeners to the document directly, eg `document.addEventListener('inertia:navigate'`).
-
-### Context instead of imports
-
-Routers and page stores now exist at the Frame level (yes, an Inertia X app has multiple routers, one for each frame). That means, that they are not globally exported anymore. Instead, they are saved in the Svelte context of each Frame:
-
-```diff
--import { router, page } from '@inertiajs/svelte'
-+const { router, page } = getContext('inertia')
-```
-
-To get the context of a parent Frame, use `getContext('inertia:[frame name]))`. For example, to get the top-level router (which exists within the Frame with the name `_top`), use `const { router } = getContext('inertia:_top')`.
-
-### `preserveState` and `preserveScroll`
-
-The `preserveState` router option has been replaced by `forgetState` and can now take a string in addition to a boolean. It now defaults to the name of the frame that made the request. If set to a frame name, the state of that frame will be forgotten after making a request. If set to true, the state of all frames will be forgotten.
-
-The `preserveScroll` option is true by default within non-top frames.
-
-### Global click handler
-
-The `<Link>` component and the `use:inertia` action have been removed. Instead, we use a global click handler to intercept clicks and pass them to the Inertia router. You can opt out of this by adding a `data-inertia-ignore` attribute to the link. To opt-out globally, set the `data-inertia-ignore` attribute on the `<body>`.
 
 ## New Features
 
@@ -71,6 +45,34 @@ The Frame component is the heart and soul of this version of Inertia. It allows 
 | `renderLayout` | boolean | (optional) Whether to render the layout. Defaults to `true` if `name` == `_top`. `false` otherwise. |
 | `history` | boolean | (optional) Whether this frame should save its state in the history. Setting this to false effectively makes this frame invisible to browser navigation. |
 | `onclick` | function(e) | (optional) Provide your own click handler. Call `e.preventDefault()` to prevent Inertia from navigating inside the frame. |
+
+### Global click handler
+
+The `<Link>` component and the `use:inertia` action have been removed. Instead, we use a global click handler to intercept clicks and pass them to the Inertia router. You can opt out of this by adding a `data-inertia-ignore` attribute to the link. To opt-out globally, set the `data-inertia-ignore` attribute on the `<body>`.
+
+## Breaking Changes
+
+### `router.on`
+
+Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[eventname]`. This currently only work for the `finish`, `before`, `start`, and `prefetching` events. For other events, attach your listeners to the document directly, eg `document.addEventListener('inertia:navigate'`).
+
+### Context instead of imports
+
+Routers and page stores now exist at the Frame level (yes, an Inertia X app has multiple routers, one for each frame). That means, that they are not globally exported anymore. Instead, they are saved in the Svelte context of each Frame:
+
+```diff
+-import { router, page } from '@inertiajs/svelte'
++const { router, page } = getContext('inertia')
+```
+
+To get the context of a parent Frame, use `getContext('inertia:[frame name]))`. For example, to get the top-level router (which exists within the Frame with the name `_top`), use `const { router } = getContext('inertia:_top')`.
+
+### `preserveState` and `preserveScroll`
+
+The `preserveState` router option has been replaced by `forgetState` and can now take a string in addition to a boolean. It now defaults to the name of the frame that made the request. If set to a frame name, the state of that frame will be forgotten after making a request. If set to true, the state of all frames will be forgotten.
+
+The `preserveScroll` option is true by default within non-top frames.
+
 
 ## Installation
 
