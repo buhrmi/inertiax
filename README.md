@@ -8,7 +8,7 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 
 * All state is now saved within `<Frame>` components, leveraging Svelte 5's fine-grained reactivity. The global page store has been removed. 
 * A top-level `<Frame>` component is taking the place of the `<App>` component. The `<App>` component has been removed.
-* The structre of the history state has been altered: The `Page` object does not contain props anymore. Instead, it now contains several `Frame` objects that contain the props for each frame.
+* The structure of the history state has been altered: The `Page` object does not contain props anymore. Instead, it now contains several `Frame` objects that contain the props for each frame.
 * A global click handler
 * Svelte 5 only
 
@@ -17,7 +17,7 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 
 ### `<Frame>`
 
-The Frame component is the heart and soul of this version of Inertia. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc.
+The Frame component is the defining feature of Inertia X. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc.
 
 #### Usage
 
@@ -54,7 +54,7 @@ The `<Link>` component and the `use:inertia` action have been removed. Instead, 
 
 ### `router.on`
 
-Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[eventname]`. This currently only work for the `finish`, `before`, `start`, and `prefetching` events. For other events, attach your listeners to the document directly, eg `document.addEventListener('inertia:navigate'`).
+Calls to `router.on(eventname)` now set up a listener for `inertia:[framename]:[eventname]`. This currently only works for the `finish`, `before`, `start`, and `prefetching` events. For other events, attach your listeners to the document directly, eg `document.addEventListener('inertia:navigate'`).
 
 ### Context instead of imports
 
