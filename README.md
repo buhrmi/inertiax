@@ -2,8 +2,6 @@
 
 Inertia X Æ A-Xii is an adaptation and (almost) drop-in replacement for the [Inertiajs](https://inertiajs.com) client side adapter for Svelte 5.
 
-This is a complete rewrite of Inertia X, based on Inertia 2.0. Inertia X started as a proof-of-concept for the `<Frame>` component, but has since graduated into a "real" project. I'm using it myself to build [my startup](https://github.com/buhrmi).
-
 Compared to Inertia 2.0, Inertia X brings the following new features and changes:
 
 * All state is now saved within `<Frame>` components, leveraging Svelte 5's fine-grained reactivity. The global page store has been removed. 
@@ -18,7 +16,7 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 
 ### `<Frame>`
 
-The Frame component is the defining feature of Inertia X. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc.
+The Frame component is the defining feature of Inertia X. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc. You can see it being used in production [here](https://www.shitcoinsociety.com/session/new).
 
 #### Usage
 
