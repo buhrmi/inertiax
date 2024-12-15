@@ -16,7 +16,7 @@ Compared to Inertia 2.0, Inertia X brings the following new features and changes
 
 ### `<Frame>`
 
-The Frame component is the defining feature of Inertia X. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc. You can see it being used in production [here](https://www.shitcoinsociety.com/session/new).
+The Frame component is the defining feature of Inertia X. It allows you to embed an Inertia page within another Inertia page. This way you can easily create interactive modals, wizards, dialogs, sidebars, etc.
 
 #### Usage
 
