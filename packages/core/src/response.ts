@@ -85,7 +85,7 @@ export class Response {
     history.preserveUrl = this.requestParams.all().preserveUrl
 
     await this.setFrame()
-    const frame = this.requestParams.all().frame
+    const frame = this.response.headers['x-inertia-frame'] || this.requestParams.all().frame
     
     const errors = currentPage.frame(frame).props.errors || {}
 
@@ -184,13 +184,14 @@ export class Response {
     
     pageResponse.url = history.preserveUrl ? currentPage.frame("_top").url : this.pageUrl(pageResponse)
     delete pageResponse.version
-    
+    const frame = this.response.headers['x-inertia-frame'] || this.requestParams.all().frame
+
     History.encryptHistory = pageResponse.encryptHistory
     if (pageResponse.clearHistory) {
       history.clear()
     }
     return currentPage.setFrame(
-      this.requestParams.all().frame, 
+      frame, 
       pageResponse, {
       replace: this.requestParams.all().replace,
       preserveScroll: this.requestParams.all().preserveScroll,

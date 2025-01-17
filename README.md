@@ -30,8 +30,10 @@ The Frame component is the defining feature of Inertia X. It allows you to embed
 
 * All navigation (including form submissions) is encapsulated within the frame that initiated the request.
 * To programmatically navigate within a different frame, make the request on the frame's router. Frame components export their router via `frame.router`.
-* The new `X-Inertia-Referer` header contains the URL of the frame that initiated the request. Use this URL instead of calling `redirect_back` on your backend, when you want to redirect the user back to the originating URL.
+* The new `X-Inertia-Referer` header contains the URL of the frame that initiated the request. Use this URL instead of the usual `referer` header, when you want to redirect the user back to the originating URL.
 * Frame content is wrapped in a `<div>` with `style="display: contents"` and `class="[frame name]"`. The frame's click handler is added on this div.
+* To render the response in a frame that is NOT the originating frame, you can set the target frame name in the `X-Inertia-Frame` header.
+
 
 #### Props
 
@@ -76,7 +78,7 @@ The `preserveScroll` option is true by default within non-top frames.
 ## Installation
 
 ```bash
-npm install -D inertiax-svelte inertiax-core
+npm install -D inertiax-svelte
 ```
 
 ```diff
