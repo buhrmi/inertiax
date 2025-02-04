@@ -77,7 +77,7 @@ The `preserveScroll` option is true by default within non-top frames.
 
 ## Installation
 
-Follow the guide at https://dev.to/buhrmi/setting-up-a-new-rails-7-app-with-vite-inertia-and-svelte-c9e but replace the imports as described above.
+Follow the guide at https://dev.to/buhrmi/setting-up-a-new-rails-7-app-with-vite-inertia-and-svelte-c9e but replace the imports as described below.
 
 ```bash
 npm install -D inertiax-svelte
