@@ -1,7 +1,5 @@
 # Inertia X Æ A-Xii
 
-> Note: This project is supposed to serve as a proof-of-concept for features that I hope will make it into an official future Inertia release. Instead of building an app with this fork of Inertia, I suggest to wait and see if similar features will be included with a future official Inertia release.
-
 Inertia X Æ A-Xii is an adaptation and (almost) drop-in replacement for the [Inertiajs](https://inertiajs.com) client side adapter for Svelte 5.
 
 Compared to Inertia 2.0, Inertia X brings the following new features and changes:
