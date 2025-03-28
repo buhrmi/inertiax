@@ -2,10 +2,10 @@ import { eventHandler } from './eventHandler'
 import { fireNavigateEvent } from './events'
 import { history } from './history'
 import { navigationType } from './navigationType'
-import { page as currentPage } from './page'
 import { Scroll } from './scroll'
 import { SessionStorage } from './sessionStorage'
 import { LocationVisit, Page } from './types'
+import { Router } from './router'
 
 export class InitialVisit {
   public static handle(): void {
@@ -27,14 +27,16 @@ export class InitialVisit {
       return false
     }
 
+    const topPage = Router.for("_top").currentPage
+
     const scrollRegions = history.getScrollRegions()
 
     history
       .decrypt()
       .then((data) => {
-        currentPage.set(data, { preserveScroll: true, preserveState: true }).then(() => {
+        Router.set(data, { preserveScroll: true, preserveState: true }).then(() => {
           Scroll.restore(scrollRegions)
-          fireNavigateEvent(currentPage.get())
+          fireNavigateEvent(topPage.get())
         })
       })
       .catch(() => {
@@ -55,9 +57,10 @@ export class InitialVisit {
     const locationVisit: LocationVisit = SessionStorage.get(SessionStorage.locationVisitKey) || {}
 
     SessionStorage.remove(SessionStorage.locationVisitKey)
+    const topPage = Router.for("_top").currentPage
 
     if (typeof window !== 'undefined') {
-      currentPage.setUrlHash(window.location.hash)
+      topPage.setUrlHash(window.location.hash)
     }
 
     history
@@ -65,10 +68,10 @@ export class InitialVisit {
       .then(() => {
         const rememberedState = history.getState<Page['rememberedState']>(history.rememberedState, {})
         const scrollRegions = history.getScrollRegions()
-        currentPage.remember(rememberedState)
+        topPage.remember(rememberedState)
 
-        currentPage
-          .set(currentPage.get(), {
+        topPage
+          .set(topPage.get(), {
             preserveScroll: locationVisit.preserveScroll,
             preserveState: true,
           })
@@ -77,7 +80,7 @@ export class InitialVisit {
               Scroll.restore(scrollRegions)
             }
 
-            fireNavigateEvent(currentPage.get())
+            fireNavigateEvent(topPage.get())
           })
       })
       .catch(() => {
@@ -88,15 +91,17 @@ export class InitialVisit {
   }
 
   protected static handleDefault(): void {
+    const topPage = Router.for("_top").currentPage
+
     if (typeof window !== 'undefined') {
-      currentPage.setUrlHash(window.location.hash)
+      topPage.setUrlHash(window.location.hash)
     }
 
-    currentPage.set(currentPage.get(), { preserveScroll: true, preserveState: true }).then(() => {
+    topPage.set(topPage.get(), { preserveScroll: true, preserveState: true }).then(() => {
       if (navigationType.isReload()) {
         Scroll.restore(history.getScrollRegions())
       }
-      fireNavigateEvent(currentPage.get())
+      fireNavigateEvent(topPage.get())
     })
   }
 }

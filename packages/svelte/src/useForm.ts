@@ -7,13 +7,13 @@ import type {
   PendingVisit,
   Progress,
   RequestPayload,
-  VisitOptions,
+  VisitOptions
 } from '@inertiajs/core'
-import { router } from '@inertiajs/core'
 import type { AxiosProgressEvent } from 'axios'
 import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'
 import { writable, type Writable } from 'svelte/store'
+import { getContext } from 'svelte'
 
 type FormDataType = Record<string, FormDataConvertible>
 type FormOptions = Omit<VisitOptions, 'data'>
@@ -57,11 +57,13 @@ export default function useForm<TForm extends FormDataType>(
   rememberKeyOrData: string | TForm | (() => TForm),
   maybeData?: TForm | (() => TForm),
 ): Writable<InertiaForm<TForm>> {
+  const {router, frame} = getContext('inertia')
+
   const rememberKey = typeof rememberKeyOrData === 'string' ? rememberKeyOrData : null
   const inputData = (typeof rememberKeyOrData === 'string' ? maybeData : rememberKeyOrData) ?? {}
   const data: TForm = typeof inputData === 'function' ? inputData() : (inputData as TForm)
   const restored = rememberKey
-    ? (router.restore(rememberKey) as { data: TForm; errors: Record<keyof TForm, string> } | null)
+    ? (router.restore(frame, rememberKey) as { data: TForm; errors: Record<keyof TForm, string> } | null)
     : null
   let defaults = cloneDeep(data)
   let cancelToken: { cancel: () => void } | null = null

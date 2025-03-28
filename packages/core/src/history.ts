@@ -1,8 +1,9 @@
 import { decryptHistory, encryptHistory, historySessionStorageKeys } from './encryption'
-import { page as currentPage } from './page'
+
 import Queue from './queue'
 import { SessionStorage } from './sessionStorage'
-import { Page, ScrollRegion } from './types'
+import { Page, ScrollRegion, Frames } from './types'
+import { Router } from './router'
 
 const isServer = typeof window === 'undefined'
 const queue = new Queue<Promise<void>>()
@@ -12,27 +13,27 @@ class History {
   public rememberedState = 'rememberedState' as const
   public scrollRegions = 'scrollRegions' as const
   public preserveUrl = false
-  protected current: Partial<Page> = {}
+  protected current: Frames = {}
   // We need initialState for `restore`
-  protected initialState: Partial<Page> | null = null
+  protected initialState: Partial<Frames> | null = null
 
-  public remember(data: unknown, key: string): void {
-    this.replaceState({
-      ...currentPage.get(),
+  public remember(frame: string, data: unknown, key: string): void {
+    this.replaceState(frame, {
+      ...this.current[frame],
       rememberedState: {
-        ...(currentPage.get()?.rememberedState ?? {}),
+        ...(this.current[frame]?.rememberedState ?? {}),
         [key]: data,
       },
     })
   }
 
-  public restore(key: string): unknown {
+  public restore(frame: string, key: string): unknown {
     if (!isServer) {
-      return this.initialState?.[this.rememberedState]?.[key]
+      return this.initialState?.[frame]?.rememberedState?.[key]
     }
   }
 
-  public pushState(page: Page, cb: (() => void) | null = null): void {
+  public pushState(frame: string, page: Page, cb: (() => void) | null = null): void {
     if (isServer) {
       return
     }
@@ -42,14 +43,14 @@ class History {
       return
     }
 
-    this.current = page
+    this.current[frame] = page
 
     queue.add(() => {
-      return this.getPageData(page).then((data) => {
+      return this.getFramesData(this.current, page.encryptHistory).then((data) => {
         // Defer history.pushState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.replaceState completes before pushState is executed.
         const doPush = () => {
-          this.doPushState({ page: data }, page.url)
+          this.doPushState({frames: data }, page.url)
           cb && cb()
         }
 
@@ -62,9 +63,9 @@ class History {
     })
   }
 
-  protected getPageData(page: Page): Promise<Page | ArrayBuffer> {
+  protected getFramesData(frames: Frames, encrypt: boolean): Promise<Frames | ArrayBuffer> {
     return new Promise((resolve) => {
-      return page.encryptHistory ? encryptHistory(page).then(resolve) : resolve(page)
+      return encrypt ? encryptHistory(frames).then(resolve) : resolve(frames)
     })
   }
 
@@ -72,14 +73,14 @@ class History {
     return queue.process()
   }
 
-  public decrypt(page: Page | null = null): Promise<Page> {
+  public decrypt(frames: Frames | null = null): Promise<Frames> {
     if (isServer) {
-      return Promise.resolve(page ?? currentPage.get())
+      return Promise.resolve(frames ?? Router.asFrames())
     }
 
-    const pageData = page ?? window.history.state?.page
+    const framesData = frames ?? window.history.state?.frames
 
-    return this.decryptPageData(pageData).then((data) => {
+    return this.decryptPageData(framesData).then((data) => {
       if (!data) {
         throw new Error('Unable to decrypt history')
       }
@@ -94,23 +95,23 @@ class History {
     })
   }
 
-  protected decryptPageData(pageData: ArrayBuffer | Page | null): Promise<Page | null> {
-    return pageData instanceof ArrayBuffer ? decryptHistory(pageData) : Promise.resolve(pageData)
+  protected decryptPageData(framesData: ArrayBuffer | Frames | null): Promise<Frames | null> {
+    return framesData instanceof ArrayBuffer ? decryptHistory(framesData) : Promise.resolve(framesData)
   }
 
   public saveScrollPositions(scrollRegions: ScrollRegion[]): void {
     queue.add(() => {
       return Promise.resolve().then(() => {
-        if (!window.history.state?.page) {
+        if (!window.history.state?.frames) {
           return
         }
 
         this.doReplaceState(
           {
-            page: window.history.state.page,
+            frames: window.history.state.frames,
             scrollRegions,
           },
-          this.current.url!,
+          this.current["_top"].url!,
         )
       })
     })
@@ -125,10 +126,10 @@ class History {
 
         this.doReplaceState(
           {
-            page: window.history.state.page,
+            frames: window.history.state.frames,
             documentScrollPosition: scrollRegion,
           },
-          this.current.url!,
+          this.current["_top"].url!,
         )
       })
     })
@@ -142,8 +143,8 @@ class History {
     return window.history.state?.documentScrollPosition || { top: 0, left: 0 }
   }
 
-  public replaceState(page: Page, cb: (() => void) | null = null): void {
-    currentPage.merge(page)
+  public replaceState(frame: string, page: Page, cb: (() => void) | null = null): void {
+    Router.for(frame).currentPage.merge(page)
 
     if (isServer) {
       return
@@ -154,14 +155,14 @@ class History {
       return
     }
 
-    this.current = page
+    this.current[frame] = page
 
     queue.add(() => {
-      return this.getPageData(page).then((data) => {
+      return this.getFramesData(this.current, page.encryptHistory).then((data) => {
         // Defer history.replaceState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.pushState completes before replaceState is executed.
         const doReplace = () => {
-          this.doReplaceState({ page: data }, page.url)
+          this.doReplaceState({ frames: data }, page.url)
           cb && cb()
         }
 
@@ -176,7 +177,7 @@ class History {
 
   protected doReplaceState(
     data: {
-      page: Page | ArrayBuffer
+      frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
     },
@@ -195,7 +196,7 @@ class History {
 
   protected doPushState(
     data: {
-      page: Page | ArrayBuffer
+      frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
     },
@@ -205,13 +206,13 @@ class History {
   }
 
   public getState<T>(key: keyof Page, defaultValue?: T): any {
-    return this.current?.[key] ?? defaultValue
+    return this.current?.["_top"]?.[key] ?? defaultValue
   }
 
   public deleteState(key: keyof Page) {
-    if (this.current[key] !== undefined) {
-      delete this.current[key]
-      this.replaceState(this.current as Page)
+    if (this.current["_top"]?.[key] !== undefined) {
+      delete this.current["_top"][key]
+      this.replaceState("_top", this.current["_top"] as Page)
     }
   }
 
@@ -224,16 +225,16 @@ class History {
     SessionStorage.remove(historySessionStorageKeys.iv)
   }
 
-  public setCurrent(page: Page): void {
-    this.current = page
+  public setCurrent(frame: string, page: Page): void {
+    this.current[frame] = page
   }
 
   public isValidState(state: any): boolean {
-    return !!state.page
+    return !!state.frames
   }
 
   public getAllState(): Page {
-    return this.current as Page
+    return this.current["_top"] as Page
   }
 }
 

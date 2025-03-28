@@ -2,22 +2,32 @@
   import type { ComponentResolver, ResolvedComponent } from '../types'
   import { type Page } from '@inertiajs/core'
 
-  export interface InertiaAppProps {
+  export interface InertiaFrameProps {
     initialComponent: ResolvedComponent
     initialPage: Page
-    resolveComponent: ComponentResolver
+    resolveComponent: ComponentResolver,
+    name?: string
   }
 </script>
 
 <script lang="ts">
   import type { LayoutType, LayoutResolver } from '../types'
-  import { router, type PageProps } from '@inertiajs/core'
+  import { Router, type PageProps } from '@inertiajs/core'
   import Render, { h, type RenderProps } from './Render.svelte'
-  import { setPage } from '../page'
+  
+  import { onDestroy, setContext } from 'svelte'
+  import { writable } from 'svelte/store'
 
-  export let initialComponent: InertiaAppProps['initialComponent']
-  export let initialPage: InertiaAppProps['initialPage']
-  export let resolveComponent: InertiaAppProps['resolveComponent']
+  export let initialComponent: InertiaFrameProps['initialComponent']
+  export let initialPage: InertiaFrameProps['initialPage']
+  export let resolveComponent: InertiaFrameProps['resolveComponent']
+  export let name: InertiaFrameProps['name'] = '_top'
+
+  const { set, subscribe } = writable<Page>()
+
+  const setPage = set
+
+
 
   let component = initialComponent
   let key: number | null = null
@@ -27,21 +37,30 @@
   setPage(page)
 
   const isServer = typeof window === 'undefined'
-
+  
+  let router: Router | null = null
   if (!isServer) {
-    router.init({
+    router = new Router({
+      name,
       initialPage,
       resolveComponent,
       swapComponent: async (args) => {
         component = args.component as ResolvedComponent
         page = args.page
         key = args.preserveState ? key : Date.now()
-
         renderProps = resolveRenderProps(component, page, key)
         setPage(page)
       },
     })
+    onDestroy(() => {
+      router.destroy()
+    })
   }
+
+  const context : Context = {page: { subscribe }, frame: name, router}
+  setContext('inertia', context)
+  setContext(`inertia:${name}`, context)
+
 
   /**
    * Resolves the render props for the current page component, including layouts.

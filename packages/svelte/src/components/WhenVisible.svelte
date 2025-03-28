@@ -1,12 +1,14 @@
 <script lang="ts">
-  import { router, type ReloadOptions } from '@inertiajs/core'
-  import { onDestroy, onMount } from 'svelte'
+  import { type ReloadOptions } from '@inertiajs/core'
+  import { onDestroy, onMount, getContext } from 'svelte'
 
   export let data: string | string[] = ''
   export let params: ReloadOptions = {}
   export let buffer: number = 0
   export let as: keyof HTMLElementTagNameMap = 'div'
   export let always: boolean = false
+
+  const { router } = getContext('inertia')
 
   let loaded = false
   let fetching = false

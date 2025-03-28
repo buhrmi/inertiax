@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page } from '../index'
-  import { onDestroy } from 'svelte'
+  import { onDestroy, getContext } from 'svelte'
 
   export let data: string | string[]
 
+  const { page } = getContext('inertia')
   const keys = Array.isArray(data) ? data : [data]
   let loaded = false
 

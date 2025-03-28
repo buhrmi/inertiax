@@ -1,11 +1,11 @@
-import { router, setupProgress, type InertiaAppResponse, type Page } from '@inertiajs/core'
+import { Router, setupProgress, type InertiaAppResponse, type Page } from '@inertiajs/core'
 import escape from 'html-escape'
 import type { ComponentType } from 'svelte'
-import App, { type InertiaAppProps } from './components/App.svelte'
+import Frame, { type InertiaFrameProps } from './components/Frame.svelte'
 import type { ComponentResolver } from './types'
 
 type SvelteRenderResult = { html: string; head: string; css?: { code: string } }
-type AppComponent = ComponentType<App> & { render: (props: InertiaAppProps) => SvelteRenderResult }
+type AppComponent = ComponentType<Frame> & { render: (props: InertiaFrameProps) => SvelteRenderResult }
 
 interface CreateInertiaAppProps {
   id?: string
@@ -13,8 +13,8 @@ interface CreateInertiaAppProps {
   setup: (props: {
     el: HTMLElement | null
     App: AppComponent
-    props: InertiaAppProps
-  }) => void | App | SvelteRenderResult
+    props: InertiaFrameProps
+  }) => void | Frame | SvelteRenderResult
   progress?:
     | false
     | {
@@ -40,14 +40,14 @@ export default async function createInertiaApp({
 
   const [initialComponent] = await Promise.all([
     resolveComponent(initialPage.component),
-    router.decryptHistory().catch(() => {}),
+    Router.decryptHistory().catch(() => {}),
   ])
 
-  const props: InertiaAppProps = { initialPage, initialComponent, resolveComponent }
+  const props: InertiaFrameProps = { initialPage, initialComponent, resolveComponent }
 
   const svelteApp = setup({
     el,
-    App: App as unknown as AppComponent,
+    App: Frame as unknown as AppComponent,
     props
   })
 

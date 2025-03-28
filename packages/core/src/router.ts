@@ -1,9 +1,9 @@
-import { hideProgress, revealProgress } from '.'
+import { hideProgress, PreserveStateOption, revealProgress } from '.'
 import { eventHandler } from './eventHandler'
 import { fireBeforeEvent } from './events'
 import { history } from './history'
 import { InitialVisit } from './initialVisit'
-import { page as currentPage } from './page'
+import { CurrentPage } from './page'
 import { polls } from './polls'
 import { prefetchedRequests } from './prefetched'
 import { Request } from './request'
@@ -16,7 +16,7 @@ import {
   GlobalEventNames,
   GlobalEventResult,
   InFlightPrefetch,
-  Page,
+  Frames,
   PendingVisit,
   PendingVisitOptions,
   PollOptions,
@@ -32,7 +32,12 @@ import {
 } from './types'
 import { transformUrlAndData } from './url'
 
+
+const routers: Record<string, Router> = {}
+
 export class Router {
+  public name: string
+  public currentPage: CurrentPage
   protected syncRequestStream = new RequestStream({
     maxConcurrent: 1,
     interruptible: true,
@@ -43,26 +48,79 @@ export class Router {
     interruptible: false,
   })
 
-  public init({ initialPage, resolveComponent, swapComponent }: RouterInitParams): void {
-    currentPage.init({
+  constructor({ name, initialPage, resolveComponent, swapComponent }: RouterInitParams) {
+    this.name = name
+    this.currentPage = new CurrentPage({
+      name,
       initialPage,
       resolveComponent,
       swapComponent,
     })
 
-    InitialVisit.handle()
+    routers[name] = this
 
-    eventHandler.init()
+    if (name == "_top") {
+      InitialVisit.handle()
+      eventHandler.init()
+    
+      eventHandler.on(`missingHistoryItem`, () => {
+        if (typeof window !== 'undefined') {
+          this.visit(window.location.href, { preserveState: true, preserveScroll: true, replace: true })
+        }
+      })
+    }
 
-    eventHandler.on('missingHistoryItem', () => {
-      if (typeof window !== 'undefined') {
-        this.visit(window.location.href, { preserveState: true, preserveScroll: true, replace: true })
-      }
-    })
-
-    eventHandler.on('loadDeferredProps', () => {
+    eventHandler.on(`${name}:loadDeferredProps`, () => {
       this.loadDeferredProps()
     })
+  }
+
+  static asFrames(): Frames {
+    return Object.entries(routers).reduce((frames, [name, router]) => {
+      frames[name] = router.currentPage.get()
+      return frames
+    }, {} as Frames)
+  }
+
+  static for(name: string): Router {
+    return routers[name]
+  }
+
+  public static setQuietly(frames: Frames, {
+      preserveState = false,
+    }: {
+      preserveState?: PreserveStateOption
+    } = {}
+  ) {
+    return Promise.all(
+      Object.entries(routers).map(([name, router]) => {
+        return router.currentPage.setQuietly(frames[name], {
+          preserveState,
+        })
+      })
+    )
+  } 
+
+  public static set(frames: Frames, {
+    replace = false,
+    preserveScroll = false,
+    preserveState = false,
+  }: Partial<Pick<VisitOptions, 'replace' | 'preserveScroll' | 'preserveState'>> = {},
+  ): Promise<void[]> {
+    return Promise.all(
+      Object.entries(routers).map(([name, router]) => {
+        return router.currentPage.set(frames[name], {
+          replace,
+          preserveScroll,
+          preserveState,
+        })
+      }
+    ))
+  }
+
+  public destroy(): void {
+    this.cancelAll()
+    delete routers[this.name]
   }
 
   public get(url: URL | string, data: RequestPayload = {}, options: VisitHelperOptions = {}): void {
@@ -103,11 +161,11 @@ export class Router {
   }
 
   public remember(data: unknown, key = 'default'): void {
-    history.remember(data, key)
+    history.remember(this.name, data, key)
   }
 
   public restore(key = 'default'): unknown {
-    return history.restore(key)
+    return history.restore(this.name, key)
   }
 
   public on<TEventName extends GlobalEventNames>(
@@ -118,7 +176,7 @@ export class Router {
       return () => {}
     }
 
-    return eventHandler.onGlobalEvent(type, callback)
+    return eventHandler.onGlobalEvent(this.name, type, callback)
   }
 
   public cancel(): void {
@@ -154,7 +212,7 @@ export class Router {
 
     requestStream.interruptInFlight()
 
-    if (!currentPage.isCleared() && !visit.preserveUrl) {
+    if (!this.currentPage.isCleared() && !visit.preserveUrl) {
       // Save scroll regions for the current page
       Scroll.save()
     }
@@ -171,7 +229,7 @@ export class Router {
       prefetchedRequests.use(prefetched, requestParams)
     } else {
       revealProgress(true)
-      requestStream.send(Request.create(requestParams, currentPage.get()))
+      requestStream.send(Request.create(requestParams, this.currentPage.get()))
     }
   }
 
@@ -230,7 +288,7 @@ export class Router {
     const ensureCurrentPageIsSet = (): Promise<void> => {
       return new Promise((resolve) => {
         const checkIfPageIsDefined = () => {
-          if (currentPage.get()) {
+          if (this.currentPage.get()) {
             resolve()
           } else {
             setTimeout(checkIfPageIsDefined, 50)
@@ -245,7 +303,7 @@ export class Router {
       prefetchedRequests.add(
         requestParams,
         (params) => {
-          this.asyncRequestStream.send(Request.create(params, currentPage.get()))
+          this.asyncRequestStream.send(Request.create(params, this.currentPage.get()))
         },
         { cacheFor },
       )
@@ -256,7 +314,7 @@ export class Router {
     history.clear()
   }
 
-  public decryptHistory(): Promise<Page> {
+  static decryptHistory(): Promise<Frames> {
     return history.decrypt()
   }
 
@@ -269,11 +327,11 @@ export class Router {
   }
 
   protected clientVisit(params: ClientSideVisitOptions, { replace = false }: { replace?: boolean } = {}): void {
-    const current = currentPage.get()
+    const current = this.currentPage.get()
 
     const props = typeof params.props === 'function' ? params.props(current.props) : (params.props ?? current.props)
 
-    currentPage.set(
+    this.currentPage.set(
       {
         ...current,
         ...params,
@@ -341,6 +399,7 @@ export class Router {
       ...pendingVisitOptions,
       url,
       data: _data,
+      frame: this.name,
     }
   }
 
@@ -360,7 +419,7 @@ export class Router {
   }
 
   protected loadDeferredProps(): void {
-    const deferred = currentPage.get()?.deferredProps
+    const deferred = this.currentPage.get()?.deferredProps
 
     if (deferred) {
       Object.entries(deferred).forEach(([_, group]) => {

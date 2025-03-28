@@ -47,6 +47,8 @@ export interface Page<SharedProps extends PageProps = PageProps> {
   rememberedState: Record<string, unknown>
 }
 
+export type Frames = Record<string, Page>
+
 export type ScrollRegion = {
   top: number
   left: number
@@ -209,7 +211,8 @@ export type GlobalEventCallback<TEventName extends GlobalEventNames> = (
   ...params: GlobalEventParameters<TEventName>
 ) => GlobalEventResult<TEventName>
 
-export type InternalEvent = 'missingHistoryItem' | 'loadDeferredProps'
+export type InternalEvent = string//'missingHistoryItem' | 'loadDeferredProps'
+
 
 export type VisitCallbacks = {
   onCancelToken: { ({ cancel }: { cancel: VoidFunction }): void }
@@ -236,6 +239,7 @@ export type PollOptions = {
 export type VisitHelperOptions = Omit<VisitOptions, 'method' | 'data'>
 
 export type RouterInitParams = {
+  name: string
   initialPage: Page
   resolveComponent: PageResolver
   swapComponent: PageHandler
@@ -246,6 +250,7 @@ export type PendingVisitOptions = {
   completed: boolean
   cancelled: boolean
   interrupted: boolean
+  frame: string
 }
 
 export type PendingVisit = Visit & PendingVisitOptions

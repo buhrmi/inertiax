@@ -14,7 +14,8 @@ import {
 } from './types'
 import { hrefToUrl, isSameUrlWithoutHash } from './url'
 
-class CurrentPage {
+export class CurrentPage {
+  protected name: string
   protected page!: Page
   protected swapComponent!: PageHandler
   protected resolveComponent!: PageResolver
@@ -26,7 +27,8 @@ class CurrentPage {
   protected isFirstPageLoad = true
   protected cleared = false
 
-  public init({ initialPage, swapComponent, resolveComponent }: RouterInitParams) {
+  public constructor({ name, initialPage, swapComponent, resolveComponent }: RouterInitParams) {
+    this.name = name
     this.page = initialPage
     this.swapComponent = swapComponent
     this.resolveComponent = resolveComponent
@@ -62,7 +64,7 @@ class CurrentPage {
       replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), location)
 
       return new Promise((resolve) => {
-        replace ? history.replaceState(page, () => resolve(null)) : history.pushState(page, () => resolve(null))
+        replace ? history.replaceState(this.name, page, () => resolve(null)) : history.pushState(this.name, page, () => resolve(null))
       }).then(() => {
         const isNewComponent = !this.isTheSame(page)
 
@@ -84,7 +86,7 @@ class CurrentPage {
             Scroll.reset()
           }
 
-          eventHandler.fireInternalEvent('loadDeferredProps')
+          eventHandler.fireInternalEvent(`${this.name}:loadDeferredProps`)
 
           if (!replace) {
             fireNavigateEvent(page)
@@ -105,7 +107,7 @@ class CurrentPage {
     return this.resolve(page.component).then((component) => {
       this.page = page
       this.cleared = false
-      history.setCurrent(page)
+      history.setCurrent(this.name, page)
       return this.swap({ component, page, preserveState })
     })
   }
@@ -168,5 +170,3 @@ class CurrentPage {
     this.listeners.filter((listener) => listener.event === event).forEach((listener) => listener.callback())
   }
 }
-
-export const page = new CurrentPage()

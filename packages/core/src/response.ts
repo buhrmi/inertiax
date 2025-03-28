@@ -2,12 +2,13 @@ import { AxiosResponse } from 'axios'
 import { fireErrorEvent, fireInvalidEvent, firePrefetchedEvent, fireSuccessEvent } from './events'
 import { history } from './history'
 import modal from './modal'
-import { page as currentPage } from './page'
+
 import Queue from './queue'
 import { RequestParams } from './requestParams'
 import { SessionStorage } from './sessionStorage'
 import { ActiveVisit, ErrorBag, Errors, Page } from './types'
 import { hrefToUrl, isSameUrlWithoutHash, setHashIfSameUrl } from './url'
+import { Router } from './router'
 
 const queue = new Queue<Promise<boolean | void>>()
 
@@ -53,6 +54,8 @@ export class Response {
     history.preserveUrl = this.requestParams.all().preserveUrl
 
     await this.setPage()
+
+    const currentPage = Router.for(this.requestParams.all().frame).currentPage
 
     const errors = currentPage.get().props.errors || {}
 
@@ -143,6 +146,8 @@ export class Response {
     if (!this.shouldSetPage(pageResponse)) {
       return Promise.resolve()
     }
+    
+    const currentPage = Router.for(this.requestParams.all().frame).currentPage
 
     this.mergeProps(pageResponse)
     await this.setRememberedState(pageResponse)
@@ -184,6 +189,7 @@ export class Response {
 
     // At this point, if the originating request component is different than the current component,
     // the user has since navigated and we should discard the response
+    const currentPage = Router.for(this.requestParams.all().frame).currentPage
     if (this.originatingPage.component !== currentPage.get().component) {
       return false
     }
@@ -205,6 +211,7 @@ export class Response {
   }
 
   protected mergeProps(pageResponse: Page): void {
+    const currentPage = Router.for(this.requestParams.all().frame).currentPage
     if (this.requestParams.isPartial() && pageResponse.component === currentPage.get().component) {
       const propsToMerge = pageResponse.mergeProps || []
 
@@ -227,7 +234,7 @@ export class Response {
 
   protected async setRememberedState(pageResponse: Page): Promise<void> {
     const rememberedState = await history.getState<Page['rememberedState']>(history.rememberedState, {})
-
+    const currentPage = Router.for(this.requestParams.all().frame).currentPage
     if (
       this.requestParams.all().preserveState &&
       rememberedState &&

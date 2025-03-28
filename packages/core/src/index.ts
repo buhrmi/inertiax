@@ -5,6 +5,4 @@ export { hide as hideProgress, reveal as revealProgress, default as setupProgres
 export { default as shouldIntercept } from './shouldIntercept'
 export * from './types'
 export { hrefToUrl, mergeDataIntoQueryString, urlWithoutHash } from './url'
-export { type Router }
-
-export const router = new Router()
+export { Router }

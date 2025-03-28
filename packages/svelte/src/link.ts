@@ -1,6 +1,5 @@
 import {
   mergeDataIntoQueryString,
-  router,
   shouldIntercept,
   type CacheForOption,
   type FormDataConvertible,
@@ -11,6 +10,7 @@ import {
 } from '@inertiajs/core'
 import type { CancelTokenSource } from 'axios'
 import type { ActionReturn } from 'svelte/action'
+import { getContext } from 'svelte'
 
 type ActionEventHandlers = {
   [K in keyof HTMLElementEventMap]?: (event: HTMLElementEventMap[K]) => void
@@ -53,6 +53,8 @@ function link(
   let data
   let baseParams: VisitOptions
   let visitParams: VisitOptions
+
+  const { router } = getContext('inertia')
 
   const regularEvents: ActionEventHandlers = {
     click: (event) => {

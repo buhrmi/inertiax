@@ -1,10 +1,10 @@
 import debounce from './debounce'
 import { fireNavigateEvent } from './events'
 import { history } from './history'
-import { page as currentPage } from './page'
 import { Scroll } from './scroll'
 import { GlobalEvent, GlobalEventNames, GlobalEventResult, InternalEvent } from './types'
-import { hrefToUrl } from './url'
+// import { hrefToUrl } from './url'
+import { Router } from './router'
 
 class EventHandler {
   protected internalListeners: {
@@ -24,6 +24,7 @@ class EventHandler {
   }
 
   public onGlobalEvent<TEventName extends GlobalEventNames>(
+    frame: string,
     type: TEventName,
     callback: (event: GlobalEvent<TEventName>) => GlobalEventResult<TEventName>,
   ): VoidFunction {
@@ -35,7 +36,7 @@ class EventHandler {
       }
     }) as EventListener
 
-    return this.registerListener(`inertia:${type}`, listener)
+    return this.registerListener(`inertia:${frame}:${type}`, listener)
   }
 
   public on(event: InternalEvent, callback: VoidFunction): VoidFunction {
@@ -49,7 +50,7 @@ class EventHandler {
   public onMissingHistoryItem() {
     // At this point, the user has probably cleared the state
     // Mark the current page as cleared so that we don't try to write anything to it.
-    currentPage.clear()
+    Router.for('_top').currentPage.clear()
     // Fire an event so that that any listeners can handle this situation
     this.fireInternalEvent('missingHistoryItem')
   }
@@ -67,12 +68,14 @@ class EventHandler {
   protected handlePopstateEvent(event: PopStateEvent): void {
     const state = event.state || null
 
+    // Let's assume his doesn't happen, because we should ALWAYS have a state when using browser nav
     if (state === null) {
-      const url = hrefToUrl(currentPage.get().url)
-      url.hash = window.location.hash
+      throw new Error('Inertia X: Missing state in popstate event')
+      // const url = hrefToUrl(currentPage.get().url)
+      // url.hash = window.location.hash
 
-      history.replaceState({ ...currentPage.get(), url: url.href })
-      Scroll.reset()
+      // history.replaceState({ ...currentPage.get(), url: url.href })
+      // Scroll.reset()
 
       return
     }
@@ -82,11 +85,12 @@ class EventHandler {
     }
 
     history
-      .decrypt(state.page)
+      .decrypt(state.frames)
       .then((data) => {
-        currentPage.setQuietly(data, { preserveState: false }).then(() => {
+        // XXX: instead of setting all frames, try to only set the frame that was changed
+        Router.setQuietly(data, { preserveState: false }).then(() => {
           Scroll.restore(history.getScrollRegions())
-          fireNavigateEvent(currentPage.get())
+          fireNavigateEvent(Router.for("_top").currentPage.get())
         })
       })
       .catch(() => {

@@ -1,7 +1,7 @@
 import { AxiosRequestConfig } from 'axios'
-import { page as currentPage } from './page'
 import { Response } from './response'
 import { ActiveVisit, InternalActiveVisit, Page, PreserveStateOption, VisitCallbacks } from './types'
+import { Router } from './router'
 
 export class RequestParams {
   protected callbacks: {
@@ -105,7 +105,7 @@ export class RequestParams {
     }
 
     if (this.isPartial()) {
-      headers['X-Inertia-Partial-Component'] = currentPage.get().component
+      headers['X-Inertia-Partial-Component'] = Router.for(this.all().frame).currentPage.get().component
     }
 
     const only = this.params.only.concat(this.params.reset)

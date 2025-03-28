@@ -1,10 +1,11 @@
 import { default as axios, AxiosProgressEvent, AxiosRequestConfig } from 'axios'
 import { fireExceptionEvent, fireFinishEvent, firePrefetchingEvent, fireProgressEvent, fireStartEvent } from './events'
-import { page as currentPage } from './page'
+
 import { RequestParams } from './requestParams'
 import { Response } from './response'
 import { ActiveVisit, Page } from './types'
 import { urlWithoutHash } from './url'
+import { Router } from './router'
 
 export class Request {
   protected response!: Response
@@ -134,8 +135,9 @@ export class Request {
       'X-Inertia': true,
     }
 
-    if (currentPage.get().version) {
-      headers['X-Inertia-Version'] = currentPage.get().version
+    const topPage = Router.for('_top').currentPage.get()
+    if (topPage.version) {
+      headers['X-Inertia-Version'] = topPage.version
     }
 
     return headers
