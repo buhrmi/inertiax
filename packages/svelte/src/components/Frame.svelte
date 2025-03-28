@@ -66,7 +66,7 @@
       router.destroy()
     })
     if (src) {
-      router.visit(src, { replace: true })
+      router.visit(src, { replace: true, preserveUrl: true })
     }
   }
   

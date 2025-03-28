@@ -38,11 +38,11 @@ class History {
       return
     }
 
-    if (this.preserveUrl) {
-      cb && cb()
-      return
-    }
-
+    // if (this.preserveUrl) {
+    //   cb && cb()
+    //   return
+    // }
+    console.log("pushing state", page)
     this.current[frame] = page
 
     queue.add(() => {
@@ -50,7 +50,8 @@ class History {
         // Defer history.pushState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.replaceState completes before pushState is executed.
         const doPush = () => {
-          this.doPushState({frames: data, changedFrame: frame }, page.url)
+          console.log("setting frames", data)
+          this.doPushState({frames: data}, this.preserveUrl ? window.location.href : page.url)
           cb && cb()
         }
 
@@ -127,10 +128,10 @@ class History {
 
         this.doReplaceState(
           {
-            frames: window.history.state.frames,
+            ...window.history.state,
             documentScrollPosition: scrollRegion,
           },
-          this.current["_top"].url!,
+          window.location.href//this.current["_top"].url!,
         )
       })
     })
@@ -151,19 +152,19 @@ class History {
       return
     }
 
-    if (this.preserveUrl) {
-      cb && cb()
-      return
-    }
+    // if (this.preserveUrl) {
+    //   cb && cb()
+    //   return
+    // }
 
     this.current[frame] = page
 
     queue.add(() => {
-      return this.getFramesData(this.current, page.encryptHistory).then((data) => {
+      return this.getFramesData(Router.asFrames(), page.encryptHistory).then((data) => {
         // Defer history.replaceState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.pushState completes before replaceState is executed.
         const doReplace = () => {
-          this.doReplaceState({ frames: data }, page.url)
+          this.doReplaceState({ frames: data }, this.preserveUrl ? window.location.href : page.url)
           cb && cb()
         }
 
@@ -186,13 +187,13 @@ class History {
   ): void {
     window.history.replaceState(
       {
+        ...window.history.state,
         ...data,
-        scrollRegions: data.scrollRegions ?? window.history.state?.scrollRegions,
-        documentScrollPosition: data.documentScrollPosition ?? window.history.state?.documentScrollPosition,
-        changedFrame: window.history.state?.changedFrame,
+        // scrollRegions: data.scrollRegions ?? window.history.state?.scrollRegions,
+        // documentScrollPosition: data.documentScrollPosition ?? window.history.state?.documentScrollPosition,
       },
       '',
-      url,
+      url
     )
   }
 
@@ -201,7 +202,6 @@ class History {
       frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
-      changedFrame: string
     },
     url: string,
   ): void {

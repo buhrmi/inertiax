@@ -155,7 +155,7 @@ export class Response {
 
     this.requestParams.setPreserveOptions(pageResponse)
 
-    pageResponse.url = history.preserveUrl ? currentPage.get().url : this.pageUrl(pageResponse)
+    // pageResponse.url = history.preserveUrl ? topUrl : this.pageUrl(pageResponse)
 
     return currentPage.set(pageResponse, {
       replace: this.requestParams.all().replace,
