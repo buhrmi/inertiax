@@ -86,37 +86,37 @@ export class Router {
     return routers[name]
   }
 
-  public static setQuietly(frames: Frames, {
-      preserveState = false,
-    }: {
-      preserveState?: PreserveStateOption
-    } = {}
-  ) {
-    return Promise.all(
-      Object.entries(routers).map(([name, router]) => {
-        return router.currentPage.setQuietly(frames[name], {
-          preserveState,
-        })
-      })
-    )
-  } 
+  // public static setQuietly(frames: Frames, {
+  //     preserveState = false,
+  //   }: {
+  //     preserveState?: PreserveStateOption
+  //   } = {}
+  // ) {
+  //   return Promise.all(
+  //     Object.entries(routers).map(([name, router]) => {
+  //       return router.currentPage.setQuietly(frames[name], {
+  //         preserveState,
+  //       })
+  //     })
+  //   )
+  // } 
 
-  public static set(frames: Frames, {
-    replace = false,
-    preserveScroll = false,
-    preserveState = false,
-  }: Partial<Pick<VisitOptions, 'replace' | 'preserveScroll' | 'preserveState'>> = {},
-  ): Promise<void[]> {
-    return Promise.all(
-      Object.entries(routers).map(([name, router]) => {
-        return router.currentPage.set(frames[name], {
-          replace,
-          preserveScroll,
-          preserveState,
-        })
-      }
-    ))
-  }
+  // public static set(frames: Frames, {
+  //   replace = false,
+  //   preserveScroll = false,
+  //   preserveState = false,
+  // }: Partial<Pick<VisitOptions, 'replace' | 'preserveScroll' | 'preserveState'>> = {},
+  // ): Promise<void[]> {
+  //   return Promise.all(
+  //     Object.entries(routers).map(([name, router]) => {
+  //       return router.currentPage.set(frames[name], {
+  //         replace,
+  //         preserveScroll,
+  //         preserveState,
+  //       })
+  //     }
+  //   ))
+  // }
 
   public destroy(): void {
     this.cancelAll()

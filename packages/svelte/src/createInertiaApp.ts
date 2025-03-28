@@ -43,7 +43,7 @@ export default async function createInertiaApp({
     Router.decryptHistory().catch(() => {}),
   ])
 
-  const props: InertiaFrameProps = { initialPage, initialComponent, resolveComponent }
+  const props: InertiaFrameProps = { initialPage, initialComponent, resolveComponent, name: "_top" }
 
   const svelteApp = setup({
     el,

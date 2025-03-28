@@ -50,7 +50,7 @@ class History {
         // Defer history.pushState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.replaceState completes before pushState is executed.
         const doPush = () => {
-          this.doPushState({frames: data }, page.url)
+          this.doPushState({frames: data, changedFrame: frame }, page.url)
           cb && cb()
         }
 
@@ -111,7 +111,8 @@ class History {
             frames: window.history.state.frames,
             scrollRegions,
           },
-          this.current["_top"].url!,
+          document.location.href,
+          // this.current["_top"].url!,
         )
       })
     })
@@ -188,6 +189,7 @@ class History {
         ...data,
         scrollRegions: data.scrollRegions ?? window.history.state?.scrollRegions,
         documentScrollPosition: data.documentScrollPosition ?? window.history.state?.documentScrollPosition,
+        changedFrame: window.history.state?.changedFrame,
       },
       '',
       url,
@@ -199,6 +201,7 @@ class History {
       frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
+      changedFrame: string
     },
     url: string,
   ): void {

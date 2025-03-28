@@ -2,6 +2,8 @@
   import type { ComponentResolver, ResolvedComponent } from '../types'
   import { type Page } from '@inertiajs/core'
 
+  let topResolveComponent: ComponentResolver | null = null
+  
   export interface InertiaFrameProps {
     initialComponent: ResolvedComponent
     initialPage: Page
@@ -20,8 +22,13 @@
 
   export let initialComponent: InertiaFrameProps['initialComponent']
   export let initialPage: InertiaFrameProps['initialPage']
-  export let resolveComponent: InertiaFrameProps['resolveComponent']
-  export let name: InertiaFrameProps['name'] = '_top'
+  export let resolveComponent: InertiaFrameProps['resolveComponent'] = topResolveComponent
+  export let name: InertiaFrameProps['name'] = Math.random().toString(36).slice(6)
+
+  export let renderLayout = name == "_top"
+  export let src
+
+  if (name == "_top") topResolveComponent = resolveComponent
 
   const { set, subscribe } = writable<Page>()
 
@@ -32,13 +39,13 @@
   let component = initialComponent
   let key: number | null = null
   let page = initialPage
-  let renderProps = resolveRenderProps(component, page, key)
-
+  let renderProps = component && page && resolveRenderProps(component, page, key)
+  
   setPage(page)
-
+  
   const isServer = typeof window === 'undefined'
   
-  let router: Router | null = null
+  let router: Router
   if (!isServer) {
     router = new Router({
       name,
@@ -55,23 +62,26 @@
     onDestroy(() => {
       router.destroy()
     })
+    if (src) {
+      router.visit(src, { replace: true })
+    }
   }
-
-  const context : Context = {page: { subscribe }, frame: name, router}
+  
+  const context = {page: { subscribe }, frame: name, router}
   setContext('inertia', context)
   setContext(`inertia:${name}`, context)
-
-
+  
+  
   /**
    * Resolves the render props for the current page component, including layouts.
    */
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
     const child = h(component.default, page.props, [], key)
-    const layout = component.layout
-
+    const layout = renderLayout && component.layout
+    
     return layout ? resolveLayout(layout, child, page.props, key) : child
   }
-
+  
   /**
    * Builds the nested layout structure by wrapping the child component with the provided layouts.
    *
@@ -119,4 +129,8 @@
   }
 </script>
 
-<Render {...renderProps} />
+{#if renderProps}
+  <Render {...renderProps} />
+{:else}
+  <slot />
+{/if}

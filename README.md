@@ -1,17 +1,36 @@
-[![Inertia.js](https://raw.githubusercontent.com/inertiajs/inertia/master/.github/LOGO.png)](https://inertiajs.com/)
+# Inertia X
 
-Inertia.js lets you quickly build modern single-page React, Vue and Svelte apps using classic server-side routing and controllers. Find full documentation at [inertiajs.com](https://inertiajs.com/).
+This is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
 
-## Contributing
+## New Features
 
-If you're interested in contributing to Inertia.js, please read our [contributing guide](https://github.com/inertiajs/inertia/blob/master/.github/CONTRIBUTING.md).
+### `<Frame>` component
 
-## Partners
+The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation.
 
-A huge thanks to [Laravel Forge](https://forge.laravel.com/) for sponsoring the project.
+#### Usage
 
-<p>
-  <a href="https://forge.laravel.com">
-    <img src="./.github/sponsors/forge.svg" width="150" alt="Laravel Forge">
-  </a>
-</p>
+```html
+<script>
+  import { Frame } from 'inertiax-svelte'
+</script>
+
+<Frame src="/users/1/edit">
+  Loading...
+</Frame>
+```
+
+## Breaking changes
+
+### No global `router` and `page`.
+
+The global `router` and `page` store have been removed. Each frame now comes with its own router and page store. You can get them from the frame component's context.
+
+```diff
+- import { router, page } from '@inertiajs/svelte'
++ const { router, page } = getContext('inertia')
+```
+
+## How does it work?
+
+The "secret sauce" that makes this work is actually quite simple: Instead of one global router instance for your Inertia app, Inertia X creates one router instance per frame. The top-level app component is also a `<Frame>` (the `<App>` component has been removed in Inertia X).

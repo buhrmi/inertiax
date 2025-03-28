@@ -87,10 +87,10 @@ class EventHandler {
     history
       .decrypt(state.frames)
       .then((data) => {
-        // XXX: instead of setting all frames, try to only set the frame that was changed
-        Router.setQuietly(data, { preserveState: false }).then(() => {
+        const changedFrame = state.changedFrame
+        Router.for(changedFrame).currentPage.setQuietly(data[changedFrame], { preserveState: false }).then(() => {
           Scroll.restore(history.getScrollRegions())
-          fireNavigateEvent(Router.for("_top").currentPage.get())
+          fireNavigateEvent(Router.for(changedFrame).currentPage.get())
         })
       })
       .catch(() => {

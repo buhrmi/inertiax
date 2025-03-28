@@ -51,7 +51,7 @@ export class CurrentPage {
     if (page.clearHistory) {
       history.clear()
     }
-
+  
     return this.resolve(page.component).then((component) => {
       if (componentId !== this.componentId) {
         // Component has changed since we started resolving this component, bail
