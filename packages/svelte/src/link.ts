@@ -159,6 +159,8 @@ function link(
       onCancelToken: (token) => dispatchEvent('cancel-token', { detail: { token } }),
     }
 
+    if (params.frame) visitParams.frame = params.frame
+
     updateEventListeners()
   }
 

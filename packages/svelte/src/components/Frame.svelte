@@ -27,6 +27,11 @@
 
   export let renderLayout = name == "_top"
   export let src
+  export let onclick = () => {}
+
+  function handleClick(event: MouseEvent) {
+    
+  }
 
   if (name == "_top") topResolveComponent = resolveComponent
 
@@ -79,7 +84,7 @@
    * Resolves the render props for the current page component, including layouts.
    */
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
-    const child = h(component.default, page.props, [], key)
+    const child = h(component.default, {...$$restProps, ...page.props}, [], key)
     const layout = renderLayout && component.layout
     
     return layout ? resolveLayout(layout, child, page.props, key) : child
@@ -132,8 +137,10 @@
   }
 </script>
 
-{#if renderProps}
-  <Render {...renderProps} />
-{:else}
-  <slot />
-{/if}
+<div style="display: contents" on:click={handleClick} role="presentation">
+  {#if renderProps}
+    <Render {...renderProps} />
+  {:else}
+    <slot />
+  {/if}
+</div>
