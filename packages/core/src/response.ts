@@ -146,8 +146,9 @@ export class Response {
     if (!this.shouldSetPage(pageResponse)) {
       return Promise.resolve()
     }
-    
-    const currentPage = Router.for(this.requestParams.all().frame).currentPage
+
+    const frame = this.response.headers['x-inertia-frame'] || this.requestParams.all().frame
+    const currentPage = Router.for(frame).currentPage
 
     this.mergeProps(pageResponse)
     await this.setRememberedState(pageResponse)

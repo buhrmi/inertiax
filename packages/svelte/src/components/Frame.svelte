@@ -38,7 +38,10 @@
 
   let component = initialComponent
   let key: number | null = null
-  let page = initialPage
+  let page = {
+    ...initialPage,
+    url: initialPage?.url || src
+  }
   let renderProps = component && page && resolveRenderProps(component, page, key)
   
   setPage(page)
@@ -49,7 +52,7 @@
   if (!isServer) {
     router = new Router({
       name,
-      initialPage,
+      initialPage: page,
       resolveComponent,
       swapComponent: async (args) => {
         component = args.component as ResolvedComponent

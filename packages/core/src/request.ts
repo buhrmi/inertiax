@@ -136,8 +136,13 @@ export class Request {
     }
 
     const topPage = Router.for('_top').currentPage.get()
+    const refPage = Router.for(this.requestParams.all().frame).currentPage.get()
+    
     if (topPage.version) {
       headers['X-Inertia-Version'] = topPage.version
+    }
+    if (refPage.url) {
+      headers['X-Inertia-Frame-Src'] = refPage.url
     }
 
     return headers

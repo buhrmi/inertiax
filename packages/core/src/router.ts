@@ -380,6 +380,7 @@ export class Router {
       reset: [],
       preserveUrl: false,
       prefetch: false,
+      frame: this.name,
       ...options,
     }
 
@@ -398,8 +399,7 @@ export class Router {
       ...mergedOptions,
       ...pendingVisitOptions,
       url,
-      data: _data,
-      frame: this.name,
+      data: _data
     }
   }
 

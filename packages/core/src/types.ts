@@ -102,6 +102,7 @@ export type Visit = {
   fresh: boolean
   reset: string[]
   preserveUrl: boolean
+  frame: string
 }
 
 export type GlobalEventsMap = {
@@ -250,7 +251,6 @@ export type PendingVisitOptions = {
   completed: boolean
   cancelled: boolean
   interrupted: boolean
-  frame: string
 }
 
 export type PendingVisit = Visit & PendingVisitOptions
