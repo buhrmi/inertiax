@@ -138,6 +138,7 @@
 </script>
 
 <div style="display: contents" on:click={handleClick} role="presentation">
+  {name}
   {#if renderProps}
     <Render {...renderProps} />
   {:else}
