@@ -1,4 +1,4 @@
-import { type VisitOptions, type Context } from '@inertiajs/core'
+import { type VisitOptions, type Context } from 'inertiax-core'
 import { onDestroy, onMount, getContext } from 'svelte'
 import { readonly, writable } from 'svelte/store'
 

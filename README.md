@@ -1,6 +1,8 @@
 # Inertia X
 
-This is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
+> Note: This is the documentation for version 10 beta, which is currently in development. You can find the legacy documentation [here](https://github.com/buhrmi/inertiax/tree/x2).
+
+Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
 
 ## New Features
 
@@ -50,10 +52,17 @@ To make a render a response in a frame that is not the originating frame, you ha
 The global `router` and `page` store have been removed. Each frame now comes with its own router and page store. You can get them from the frame component's context.
 
 ```diff
-- import { router, page } from '@inertiajs/svelte'
+- import { router, page } from 'inertiax-svelte'
 + const { router, page } = getContext('inertia')
+```
+
+## Installation
+
+```
+npm i -D inertiax-svelte@^10.0.0-beta.0
 ```
 
 ## How does it work?
 
 The "secret sauce" that makes this work is actually quite simple: Instead of one global router instance for your Inertia app, Inertia X creates one router instance per frame. The top-level app component is also a `<Frame>` (the `<App>` component has been removed in Inertia X).
+

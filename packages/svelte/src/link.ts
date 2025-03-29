@@ -7,7 +7,7 @@ import {
   type LinkPrefetchOption,
   type Method,
   type VisitOptions,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import type { CancelTokenSource } from 'axios'
 import type { ActionReturn } from 'svelte/action'
 import { getContext } from 'svelte'

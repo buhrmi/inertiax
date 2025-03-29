@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { type ReloadOptions } from '@inertiajs/core'
+  import { type ReloadOptions } from 'inertiax-core'
   import { onDestroy, onMount, getContext } from 'svelte'
 
   export let data: string | string[] = ''

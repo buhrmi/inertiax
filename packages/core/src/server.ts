@@ -27,7 +27,7 @@ export default (render: AppCallback, port?: number): void => {
     const dispatchRoute = routes[<string>request.url] || routes['/404']
 
     try {
-      response.writeHead(200, { 'Content-Type': 'application/json', Server: 'Inertia.js SSR' })
+      response.writeHead(200, { 'Content-Type': 'application/json', Server: 'Inertia X SSR' })
       response.write(JSON.stringify(await dispatchRoute(request)))
     } catch (e) {
       console.error(e)

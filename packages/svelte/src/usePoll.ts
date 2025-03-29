@@ -1,4 +1,4 @@
-import { type PollOptions, type ReloadOptions, type Context } from '@inertiajs/core'
+import { type PollOptions, type ReloadOptions, type Context } from 'inertiax-core'
 import { onDestroy, onMount, getContext } from 'svelte'
 
 

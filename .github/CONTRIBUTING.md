@@ -1,10 +1,10 @@
 # Contributing
 
-Thanks for your interest in contributing to Inertia.js!
+Thanks for your interest in contributing to Inertia X!
 
 ## Packages
 
-To make local Inertia.js development easier, this project has been setup as a monorepo using [NPM Workspaces](https://docs.npmjs.com/using-npm/workspaces). To set it up, start by cloning the repository on your system.
+To make local Inertia X development easier, this project has been setup as a monorepo using [NPM Workspaces](https://docs.npmjs.com/using-npm/workspaces). To set it up, start by cloning the repository on your system.
 
 ```sh
 git clone https://github.com/inertiajs/inertia.git inertia
@@ -34,7 +34,7 @@ When proposing changes to one of the adapters (`react`, `vue2`, `vue3`, `svelte`
 
 ## Playgrounds
 
-It's often helpful to develop Inertia.js using a real application. The playground folder contains an example Laravel project for each of the adapters. Here's how to get a playground running:
+It's often helpful to develop Inertia X using a real application. The playground folder contains an example Laravel project for each of the adapters. Here's how to get a playground running:
 
 ```sh
 cd playgrounds/react
@@ -61,7 +61,7 @@ php artisan inertia:start-ssr
 
 ## Testing
 
-Inertia.js uses [Playwright](https://playwright.dev/) for testing. To run the tests, use the following command:
+Inertia X uses [Playwright](https://playwright.dev/) for testing. To run the tests, use the following command:
 
 ```sh
 cd tests && npx playwright test
@@ -71,7 +71,7 @@ cd tests && npx playwright test
 
 This section is really for the benefit of the core maintainers.
 
-1. Increment the version numbers in the `package.json` file for each package, making sure to also update the adapter dependencies on `@inertiajs/core`.
+1. Increment the version numbers in the `package.json` file for each package, making sure to also update the adapter dependencies on `inertiax-core`.
 2. Run `npm install` to update the top-level `package-lock.json` file.
 3. Update `CHANGELOG.md`.
 4. Run `npm publish` for each package. This will automatically run the necessary build step. When publishing beta releases, make sure to run `npm publish --tag=beta` or `npm publish --tag=next` if it's `next`.

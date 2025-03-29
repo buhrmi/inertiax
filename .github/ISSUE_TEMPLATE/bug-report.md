@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Submit a generic Inertia.js issue.
+about: Submit a generic Inertia X issue.
 title: ''
 labels: ''
 assignees: ''
@@ -9,11 +9,11 @@ assignees: ''
 
 ### Versions:
 
-- `@inertiajs/core` version: #.#.#
+- `inertiax-core` version: #.#.#
 - `@inertiajs/vue2` version: #.#.#
 - `@inertiajs/vue3` version: #.#.#
 - `@inertiajs/react` version: #.#.#
-- `@inertiajs/svelte` version: #.#.#
+- `inertiax-svelte` version: #.#.#
 
 ### Describe the problem:
 

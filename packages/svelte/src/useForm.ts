@@ -8,7 +8,7 @@ import type {
   Progress,
   RequestPayload,
   VisitOptions
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import type { AxiosProgressEvent } from 'axios'
 import cloneDeep from 'lodash/cloneDeep'
 import isEqual from 'lodash/isEqual'

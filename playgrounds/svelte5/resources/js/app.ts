@@ -1,4 +1,4 @@
-import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
+import { createInertiaApp, type ResolvedComponent } from 'inertiax-svelte'
 import { hydrate, mount } from 'svelte'
 
 createInertiaApp({

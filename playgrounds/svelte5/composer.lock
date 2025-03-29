@@ -1114,7 +1114,7 @@
                     "homepage": "https://reinink.ca"
                 }
             ],
-            "description": "The Laravel adapter for Inertia.js.",
+            "description": "The Laravel adapter for Inertia X.",
             "keywords": [
                 "inertia",
                 "laravel"

@@ -1,4 +1,4 @@
-import { Router, setupProgress, type InertiaAppResponse, type Page } from '@inertiajs/core'
+import { Router, setupProgress, type InertiaAppResponse, type Page } from 'inertiax-core'
 import escape from 'html-escape'
 import type { ComponentType } from 'svelte'
 import Frame, { type InertiaFrameProps } from './components/Frame.svelte'

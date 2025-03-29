@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
   import type { ComponentResolver, ResolvedComponent } from '../types'
-  import { type Page } from '@inertiajs/core'
+  import { shouldIntercept, type Page } from 'inertiax-core'
 
   let topResolveComponent: ComponentResolver | null = null
   
@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import type { LayoutType, LayoutResolver } from '../types'
-  import { Router, type PageProps } from '@inertiajs/core'
+  import { Router, type PageProps } from 'inertiax-core'
   import Render, { h, type RenderProps } from './Render.svelte'
   
   import { onDestroy, setContext } from 'svelte'
@@ -30,7 +30,16 @@
   export let onclick = () => {}
 
   function handleClick(event: MouseEvent) {
-    
+    if (event.target.closest('[data-inertia-ignore]')) return;
+    onclick(event)
+    if (!shouldIntercept(event)) return
+    const href = event.target.closest('[href]')?.getAttribute('href')
+    if (!href) return
+    event.preventDefault()
+    const preserveUrl = name !== "_top"
+    const data = event.target.closest('[inertia]')?.getAttribute('inertia')
+    console.log(data)
+    router.visit(href, { preserveUrl })
   }
 
   if (name == "_top") topResolveComponent = resolveComponent
@@ -138,7 +147,6 @@
 </script>
 
 <div style="display: contents" on:click={handleClick} role="presentation">
-  {name}
   {#if renderProps}
     <Render {...renderProps} />
   {:else}
