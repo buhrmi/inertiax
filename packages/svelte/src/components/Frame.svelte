@@ -37,8 +37,6 @@
     if (!href) return
     event.preventDefault()
     const preserveUrl = name !== "_top"
-    const data = event.target.closest('[inertia]')?.getAttribute('inertia')
-    console.log(data)
     router.visit(href, { preserveUrl })
   }
 
@@ -62,27 +60,25 @@
   
   const isServer = typeof window === 'undefined'
   
-  let router: Router
-  if (!isServer) {
-    router = new Router({
-      name,
-      initialPage: page,
-      resolveComponent,
-      swapComponent: async (args) => {
-        component = args.component as ResolvedComponent
-        page = args.page
-        key = args.preserveState ? key : Date.now()
-        renderProps = resolveRenderProps(component, page, key)
-        setPage(page)
-      },
-    })
-    onDestroy(() => {
-      router.destroy()
-    })
-    if (src) {
-      router.visit(src, { replace: true, preserveUrl: true })
-    }
+  let router: Router = new Router({
+    name,
+    initialPage: page,
+    resolveComponent,
+    swapComponent: async (args) => {
+      component = args.component as ResolvedComponent
+      page = args.page
+      key = args.preserveState ? key : Date.now()
+      renderProps = resolveRenderProps(component, page, key)
+      setPage(page)
+    },
+  })
+  onDestroy(() => {
+    router.destroy()
+  })
+  if (!isServer && src) {
+    router.visit(src, { replace: true, preserveUrl: true })
   }
+  
   
   const context = {page: { subscribe }, frame: name, router}
   setContext('inertia', context)

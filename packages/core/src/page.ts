@@ -90,7 +90,7 @@ export class CurrentPage {
           eventHandler.fireInternalEvent(`${this.name}:loadDeferredProps`)
 
           if (!replace) {
-            fireNavigateEvent(page)
+            fireNavigateEvent(page, this.name)
           }
         })
       })

@@ -63,14 +63,14 @@ export class Response {
     if (Object.keys(errors).length > 0) {
       const scopedErrors = this.getScopedErrors(errors)
 
-      fireErrorEvent(scopedErrors)
+      fireErrorEvent(scopedErrors, frame)
 
-      return this.requestParams.all().onError(scopedErrors)
+      return this.requestParams.all().onError(scopedErrors, frame)
     }
 
-    fireSuccessEvent(currentPage.get())
+    fireSuccessEvent(currentPage.get(), frame)
 
-    await this.requestParams.all().onSuccess(currentPage.get())
+    await this.requestParams.all().onSuccess(currentPage.get(), frame)
 
     history.preserveUrl = false
   }
@@ -93,7 +93,7 @@ export class Response {
       data: this.getDataFromResponse(this.response.data),
     }
 
-    if (fireInvalidEvent(response)) {
+    if (fireInvalidEvent(response, this.requestParams.all().frame)) {
       return modal.show(response.data)
     }
   }

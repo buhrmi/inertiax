@@ -102,7 +102,7 @@ class EventHandler {
           if (!page) continue
           page.setQuietly(data[frame], { preserveState: false }).then(() => {
             Scroll.restore(history.getScrollRegions())
-            fireNavigateEvent(page.get())
+            fireNavigateEvent(page.get(), frame)
           })
         }
       })

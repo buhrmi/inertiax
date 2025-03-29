@@ -36,7 +36,7 @@ export class InitialVisit {
       .then((data) => {
         Router.set(data, { preserveScroll: true, preserveState: true }).then(() => {
           Scroll.restore(scrollRegions)
-          fireNavigateEvent(topPage.get())
+          fireNavigateEvent(topPage.get(), "_top")
         })
       })
       .catch(() => {
@@ -80,7 +80,7 @@ export class InitialVisit {
               Scroll.restore(scrollRegions)
             }
 
-            fireNavigateEvent(topPage.get())
+            fireNavigateEvent(topPage.get(), "_top")
           })
       })
       .catch(() => {
@@ -101,7 +101,7 @@ export class InitialVisit {
       if (navigationType.isReload()) {
         Scroll.restore(history.getScrollRegions())
       }
-      fireNavigateEvent(topPage.get())
+      fireNavigateEvent(topPage.get(), "_top")
     })
   }
 }

@@ -18,8 +18,8 @@ export const hide = () => {
 }
 
 function addEventListeners(delay: number): void {
-  document.addEventListener('inertia:start', (e) => start(e, delay))
-  document.addEventListener('inertia:progress', progress)
+  document.addEventListener('inertia:_top:start', ((e: Event) => start(e as GlobalEvent<'start'>, delay)) as EventListener)
+  document.addEventListener('inertia:_top:progress', progress)
 }
 
 function start(event: GlobalEvent<'start'>, delay: number): void {
@@ -28,12 +28,13 @@ function start(event: GlobalEvent<'start'>, delay: number): void {
   }
 
   const timeout = setTimeout(() => ProgressComponent.start(), delay)
-  document.addEventListener('inertia:finish', (e) => finish(e, timeout), { once: true })
+  document.addEventListener('inertia:_top:finish', ((e: Event) => finish(e as GlobalEvent<'finish'>, timeout)) as EventListener, { once: true })
 }
 
-function progress(event: GlobalEvent<'progress'>): void {
-  if (ProgressComponent.isStarted() && event.detail.progress?.percentage) {
-    ProgressComponent.set(Math.max(ProgressComponent.status!, (event.detail.progress.percentage / 100) * 0.9))
+function progress(event: Event): void {
+  const customEvent = event as GlobalEvent<'progress'>
+  if (ProgressComponent.isStarted() && customEvent.detail.progress?.percentage) {
+    ProgressComponent.set(Math.max(ProgressComponent.status!, (customEvent.detail.progress.percentage / 100) * 0.9))
   }
 }
 

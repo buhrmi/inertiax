@@ -8,45 +8,46 @@ function fireEvent<TEventName extends GlobalEventNames>(
 }
 
 export const fireBeforeEvent: GlobalEventTrigger<'before'> = (visit) => {
-  return fireEvent('before', { cancelable: true, detail: { visit } })
+  return fireEvent('before', { cancelable: true, detail: { visit } }) && fireEvent(`${visit.frame}:before`, { cancelable: true, detail: { visit } })
 }
 
-export const fireErrorEvent: GlobalEventTrigger<'error'> = (errors) => {
-  return fireEvent('error', { detail: { errors } })
+export const fireErrorEvent: GlobalEventTrigger<'error'> = (errors, frame) => {
+  return fireEvent('error', { detail: { errors } }) && fireEvent(`${frame}:error`, { detail: { errors } })
 }
 
-export const fireExceptionEvent: GlobalEventTrigger<'exception'> = (exception) => {
-  return fireEvent('exception', { cancelable: true, detail: { exception } })
+export const fireExceptionEvent: GlobalEventTrigger<'exception'> = (exception, frame) => {
+  return fireEvent('exception', { cancelable: true, detail: { exception } }) && fireEvent(`${frame}:exception`, { cancelable: true, detail: { exception } })
 }
 
 export const fireFinishEvent: GlobalEventTrigger<'finish'> = (visit) => {
-  return fireEvent('finish', { detail: { visit } })
+  return fireEvent('finish', { detail: { visit } }) && fireEvent(`${visit.frame}:finish`, { detail: { visit } })
 }
 
-export const fireInvalidEvent: GlobalEventTrigger<'invalid'> = (response) => {
-  return fireEvent('invalid', { cancelable: true, detail: { response } })
+export const fireInvalidEvent: GlobalEventTrigger<'invalid'> = (response, frame) => {
+  return fireEvent('invalid', { cancelable: true, detail: { response } }) && fireEvent(`${frame}:invalid`, { cancelable: true, detail: { response } })
 }
 
-export const fireNavigateEvent: GlobalEventTrigger<'navigate'> = (page) => {
-  return fireEvent('navigate', { detail: { page } })
+export const fireNavigateEvent: GlobalEventTrigger<'navigate'> = (page, frame) => {
+  return fireEvent('navigate', { detail: { page } }) && fireEvent(`${frame}:navigate`, { detail: { page } })
 }
 
-export const fireProgressEvent: GlobalEventTrigger<'progress'> = (progress) => {
-  return fireEvent('progress', { detail: { progress } })
+export const fireProgressEvent: GlobalEventTrigger<'progress'> = (progress, frame) => {
+  return fireEvent('progress', { detail: { progress } }) && fireEvent(`${frame}:progress`, { detail: { progress } })
 }
 
 export const fireStartEvent: GlobalEventTrigger<'start'> = (visit) => {
-  return fireEvent('start', { detail: { visit } })
+  return fireEvent('start', { detail: { visit } }) && fireEvent(`${visit.frame}:start`, { detail: { visit } })
 }
 
-export const fireSuccessEvent: GlobalEventTrigger<'success'> = (page) => {
-  return fireEvent('success', { detail: { page } })
+export const fireSuccessEvent: GlobalEventTrigger<'success'> = (page, frame) => {
+  return fireEvent('success', { detail: { page } }) && fireEvent(`${frame}:success`, { detail: { page } })
 }
 
 export const firePrefetchedEvent: GlobalEventTrigger<'prefetched'> = (response, visit) => {
-  return fireEvent('prefetched', { detail: { fetchedAt: Date.now(), response: response.data, visit } })
+  return fireEvent('prefetched', { detail: { fetchedAt: Date.now(), response: response.data, visit } }) &&
+         fireEvent(`${visit.frame}:prefetched`, { detail: { fetchedAt: Date.now(), response: response.data, visit } })
 }
 
 export const firePrefetchingEvent: GlobalEventTrigger<'prefetching'> = (visit) => {
-  return fireEvent('prefetching', { detail: { visit } })
+  return fireEvent('prefetching', { detail: { visit } }) && fireEvent(`${visit.frame}:prefetching`, { detail: { visit } })
 }

@@ -121,7 +121,7 @@ export type GlobalEventsMap = {
     result: void
   }
   progress: {
-    parameters: [Progress | undefined]
+    parameters: [Progress | undefined, string]
     details: {
       progress: Progress | undefined
     }
@@ -140,35 +140,35 @@ export type GlobalEventsMap = {
     result: void
   }
   navigate: {
-    parameters: [Page]
+    parameters: [Page, string]
     details: {
       page: Page
     }
     result: void
   }
   success: {
-    parameters: [Page]
+    parameters: [Page, string]
     details: {
       page: Page
     }
     result: void
   }
   error: {
-    parameters: [Errors]
+    parameters: [Errors, string]
     details: {
       errors: Errors
     }
     result: void
   }
   invalid: {
-    parameters: [AxiosResponse]
+    parameters: [AxiosResponse, string]
     details: {
       response: AxiosResponse
     }
     result: boolean | void
   }
   exception: {
-    parameters: [Error]
+    parameters: [Error, string]
     details: {
       exception: Error
     }
@@ -194,15 +194,17 @@ export type GlobalEventsMap = {
 
 export type PageEvent = 'newComponent' | 'firstLoad'
 
-export type GlobalEventNames = keyof GlobalEventsMap
+export type GlobalEventNames = keyof GlobalEventsMap | `${string}:${keyof GlobalEventsMap}`
+
+export type ExtractBaseName<T> = T extends `${string}:${infer Base}` ? Base extends keyof GlobalEventsMap ? Base : never : T extends keyof GlobalEventsMap ? T : never;
 
 export type GlobalEvent<TEventName extends GlobalEventNames> = CustomEvent<GlobalEventDetails<TEventName>>
 
-export type GlobalEventParameters<TEventName extends GlobalEventNames> = GlobalEventsMap[TEventName]['parameters']
+export type GlobalEventParameters<TEventName extends GlobalEventNames> = GlobalEventsMap[ExtractBaseName<TEventName>]['parameters']
 
-export type GlobalEventResult<TEventName extends GlobalEventNames> = GlobalEventsMap[TEventName]['result']
+export type GlobalEventResult<TEventName extends GlobalEventNames> = GlobalEventsMap[ExtractBaseName<TEventName>]['result']
 
-export type GlobalEventDetails<TEventName extends GlobalEventNames> = GlobalEventsMap[TEventName]['details']
+export type GlobalEventDetails<TEventName extends GlobalEventNames> = GlobalEventsMap[ExtractBaseName<TEventName>]['details']
 
 export type GlobalEventTrigger<TEventName extends GlobalEventNames> = (
   ...params: GlobalEventParameters<TEventName>

@@ -56,6 +56,10 @@ The global `router` and `page` store have been removed. Each frame now comes wit
 + const { router, page } = getContext('inertia')
 ```
 
+### Global and frame-bound events
+
+When using `router.on('event', ...)`, you will only listen to events that happen within that specific router. To listen to events globally, use `document.addEventListener('event', ...)`.
+
 ## Installation
 
 ```

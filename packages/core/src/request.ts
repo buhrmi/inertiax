@@ -72,7 +72,7 @@ export class Request {
           return
         }
 
-        if (fireExceptionEvent(error)) {
+        if (fireExceptionEvent(error, this.requestParams.all().frame)) {
           return Promise.reject(error)
         }
       })
@@ -122,8 +122,8 @@ export class Request {
   protected onProgress(progress: AxiosProgressEvent): void {
     if (this.requestParams.data() instanceof FormData) {
       progress.percentage = progress.progress ? Math.round(progress.progress * 100) : 0
-      fireProgressEvent(progress)
-      this.requestParams.all().onProgress(progress)
+      fireProgressEvent(progress, this.requestParams.all().frame)
+      this.requestParams.all().onProgress(progress, this.requestParams.all().frame)
     }
   }
 
