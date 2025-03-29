@@ -21,6 +21,7 @@ class History {
   protected initialState: Partial<Frames> | null = null
 
   public remember(frame: string, data: unknown, key: string): void {
+    this.preserveUrl = true
     this.replaceState(frame, {
       ...this.current[frame],
       rememberedState: {
@@ -32,7 +33,7 @@ class History {
 
   public restore(frame: string, key: string): unknown {
     if (!isServer) {
-      return this.initialState?.[frame]?.rememberedState?.[key]
+      return this.current?.[frame]?.rememberedState?.[key]
     }
   }
 
@@ -163,10 +164,9 @@ class History {
     //   return
     // }
 
-    this.current[frame] = page
-
-    queue.add(() => {
-      return this.getFramesData(Router.asFrames(), page.encryptHistory).then((data) => {
+    this.current[frame] = Router.for(frame).currentPage.get()
+    // queue.add(() => {
+       this.getFramesData(this.current, page.encryptHistory).then((data) => {
         // Defer history.replaceState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.pushState completes before replaceState is executed.
         const doReplace = () => {
@@ -184,7 +184,7 @@ class History {
           doReplace()
         }
       })
-    })
+    // })
   }
 
   protected doReplaceState(

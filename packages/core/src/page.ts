@@ -59,7 +59,7 @@ export class CurrentPage {
         return
       }
 
-      page.rememberedState ??= {}
+      // page.rememberedState ??= {}
 
       const location = typeof window !== 'undefined' ? window.location : new URL(page.url)
       replace = replace || !preserveUrl && isSameUrlWithoutHash(hrefToUrl(page.url), location)

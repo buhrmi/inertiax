@@ -106,7 +106,7 @@ class EventHandler {
           })
         }
       })
-      .catch((e) => {
+      .catch(() => {
         this.onMissingHistoryItem()
       })
   }
