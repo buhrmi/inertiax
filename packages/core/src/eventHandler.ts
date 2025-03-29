@@ -81,18 +81,32 @@ class EventHandler {
     }
 
     if (!history.isValidState(state)) {
+
       return this.onMissingHistoryItem()
     }
-
+    let framesToUpdate: string[] = []
+    if (state.c < history.counter) {
+      framesToUpdate = history.lastChangedFrames || []
+    }
+    if (state.c > history.counter) {
+      framesToUpdate = window.history.state?.changedFrames || []
+    }
+    history.counter = state.c
+    history.lastChangedFrames = state.changedFrames || []
     history
       .decrypt(state.frames)
       .then((data) => {
-        Router.setQuietly(data, { preserveState: false }).then(() => {
-          Scroll.restore(history.getScrollRegions())
-          fireNavigateEvent(Router.for("_top").currentPage.get())
-        })
+        for (const frame of framesToUpdate) {
+          if (!data[frame]) continue
+          const page = Router.for(frame)?.currentPage
+          if (!page) continue
+          page.setQuietly(data[frame], { preserveState: false }).then(() => {
+            Scroll.restore(history.getScrollRegions())
+            fireNavigateEvent(page.get())
+          })
+        }
       })
-      .catch(() => {
+      .catch((e) => {
         this.onMissingHistoryItem()
       })
   }

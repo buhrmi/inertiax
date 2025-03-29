@@ -13,6 +13,9 @@ class History {
   public rememberedState = 'rememberedState' as const
   public scrollRegions = 'scrollRegions' as const
   public preserveUrl = false
+  public counter = isServer ? 0 : window.history.state?.c ?? 0
+  public lastChangedFrames: string[] = []
+
   protected current: Frames = {}
   // We need initialState for `restore`
   protected initialState: Partial<Frames> | null = null
@@ -42,7 +45,7 @@ class History {
     //   cb && cb()
     //   return
     // }
-    console.log("pushing state", page)
+    
     this.current[frame] = page
 
     queue.add(() => {
@@ -50,8 +53,7 @@ class History {
         // Defer history.pushState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.replaceState completes before pushState is executed.
         const doPush = () => {
-          console.log("setting frames", data)
-          this.doPushState({frames: data}, this.preserveUrl ? window.location.href : page.url)
+          this.doPushState({frames: data, changedFrames: [frame]}, this.preserveUrl ? window.location.href : page.url)
           cb && cb()
         }
 
@@ -62,6 +64,10 @@ class History {
         }
       })
     })
+  }
+
+  public removeFrame(frame: string): void {
+    delete this.current[frame]
   }
 
   protected getFramesData(frames: Frames, encrypt: boolean): Promise<Frames | ArrayBuffer> {
@@ -164,7 +170,11 @@ class History {
         // Defer history.replaceState to the next event loop tick to prevent timing conflicts.
         // Ensure any previous history.pushState completes before replaceState is executed.
         const doReplace = () => {
-          this.doReplaceState({ frames: data }, this.preserveUrl ? window.location.href : page.url)
+          const changedFrames = window.history.state?.changedFrames || []
+          if (!changedFrames.includes(frame)) {
+            changedFrames.push(frame)
+          }
+          this.doReplaceState({ frames: data, changedFrames }, this.preserveUrl ? window.location.href : page.url)
           cb && cb()
         }
 
@@ -182,6 +192,7 @@ class History {
       frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
+      changedFrames?: string[]
     },
     url: string,
   ): void {
@@ -195,6 +206,7 @@ class History {
       '',
       url
     )
+    this.lastChangedFrames = window.history.state.changedFrames || []
   }
 
   protected doPushState(
@@ -202,10 +214,12 @@ class History {
       frames: Frames | ArrayBuffer
       scrollRegions?: ScrollRegion[]
       documentScrollPosition?: ScrollRegion
+      changedFrames?: string[]
     },
     url: string,
   ): void {
-    window.history.pushState(data, '', url)
+    this.lastChangedFrames = data.changedFrames || []
+    window.history.pushState({...data, c: ++this.counter}, '', url)
   }
 
   public getState<T>(key: keyof Page, defaultValue?: T): any {

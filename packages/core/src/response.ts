@@ -55,7 +55,8 @@ export class Response {
 
     await this.setPage()
 
-    const currentPage = Router.for(this.requestParams.all().frame).currentPage
+    const frame = this.response.headers['x-inertia-frame'] || this.requestParams.all().frame
+    const currentPage = Router.for(frame).currentPage
 
     const errors = currentPage.get().props.errors || {}
 
@@ -161,6 +162,7 @@ export class Response {
       replace: this.requestParams.all().replace,
       preserveScroll: this.requestParams.all().preserveScroll,
       preserveState: this.requestParams.all().preserveState,
+      preserveUrl: this.requestParams.all().preserveUrl
     })
   }
 

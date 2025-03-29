@@ -94,6 +94,10 @@ export class Router {
   ) {
     return Promise.all(
       Object.entries(routers).map(([name, router]) => {
+        if (!frames[name]) {
+          console.log("no page for router", name)
+          return Promise.resolve()
+        }
         return router.currentPage.setQuietly(frames[name], {
           preserveState,
         })

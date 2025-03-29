@@ -30,9 +30,18 @@ The following props are available on the `<Frame>` component:
 `initialComponent` | null | The component to show before the request is made.
 `initialPage` | null | The initial Inertia page object, containing the initial props. Will be replaced after request is made.
 
+Any other unknown props will be passed down to the underlying page component.
+
 If `initialComponent` is not set, the child content is shown until the request has finished. You can use this to show loading spinners and animations.
 
 Requests made from within frames (basically all requests) send their current URL in the `X-Inertia-Frame-Src` header. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL. 
+
+#### Targeting specific frames
+
+To make a render a response in a frame that is not the originating frame, you have multiple options:
+
+- Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
+- Set an `X-Inertia-Frame` response header containing the name of the target frame.
 
 ## Breaking changes
 

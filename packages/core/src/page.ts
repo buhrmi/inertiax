@@ -42,7 +42,8 @@ export class CurrentPage {
       replace = false,
       preserveScroll = false,
       preserveState = false,
-    }: Partial<Pick<VisitOptions, 'replace' | 'preserveScroll' | 'preserveState'>> = {},
+      preserveUrl = false,
+    }: Partial<Pick<VisitOptions, 'replace' | 'preserveScroll' | 'preserveState' | 'preserveUrl'>> = {},
   ): Promise<void> {
     this.componentId = {}
 
@@ -61,13 +62,13 @@ export class CurrentPage {
       page.rememberedState ??= {}
 
       const location = typeof window !== 'undefined' ? window.location : new URL(page.url)
-      replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), location)
+      replace = replace || !preserveUrl && isSameUrlWithoutHash(hrefToUrl(page.url), location)
 
       return new Promise((resolve) => {
         replace ? history.replaceState(this.name, page, () => resolve(null)) : history.pushState(this.name, page, () => resolve(null))
       }).then(() => {
         const isNewComponent = !this.isTheSame(page)
-
+        
         this.page = page
         this.cleared = false
 
@@ -85,7 +86,7 @@ export class CurrentPage {
           if (!preserveScroll) {
             Scroll.reset()
           }
-
+ 
           eventHandler.fireInternalEvent(`${this.name}:loadDeferredProps`)
 
           if (!replace) {
