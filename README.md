@@ -45,6 +45,22 @@ To make a render a response in a frame that is not the originating frame, you ha
 - Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
 - Set an `X-Inertia-Frame` response header containing the name of the target frame.
 
+You can also grab the router of a child frame by accessing it directly on the component:
+
+```html
+<script>
+  const router = frame.router
+</script>
+
+<Frame bind:this={{router}} />
+```
+
+### Global click handler
+
+Each frame component now comes with its own click handler. Clicks on an element with an `href` attribute will be automatically handled by it. To opt out, add the `data-inertia-ignore` attribute to the element or one of its parents. To opt-out globally, add the `data-inertia-ignore` attribute to the body. 
+
+You can continue to use the `inertia` action and `<Link>` component as usual.
+
 ## Breaking changes
 
 ### No global `router` and `page`.
@@ -58,12 +74,37 @@ The global `router` and `page` store have been removed. Each frame now comes wit
 
 ### Global and frame-bound events
 
-When using `router.on('event', ...)`, you will only listen to events that happen within that specific router. To listen to events globally, use `document.addEventListener('event', ...)`.
+When using `router.on('event', ...)`, you will only receive events that happen within the frame for that specific router. To listen to events globally, use `document.addEventListener('inertia:event', ...)`:
+
+```js
+import { getContext } from "svelte";
+const { router, frame } = getContext("inertia");
+
+router.on("navigate", () => {
+  console.log("navigated inside frame ", frame);
+})
+
+// or listen two all frames:
+document.addEventListener('inertia:navigate', ...)
+
+```
 
 ## Installation
 
-```
+Follow the installation guide for your favourite backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with:
+
+```bash
 npm i -D inertiax-svelte@^10.0.0-beta.0
+```
+
+Then use the package as you would use the original package:
+
+```js
+import { createInertiaApp } from 'inertiax-svelte'
+
+createInertiaApp( ... ) {
+  // ...
+}
 ```
 
 ## How does it work?
