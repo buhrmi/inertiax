@@ -45,14 +45,16 @@ To make a render a response in a frame that is not the originating frame, you ha
 - Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
 - Set an `X-Inertia-Frame` response header containing the name of the target frame.
 
-You can also grab the router of a child frame by accessing it directly on the component:
+You can also grab the router of a frame by accessing it directly on the component:
 
 ```html
 <script>
-  const router = frame.router
+  function goSomewhereElse() {
+    frame.router.visit(...)
+  }
 </script>
 
-<Frame bind:this={{router}} />
+<Frame bind:this={frame} />
 ```
 
 ### Global click handler
