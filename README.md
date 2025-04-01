@@ -1,6 +1,6 @@
 # Inertia X
 
-> Note: This is the documentation for version 10 beta, which is currently in development. You can find the legacy documentation [here](https://github.com/buhrmi/inertiax/tree/x2).
+> Note: This is the documentation for version 10, which is currently in beta. You can find the documentation for the previous version [here](https://github.com/buhrmi/inertiax/tree/x2).
 
 Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
 

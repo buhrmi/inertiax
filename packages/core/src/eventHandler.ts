@@ -3,8 +3,14 @@ import { fireNavigateEvent } from './events'
 import { history } from './history'
 import { Scroll } from './scroll'
 import { GlobalEvent, GlobalEventNames, GlobalEventResult, InternalEvent } from './types'
-// import { hrefToUrl } from './url'
+import { hrefToUrl } from './url'
 import { Router } from './router'
+
+declare global {
+  interface PopStateEvent {
+    skipInertia?: boolean
+  }
+}
 
 class EventHandler {
   protected internalListeners: {
@@ -14,7 +20,7 @@ class EventHandler {
 
   public init() {
     if (typeof window !== 'undefined') {
-      window.addEventListener('popstate', this.handlePopstateEvent.bind(this))
+      window.addEventListener('popstate', (e) => setTimeout(this.handlePopstateEvent.bind(this,e)))
       window.addEventListener('scroll', debounce(Scroll.onWindowScroll.bind(Scroll), 100), true)
     }
 
@@ -67,15 +73,14 @@ class EventHandler {
 
   protected handlePopstateEvent(event: PopStateEvent): void {
     const state = event.state || null
+    if (event.skipInertia) return;
 
-    // Let's assume his doesn't happen, because we should ALWAYS have a state when using browser nav
     if (state === null) {
-      throw new Error('Inertia X: Missing state in popstate event')
-      // const url = hrefToUrl(currentPage.get().url)
-      // url.hash = window.location.hash
+      const url = hrefToUrl(Router.for("_top").currentPage.get().url)
+      url.hash = window.location.hash
 
-      // history.replaceState({ ...currentPage.get(), url: url.href })
-      // Scroll.reset()
+      history.replaceState("_top", { ...Router.for("_top").currentPage.get(), url: url.href })
+      Scroll.reset()
 
       return
     }
@@ -94,17 +99,19 @@ class EventHandler {
     history.counter = state.c
     history.lastChangedFrames = state.changedFrames || []
     history
-      .decrypt(state.frames)
-      .then((data) => {
-        for (const frame of framesToUpdate) {
-          if (!data[frame]) continue
+    .decrypt(state.frames)
+    .then((data) => {
+        const promises = framesToUpdate.map(async (frame) => {
+          if (!data[frame]) return
           const page = Router.for(frame)?.currentPage
-          if (!page) continue
-          page.setQuietly(data[frame], { preserveState: false }).then(() => {
-            Scroll.restore(history.getScrollRegions())
-            fireNavigateEvent(page.get(), frame)
-          })
-        }
+          if (!page) return
+          await page.setQuietly(data[frame], { preserveState: false })
+          fireNavigateEvent(page.get(), frame)
+        })
+
+        Promise.all(promises).then(() => {
+          Scroll.restore(history.getScrollRegions())
+        })
       })
       .catch(() => {
         this.onMissingHistoryItem()
