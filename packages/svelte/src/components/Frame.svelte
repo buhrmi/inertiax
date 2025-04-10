@@ -46,8 +46,6 @@
 
   const setPage = set
 
-
-
   let component = initialComponent
   let key: number | null = null
   let page = {
@@ -76,7 +74,7 @@
     router.destroy()
   })
   if (!isServer && src) {
-    router.visit(src, { replace: true, preserveUrl: true })
+    router.visit(src, { replace: true, preserveState: true, preserveUrl: true })
   }
   
   
@@ -89,7 +87,7 @@
    * Resolves the render props for the current page component, including layouts.
    */
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
-    const child = h(component.default, {...$$restProps, ...page.props}, [], key)
+    const child = h(component.default || component, {...$$restProps, ...page.props}, [], key)
     const layout = renderLayout && component.layout
     
     return layout ? resolveLayout(layout, child, page.props, key) : child
