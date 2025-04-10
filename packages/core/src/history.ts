@@ -118,9 +118,7 @@ class History {
           {
             frames: window.history.state.frames,
             scrollRegions,
-          },
-          document.location.href,
-          // this.current["_top"].url!,
+          }
         )
       })
     })
@@ -137,8 +135,7 @@ class History {
           {
             ...window.history.state,
             documentScrollPosition: scrollRegion,
-          },
-          window.location.href//this.current["_top"].url!,
+          }
         )
       })
     })
@@ -194,7 +191,7 @@ class History {
       documentScrollPosition?: ScrollRegion
       changedFrames?: string[]
     },
-    url: string,
+    url?: string,
   ): void {
     window.history.replaceState(
       {

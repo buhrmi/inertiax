@@ -64,7 +64,7 @@ export class InitialVisit {
     }
 
     history
-      .decrypt()
+      .decrypt(Router.asFrames())
       .then(() => {
         const rememberedState = history.getState<Page['rememberedState']>(history.rememberedState, {})
         const scrollRegions = history.getScrollRegions()

@@ -128,27 +128,46 @@ export class Router {
     delete routers[this.name]
   }
 
-  public get(url: URL | string, data: RequestPayload = {}, options: VisitHelperOptions = {}): void {
+  public get<T extends RequestPayload = RequestPayload>(
+    url: URL | string,
+    data: T = {} as T,
+    options: VisitHelperOptions<T> = {},
+  ): void {
     return this.visit(url, { ...options, method: 'get', data })
   }
 
-  public post(url: URL | string, data: RequestPayload = {}, options: VisitHelperOptions = {}): void {
+  public post<T extends RequestPayload = RequestPayload>(
+    url: URL | string,
+    data: T = {} as T,
+    options: VisitHelperOptions<T> = {},
+  ): void {
     return this.visit(url, { preserveState: true, ...options, method: 'post', data })
   }
 
-  public put(url: URL | string, data: RequestPayload = {}, options: VisitHelperOptions = {}): void {
+  public put<T extends RequestPayload = RequestPayload>(
+    url: URL | string,
+    data: T = {} as T,
+    options: VisitHelperOptions<T> = {},
+  ): void {
     return this.visit(url, { preserveState: true, ...options, method: 'put', data })
   }
 
-  public patch(url: URL | string, data: RequestPayload = {}, options: VisitHelperOptions = {}): void {
+  public patch<T extends RequestPayload = RequestPayload>(
+    url: URL | string,
+    data: T = {} as T,
+    options: VisitHelperOptions<T> = {},
+  ): void {
     return this.visit(url, { preserveState: true, ...options, method: 'patch', data })
   }
 
-  public delete(url: URL | string, options: Omit<VisitOptions, 'method'> = {}): void {
+  public delete<T extends RequestPayload = RequestPayload>(
+    url: URL | string,
+    options: Omit<VisitOptions<T>, 'method'> = {},
+  ): void {
     return this.visit(url, { preserveState: true, ...options, method: 'delete' })
   }
 
-  public reload(options: ReloadOptions = {}): void {
+  public reload<T extends RequestPayload = RequestPayload>(options: ReloadOptions<T> = {}): void {
     if (typeof window === 'undefined') {
       return
     }
@@ -200,7 +219,7 @@ export class Router {
     })
   }
 
-  public visit(href: string | URL, options: VisitOptions = {}): void {
+  public visit<T extends RequestPayload = RequestPayload>(href: string | URL, options: VisitOptions<T> = {}): void {
     const visit: PendingVisit = this.getPendingVisit(href, {
       ...options,
       showProgress: options.showProgress ?? !options.async,
