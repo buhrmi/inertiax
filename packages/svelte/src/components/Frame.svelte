@@ -5,7 +5,7 @@
   let topResolveComponent: ComponentResolver | null = null
   
   export interface InertiaFrameProps {
-    initialComponent: ResolvedComponent
+    initialComponent: ResolvedComponent | Promise<ResolvedComponent>
     initialPage: Page
     resolveComponent: ComponentResolver,
     name?: string
@@ -46,14 +46,25 @@
 
   const setPage = set
 
-  let component = initialComponent
+  let component: ResolvedComponent | null = null
   let key: number | null = null
   let page = {
     ...initialPage,
     url: initialPage?.url || src
   }
-  let renderProps = component && page && resolveRenderProps(component, page, key)
-  
+  let renderProps = null
+
+  // Handle initialComponent being a promise
+  if (initialComponent instanceof Promise) {
+    initialComponent.then(resolvedComponent => {
+      component = resolvedComponent
+      renderProps = resolveRenderProps(component, page, key)
+    })
+  } else {
+    component = initialComponent
+    renderProps = resolveRenderProps(component, page, key)
+  }
+
   setPage(page)
   
   const isServer = typeof window === 'undefined'
@@ -76,7 +87,6 @@
   if (!isServer && src) {
     router.visit(src, { replace: true, preserveState: true, preserveUrl: true })
   }
-  
   
   const context = {page: { subscribe }, frame: name, router}
   setContext('inertia', context)

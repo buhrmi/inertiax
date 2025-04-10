@@ -29,7 +29,7 @@ The following props are available on the `<Frame>` component:
  `name` | *random* | The name of the frame. This is used to directly target the frame in responses. The name of the top-level frame is `_top`.
 `src` | null | The url of the page to load. If not set, no request is made, and the initial component and page are shown.
 `renderLayout` | `true` if name == `_top` | Whether or not to render the layout of the component.
-`initialComponent` | null | The component to show before the request is made.
+`initialComponent` | null | The component to show before the request is made. Can be a promise.
 `initialPage` | null | The initial Inertia page object, containing the initial props. Will be replaced after request is made.
 
 Any other unknown props will be passed down to the underlying page component.
