@@ -55,15 +55,10 @@
   let renderProps = null
 
   // Handle initialComponent being a promise
-  if (initialComponent instanceof Promise) {
-    initialComponent.then(resolvedComponent => {
-      component = resolvedComponent
-      renderProps = resolveRenderProps(component, page, key)
-    })
-  } else {
-    component = initialComponent
+  Promise.resolve(initialComponent).then(resolvedComponent => {
+    component = resolvedComponent
     renderProps = resolveRenderProps(component, page, key)
-  }
+  })
 
   setPage(page)
   

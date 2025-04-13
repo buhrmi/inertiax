@@ -36,7 +36,15 @@ Any other unknown props will be passed down to the underlying page component.
 
 If `initialComponent` is not set, the child content is shown until the request has finished. You can use this to show loading spinners and animations.
 
-Requests made from within frames (basically all requests) send their current URL in the `X-Inertia-Frame-Src` header. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL. 
+#### Redirecting back
+
+When making a request from within a frame, the `referer` request header will still be the current window location. 
+
+That's where the new `X-Inertia-Frame-Src` header comes in. The Inertia router sets this header to the url of the originating frame. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL. 
+
+#### New router defaults
+
+For all frames other than the `_top` frame, the `preserveUrl` and `replace` router visit options now default to `true`.
 
 #### Targeting specific frames
 
