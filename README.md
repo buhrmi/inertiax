@@ -8,7 +8,7 @@ Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inerti
 
 ### `<Frame>` component
 
-The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation.
+The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation. This is useful for modals, slideovers, etc.
 
 #### Usage
 
@@ -48,7 +48,9 @@ For all frames other than the `_top` frame, the `preserveUrl` and `replace` rout
 
 #### Targeting specific frames
 
-To make a render a response in a frame that is not the originating frame, you have multiple options:
+By default, `router.visit` and `form.submit` calls render their response in whatever frame the request originated in.
+
+To render a response in a frame that is not the originating frame, you have multiple options:
 
 - Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
 - Set an `X-Inertia-Frame` response header containing the name of the target frame.
