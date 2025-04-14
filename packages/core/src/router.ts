@@ -172,7 +172,7 @@ export class Router {
       return
     }
 
-    return this.visit(window.location.href, {
+    return this.visit(this.currentPage.get().url, {
       ...options,
       preserveScroll: true,
       preserveState: true,
