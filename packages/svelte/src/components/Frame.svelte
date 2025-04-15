@@ -36,8 +36,7 @@
     const href = event.target.closest('[href]')?.getAttribute('href')
     if (!href) return
     event.preventDefault()
-    const preserveUrl = name !== "_top"
-    router.visit(href, { preserveUrl })
+    router.visit(href)
   }
 
   if (name == "_top") topResolveComponent = resolveComponent
@@ -56,6 +55,7 @@
 
   // Handle initialComponent being a promise
   Promise.resolve(initialComponent).then(resolvedComponent => {
+    if (!resolvedComponent) return
     component = resolvedComponent
     renderProps = resolveRenderProps(component, page, key)
   })
