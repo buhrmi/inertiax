@@ -14,6 +14,7 @@ class History {
   public scrollRegions = 'scrollRegions' as const
   public preserveUrl = false
   public counter = isServer ? 0 : window.history.state?.c ?? 0
+  public externalCallbacks: Array<{arrive: () => void, recede: () => void}> = []
   public lastChangedFrames: string[] = []
 
   protected current: Frames = {}
@@ -35,6 +36,18 @@ class History {
     if (!isServer) {
       return this.current?.[frame]?.rememberedState?.[key]
     }
+  }
+
+  public pushExternal(src: string, {arrive, recede}: { arrive: () => void, recede: () => void }): void {
+    this.doPushState({
+      ...window.history.state
+    }, src)
+    this.externalCallbacks = this.externalCallbacks.slice(0, this.counter)
+    this.externalCallbacks[this.counter] = {
+      arrive,
+      recede
+    }
+    arrive()
   }
 
   public pushState(frame: string, page: Page, cb: (() => void) | null = null): void {
