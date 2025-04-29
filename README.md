@@ -67,6 +67,29 @@ You can also grab the router of a frame by accessing it directly on the componen
 <Frame bind:this={frame} />
 ```
 
+### External history state
+
+Inertia X allows you to push a set of callbacks onto its navigation stack using the new `pushExternal()` function. When this function is called, it will push the callbacks on its "stack", and calls the `arrive()` function. When the user navigates back using the browser's back button, the `recede()` function will be called. Subsequent forward/back navigations will call `arrive()` and `recede()` as the user navigates back and forth. All of Inertia's usual navigation handling is suspended in these cases.
+
+```html
+<script>
+  import { history } from 'inertiax-core'
+
+  function onclick() {
+    history.pushExternal(url, {
+      arrive() {
+        alert("You arrived at an external history state")
+      },
+      recede() {
+        alert("You navigated back from an external history state")
+      }
+    })
+  }
+</script>
+
+<button {onclick}>Push external state</button>
+```
+
 ### Global click handler
 
 Each frame component now comes with its own click handler. Clicks on an element with an `href` attribute will be automatically handled by it. To opt out, add the `data-inertia-ignore` attribute to the element or one of its parents. To opt-out globally, add the `data-inertia-ignore` attribute to the body. 
