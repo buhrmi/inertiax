@@ -80,7 +80,7 @@
     router.destroy()
   })
   if (!isServer && src) {
-    router.visit(src, { replace: true, preserveState: true, preserveUrl: true })
+    router.visit(src, { replace: true, preserveState: true, preserveUrl: true, preserveScroll: true })
   }
   
   const context = {page: { subscribe }, frame: name, router}

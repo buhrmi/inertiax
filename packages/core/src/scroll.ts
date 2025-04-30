@@ -37,7 +37,7 @@ export class Scroll {
       setTimeout(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView())
     }
   }
-
+  
   public static restore(scrollRegions: ScrollRegion[]): void {
     this.restoreDocument()
 
