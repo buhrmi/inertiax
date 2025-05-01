@@ -8,15 +8,17 @@ export default function shouldIntercept(
     'altKey' | 'ctrlKey' | 'defaultPrevented' | 'target' | 'currentTarget' | 'metaKey' | 'shiftKey' | 'button'
   >,
 ): boolean {
-  const hasHref = ((event.target as HTMLElement).closest('[href]') as HTMLElement)?.hasAttribute('href')
+  const href = ((event.target as HTMLElement).closest('[href]') as HTMLElement)?.getAttribute('href')
 
   return !(
+    !href ||
+    !href.startsWith('/') && !href.startsWith(window.location.origin) ||
     (event.target && (event?.target as HTMLElement).isContentEditable) ||
     event.defaultPrevented ||
-    (hasHref && event.altKey) ||
-    (hasHref && event.ctrlKey) ||
-    (hasHref && event.metaKey) ||
-    (hasHref && event.shiftKey) ||
-    (hasHref && 'button' in event && event.button !== 0)
+    (href && event.altKey) ||
+    (href && event.ctrlKey) ||
+    (href && event.metaKey) ||
+    (href && event.shiftKey) ||
+    (href && 'button' in event && event.button !== 0)
   )
 }
