@@ -96,6 +96,16 @@ Each frame component now comes with its own click handler. Clicks on an element 
 
 You can continue to use the `inertia` action and `<Link>` component as usual.
 
+#### Supported attributes:
+
+- `data-method`: The HTTP method
+
+#### Example
+
+```html
+<a href="/session" data-method="delete">Log out</a>
+```
+
 ## Breaking changes
 
 ### No global `router` and `page`.
