@@ -1,6 +1,7 @@
 <script context="module" lang="ts">
   import type { ComponentResolver, ResolvedComponent } from '../types'
   import { shouldIntercept, type Page } from 'inertiax-core'
+  import { BROWSER } from 'esm-env'
 
   let topResolveComponent: ComponentResolver | null = null
   
@@ -55,17 +56,22 @@
   let renderProps = null
 
   // Handle initialComponent being a promise
-  Promise.resolve(initialComponent).then(resolvedComponent => {
-    if (!resolvedComponent) return
-    component = resolvedComponent
+  if (initialComponent instanceof Promise) {
+    initialComponent.then(resolvedComponent => {
+      if (!resolvedComponent) return
+      component = resolvedComponent
+      renderProps = resolveRenderProps(component, page, key)
+    })
+  } else if (initialComponent) {
+    component = initialComponent
     renderProps = resolveRenderProps(component, page, key)
-  })
+  }
 
   setPage(page)
   
-  const isServer = typeof window === 'undefined'
+  let router: Router | null
   
-  let router: Router = new Router({
+  if (BROWSER) router = new Router({
     name,
     initialPage: page,
     resolveComponent,
@@ -78,10 +84,10 @@
     },
   })
   onDestroy(() => {
-    router.destroy()
+    router?.destroy()
   })
-  if (!isServer && src) {
-    router.visit(src, { replace: true, preserveState: true, preserveUrl: true, preserveScroll: true })
+  if (BROWSER && src) {
+    router?.visit(src, { replace: true, preserveState: true, preserveUrl: true, preserveScroll: true })
   }
   
   const context = {page: { subscribe }, frame: name, router}
@@ -148,6 +154,7 @@
 
 <div style="display: contents" on:click={handleClick} role="presentation">
   {#if renderProps}
+    {""} <!-- without this empty string, Svelte runs into a hydration mismatch error. No clue why. Don't remove this string. -->
     <Render {...renderProps} />
   {:else}
     <slot />

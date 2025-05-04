@@ -129,7 +129,7 @@ router.on("navigate", () => {
   console.log("navigated inside frame ", frame);
 })
 
-// or listen two all frames:
+// or listen to all frames:
 document.addEventListener('inertia:navigate', ...)
 
 ```
