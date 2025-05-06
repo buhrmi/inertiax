@@ -90,18 +90,26 @@ class EventHandler {
       return this.onMissingHistoryItem()
     }
     let framesToUpdate: string[] = []
+    let handledExternally = false
     if (!state.c || state.c < history.counter) {
       // navigated back
       framesToUpdate = history.lastChangedFrames || []
-      history.externalCallbacks[history.counter]?.recede()
+      if (history.externalCallbacks[history.counter]) {
+        history.externalCallbacks[history.counter]?.recede()
+        handledExternally = true
+      }
     }
     if (state.c > history.counter) {
       // navigated forward
       framesToUpdate = window.history.state?.changedFrames || []
-      history.externalCallbacks[state.c]?.arrive()
+      if (history.externalCallbacks[state.c]) {
+        history.externalCallbacks[state.c]?.arrive()
+        handledExternally = true
+      }
     }
     history.counter = state.c || 0
     history.lastChangedFrames = state.changedFrames || []
+    if (handledExternally) return
     history
     .decrypt(state.frames)
     .then((data) => {
