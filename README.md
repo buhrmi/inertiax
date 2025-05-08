@@ -8,7 +8,7 @@ Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inerti
 
 ### `<Frame>` component
 
-The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation. This is useful for modals, slideovers, etc.
+The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation. This is useful for modals, slideovers, [navstacks](https://github.com/shitcoinsociety/shitcoinswap/tree/main/app/frontend/lib/navstack), etc.
 
 #### Usage
 
