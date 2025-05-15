@@ -1,7 +1,5 @@
 # Inertia X
 
-> Note: This is the documentation for version 10, which is currently in beta. You can find the documentation for the previous version [here](https://github.com/buhrmi/inertiax/tree/x2).
-
 Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
 
 ## New Features
@@ -110,11 +108,13 @@ You can continue to use the `inertia` action and `<Link>` component as usual.
 
 ### No global `router` and `page`.
 
-The global `router` and `page` store have been removed. Each frame now comes with its own router and page store. You can get them from the frame component's context.
+The global `router` and `page` store have been removed. Each frame now comes with its own router and page store. You can get them from the frame component's context. Parent frame's context is also available via `inertia:frame_name'.
 
 ```diff
 - import { router, page } from 'inertiax-svelte'
 + const { router, page } = getContext('inertia')
+// OR
++ const { router, page } = getContext('inertia:_top')
 ```
 
 ### Global and frame-bound events
