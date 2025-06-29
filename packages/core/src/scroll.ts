@@ -15,8 +15,8 @@ export class Scroll {
     return document.querySelectorAll('[scroll-region]')
   }
 
-  public static reset(): void {
-    if (typeof window !== 'undefined') {
+  public static reset(frame: string): void {
+    if (frame == "_top" && typeof window !== 'undefined') {
       window.scrollTo(0, 0)
     }
 

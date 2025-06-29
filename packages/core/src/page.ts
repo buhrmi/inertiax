@@ -84,7 +84,7 @@ export class CurrentPage {
 
         return this.swap({ component, page, preserveState }).then(() => {
           if (!preserveScroll) {
-            Scroll.reset()
+            Scroll.reset(this.name)
           }
  
           eventHandler.fireInternalEvent(`${this.name}:loadDeferredProps`)

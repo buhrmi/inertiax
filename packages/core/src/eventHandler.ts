@@ -80,7 +80,7 @@ class EventHandler {
       url.hash = window.location.hash
 
       history.replaceState("_top", { ...Router.for("_top").currentPage.get(), url: url.href })
-      Scroll.reset()
+      Scroll.reset("_top")
 
       return
     }

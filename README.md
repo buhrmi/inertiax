@@ -117,6 +117,13 @@ The global `router` and `page` store have been removed. Each frame now comes wit
 + const { router, page } = getContext('inertia:_top')
 ```
 
+You can also get the router for a frame through the `Router` object exported by `inertiax-core`:
+
+```js
+import { Router } from 'inertiax-core'
+const router = Router.for('myframe')
+```
+
 ### Global and frame-bound events
 
 When using `router.on('event', ...)`, you will only receive events that happen within the frame for that specific router. To listen to events globally, use `document.addEventListener('inertia:event', ...)`:
@@ -136,7 +143,7 @@ document.addEventListener('inertia:navigate', ...)
 
 ## Installation
 
-Follow the installation guide for your favourite backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with:
+Follow the installation guide for your favourite backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with `inertiax-svelte`.
 
 ```bash
 npm i -D inertiax-svelte@^10.0.0-beta.0

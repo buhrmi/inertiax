@@ -152,7 +152,7 @@
   }
 </script>
 
-<div style="display: contents" on:click={handleClick} role="presentation">
+<div style="display: contents" on:click={handleClick} role="presentation" data-frame={name}>
   {#if renderProps}
     {""} <!-- without this empty string, Svelte runs into a hydration mismatch error. No clue why. Don't remove this string. -->
     <Render {...renderProps} />
