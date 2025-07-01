@@ -1,6 +1,6 @@
 {
   "name": "inertiax-svelte",
-  "version": "10.0.0-beta.13",
+  "version": "10.0.1",
   "license": "MIT",
   "description": "The Svelte adapter for Inertia X",
   "contributors": [
@@ -44,23 +44,23 @@
     "svelte": "^5.0.0"
   },
   "dependencies": {
-    "inertiax-core": "^10.0.0-beta.0",
-    "es-toolkit": "^1.33.0",
+    "inertiax-core": "^10.0.0",
+    "es-toolkit": "^1.39.5",
     "html-escape": "^2.0.0"
   },
   "devDependencies": {
-    "@sveltejs/adapter-auto": "^3.2.0",
-    "@sveltejs/kit": "^2.5.26",
-    "@sveltejs/package": "^2.3.4",
+    "@sveltejs/adapter-auto": "^3.3.1",
+    "@sveltejs/kit": "^2.22.2",
+    "@sveltejs/package": "^2.3.12",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@types/html-escape": "^2.0.2",
-    "axios": "^1.8.2",
-    "publint": "^0.2.10",
-    "svelte": "^5.25.3",
-    "svelte-check": "^4.0.0",
-    "tslib": "^2.7.0",
-    "typescript": "^5.5.4",
-    "vite": "^5.4.17"
+    "axios": "^1.10.0",
+    "publint": "^0.2.12",
+    "svelte": "^5.34.9",
+    "svelte-check": "^4.2.2",
+    "tslib": "^2.8.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.19"
   },
   "svelte": "./dist/index.js",
   "types": "./dist/index.d.ts",
