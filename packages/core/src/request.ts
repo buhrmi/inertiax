@@ -134,16 +134,17 @@ export class Request {
       'X-Requested-With': 'XMLHttpRequest',
       'X-Inertia': true,
     }
-
+    const frame = this.requestParams.all().frame
     const topPage = Router.for('_top').currentPage.get()
-    const refPage = Router.for(this.requestParams.all().frame).currentPage.get()
+    const framePage = Router.for(frame).currentPage.get()
     
     if (topPage.version) {
       headers['X-Inertia-Version'] = topPage.version
     }
-    if (refPage.url) {
-      headers['X-Inertia-Frame-Src'] = refPage.url
+    if (framePage.url) {
+      headers['X-Inertia-Frame-Src'] = framePage.url
     }
+    headers['X-Inertia-Frame'] = frame
 
     return headers
   }
