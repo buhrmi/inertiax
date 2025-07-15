@@ -36,7 +36,7 @@
     if (!shouldIntercept(event)) return
     const href = event.target.closest('[href]')?.getAttribute('href')
     const method = event.target.closest('[data-method]')?.getAttribute('data-method') || 'get'
-    const frame = event.target.closest('[data-target]')?.getAttribute('data-target')
+    const frame = event.target.closest('[data-target]')?.getAttribute('data-target') || name
     if (!href) return
     event.preventDefault()
     router.visit(href, {method, frame})
