@@ -1,6 +1,6 @@
 {
   "name": "inertiax-svelte",
-  "version": "10.2.1",
+  "version": "10.3.0",
   "license": "MIT",
   "description": "The Svelte adapter for Inertia X",
   "contributors": [

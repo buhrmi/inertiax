@@ -1,12 +1,12 @@
 # Inertia X
 
-Inertia X is a Svelte-only fork of [Inertia](https://github.com/inertiajs/inertia) with additional features.
+Inertia X is a drop-in replacement for the [Inertia](https://github.com/inertiajs/inertia) client-side adapter with additional features. Currently only available for Svelte 5.
 
 ## New Features
 
 ### `<Frame>` component
 
-The `<Frame>` component allows you to embed an Inertia page within another Inertia page, complete with its own navigation. This is useful for modals, wizards, sidebars, etc.
+The `<Frame>` component lets you embed one Inertia page inside another Inertia page, each with its own navigation. This is useful for modals, wizards, sidebars, and more.
 
 #### Usage
 
@@ -20,45 +20,46 @@ The `<Frame>` component allows you to embed an Inertia page within another Inert
 </Frame>
 ```
 
-The following props are available on the `<Frame>` component:
+The `<Frame>` component accepts these props:
 
  Prop | Default | Description
 -----|------|-------
- `name` | *random* | The name of the frame. This is used to directly target the frame in responses. The name of the top-level frame is `_top`.
-`src` | null | The url of the page to load. If not set, no request is made, and the initial component and page are shown.
-`renderLayout` | `true` if name == `_top` | Whether or not to render the layout of the component.
-`initialComponent` | null | The component to show before the request is made. Can be a promise.
-`initialPage` | null | The initial Inertia page object, containing the initial props. Will be replaced after request is made.
+ `name` | *random* | The frame's name. Use this to target the frame directly in responses. The top-level frame is always named `_top`.
+`src` | null | The URL of the page to load. If not provided, no request is made and the initial component and page are shown.
+`renderLayout` | `true` if name == `_top` | Whether to render the component's layout.
+`initialComponent` | null | The component to show before making the request. Can be a promise.
+`initialPage` | null | The initial Inertia page object with initial props. Gets replaced after the request completes.
+`onclick` | noop | An event handler that runs before the frame's own click handler. Call `preventDefault` on the event to skip the frame's default handler.
 
-Any other unknown props will be passed down to the underlying page component.
+Any other props are passed down to the page component.
 
-If `initialComponent` is not set, the child content is shown until the request has finished. You can use this to show loading spinners and animations.
+If you don't set `initialComponent`, the child content shows until the request finishes. Use this to display loading spinners and animations.
 
 #### Redirecting back
 
-When making a request from within a frame, the `referer` request header will still be the current window location. 
+When you make a request from inside a frame, the `referer` header still contains the current window location. 
 
-That's where the new `X-Inertia-Frame-Src` header comes in. The Inertia router sets this header to the url of the originating frame. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL.
+The new `X-Inertia-Frame-Src` header solves this. The Inertia router sets this header to the originating frame's URL. Use this header instead of `referer` when you want to redirect users back to the previous URL.
 
 #### Checking the originating frame
 
-On the backend side, you can get the name of the originating frame from the `X-Inertia-Frame` header. The default top frame name is `_top`.
+On the backend, you can get the originating frame's name from the `X-Inertia-Frame` header. The default top frame name is `_top`.
 
 #### New router defaults
 
-For all frames other than the `_top` frame, the `preserveUrl` and `replace` router visit options now default to `true`.
+For all frames except `_top`, the `preserveUrl` and `replace` router visit options now default to `true`.
 
 #### Targeting specific frames
 
-By default, `router.visit` and `form.submit` calls render their response in whatever frame the request originated in.
+By default, navigation through links, `router.visit` calls, and `form.submit` calls render their response in the same frame that made the request.
 
-To render a response in a frame that is not the originating frame, you have multiple options:
+To render a response in a different frame, you have several options:
 
 - Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
-- Set an `X-Inertia-Frame` response header containing the name of the target frame.
-- Set a `data-target="frame"` attribute on the `a` tag.
+- Set an `X-Inertia-Frame` response header with the target frame's name.
+- Add a `data-target="frame"` attribute to your `a` tag.
 
-You can also grab the router of a frame by accessing it directly on the component:
+You can also access a frame's router directly from the component:
 
 ```html
 <script>
@@ -70,9 +71,15 @@ You can also grab the router of a frame by accessing it directly on the componen
 <Frame bind:this={frame} />
 ```
 
+or globally:
+
+```js
+Router.for("modal").post("/users")
+```
+
 ### External history state
 
-Inertia X allows you to push a set of callbacks onto its navigation stack using the new `pushExternal()` function. When this function is called, it will push the callbacks on its "stack", and calls the `arrive()` function. When the user navigates back using the browser's back button, the `recede()` function will be called. Subsequent forward/back navigations will call `arrive()` and `recede()` as the user navigates back and forth. All of Inertia's usual navigation handling is suspended in these cases.
+Inertia X lets you add custom callbacks to its navigation stack using the new `pushExternal()` function. When you call this function, it adds the callbacks to the "stack" and calls the `arrive()` function. When users navigate back with the browser's back button, the `recede()` function gets called. Future forward/back navigation will call `arrive()` and `recede()` as users move back and forth. Inertia's normal navigation handling stops during these states.
 
 ```html
 <script>
@@ -95,13 +102,17 @@ Inertia X allows you to push a set of callbacks onto its navigation stack using 
 
 ### Global click handler
 
-Each frame component now comes with its own click handler. Clicks on an element with an `href` attribute will be automatically handled by it. To opt out, add the `data-inertia-ignore` attribute to the element or one of its parents. To opt-out globally, add the `data-inertia-ignore` attribute to the body. 
+Each frame component now has its own click handler. Clicks on elements with an `href` attribute get handled automatically. To disable this, add the `data-inertia-ignore` attribute to the element or any parent element. To disable globally, add `data-inertia-ignore` to the body element.
 
-You can continue to use the `inertia` action and `<Link>` component as usual.
+You can still use the `inertia` action and `<Link>` component as usual.
 
 #### Supported attributes:
 
 - `data-method`: The HTTP method
+- `data-target`: A target frame
+- `data-preserve-scroll`: Preserve scroll
+- `data-preserve-state`: Preserve state
+- `data-preserve-url`: Preserve URL
 
 #### Example
 
@@ -111,9 +122,9 @@ You can continue to use the `inertia` action and `<Link>` component as usual.
 
 ## Breaking changes
 
-### No global `router` and `page`.
+### No global `router` and `page`
 
-The global `router` and `page` store have been removed. Each frame now comes with its own router and page store. You can get them from the frame component's context. Parent frame's context is also available via `inertia:frame_name'.
+The global `router` and `page` stores have been removed. Each frame now has its own router and page store. Get them from the frame component's context. Parent frame context is also available via `inertia:frame_name`.
 
 ```diff
 - import { router, page } from 'inertiax-svelte'
@@ -122,16 +133,9 @@ The global `router` and `page` store have been removed. Each frame now comes wit
 + const { router, page } = getContext('inertia:_top')
 ```
 
-You can also get the router for a frame through the `Router` object exported by `inertiax-core`:
+### Global and frame-specific events
 
-```js
-import { Router } from 'inertiax-core'
-const router = Router.for('myframe')
-```
-
-### Global and frame-bound events
-
-When using `router.on('event', ...)`, you will only receive events that happen within the frame for that specific router. To listen to events globally, use `document.addEventListener('inertia:event', ...)`:
+When you use `router.on('event', ...)`, you only receive events from that specific frame's router. To listen to events from all frames, use `document.addEventListener('inertia:event', ...)`:
 
 ```js
 import { getContext } from "svelte";
@@ -148,13 +152,13 @@ document.addEventListener('inertia:navigate', ...)
 
 ## Installation
 
-Follow the installation guide for your favourite backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with `inertiax-svelte`.
+Follow the installation guide for your backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with `inertiax-svelte`.
 
 ```bash
-npm i -D inertiax-svelte@^10.0.0-beta.0
+npm i -D inertiax-svelte@^10.0.0
 ```
 
-Then use the package as you would use the original package:
+Then use the package like you would use the original:
 
 ```js
 import { createInertiaApp } from 'inertiax-svelte'
@@ -166,5 +170,5 @@ createInertiaApp( ... ) {
 
 ## How does it work?
 
-The "secret sauce" that makes this work is actually quite simple: Instead of one global router instance for your Inertia app, Inertia X creates one router instance per frame. The top-level app component is also a `<Frame>` (the `<App>` component has been removed in Inertia X).
+The "secret sauce" is actually quite simple: Instead of one global router instance for your Inertia app, Inertia X creates one router instance per frame. The top-level app component is also a `<Frame>` (the `<App>` component has been removed in Inertia X).
 

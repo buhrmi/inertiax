@@ -34,12 +34,24 @@
     if (event.target.closest('[data-inertia-ignore]')) return;
     onclick(event)
     if (!shouldIntercept(event)) return
-    const href = event.target.closest('[href]')?.getAttribute('href')
-    const method = event.target.closest('[data-method]')?.getAttribute('data-method') || 'get'
-    const frame = event.target.closest('[data-target]')?.getAttribute('data-target') || name
-    if (!href) return
+    const el = event.target.closest('[href]')
+    if (!el) return
+    const href = el.getAttribute('href')
+    const options = {
+      method: el.getAttribute('data-method') || 'get',
+      frame: el.getAttribute('data-target') || name
+    }
+    if (el.hasAttribute('data-preserve-state')) {
+      options.preserveState = el.getAttribute('data-preserve-state') !== 'false'
+    }
+    if (el.hasAttribute('data-preserve-scroll')) {
+      options.preserveScroll = el.getAttribute('data-preserve-scroll') !== 'false'
+    }
+    if (el.hasAttribute('data-preserve-url')) {
+      options.preserveUrl = el.getAttribute('data-preserve-url') !== 'false'
+    }
     event.preventDefault()
-    router.visit(href, {method, frame})
+    router.visit(href, options)
   }
 
   if (name == "_top") topResolveComponent = resolveComponent
