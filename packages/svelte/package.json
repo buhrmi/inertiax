@@ -6,9 +6,9 @@
   "contributors": [
     "Jonathan Reinink <jonathan@reinink.ca>",
     "Pedro Borges <oi@pedroborg.es>",
-    "Stefan Buhrmester <stefan@shitcoinsociety.com>"
+    "Stefan Buhrmester <stefan@buhrmi.de>"
   ],
-  "homepage": "https://inertiajs.com/",
+  "homepage": "https://github.com/buhrmi/inertiax",
   "repository": {
     "type": "git",
     "url": "https://github.com/buhrmi/inertiax.git",

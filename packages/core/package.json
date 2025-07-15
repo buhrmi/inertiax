@@ -7,16 +7,16 @@
     "Jonathan Reinink <jonathan@reinink.ca>",
     "Claudio Dekker <claudio@ubient.net>",
     "Sebastian De Deyne <sebastiandedeyne@gmail.com>",
-    "Stefan Buhrmester <stefan@shitcoinsociety.com>"
+    "Stefan Buhrmester <stefan@buhrmi.de>"
   ],
-  "homepage": "https://inertiajs.com/",
+  "homepage": "https://github.com/buhrmi/inertiax",
   "repository": {
     "type": "git",
-    "url": "https://github.com/inertiajs/inertia.git",
-    "directory": "packages/inertia"
+    "url": "https://github.com/buhrmi/inertiax.git",
+    "directory": "packages/core"
   },
   "bugs": {
-    "url": "https://github.com/inertiajs/inertia/issues"
+    "url": "https://github.com/buhrmi/inertiax/issues"
   },
   "files": [
     "dist",
