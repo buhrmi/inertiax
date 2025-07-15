@@ -113,6 +113,7 @@ You can still use the `inertia` action and `<Link>` component as usual.
 - `data-preserve-scroll`: Preserve scroll
 - `data-preserve-state`: Preserve state
 - `data-preserve-url`: Preserve URL
+- `data-replace`: Replace history state (instead of pushing new state)
 
 #### Example
 

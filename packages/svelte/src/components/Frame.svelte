@@ -50,6 +50,9 @@
     if (el.hasAttribute('data-preserve-url')) {
       options.preserveUrl = el.getAttribute('data-preserve-url') !== 'false'
     }
+    if (el.hasAttribute('data-replace')) {
+      options.replace = el.getAttribute('data-replace') !== 'false'
+    }
     event.preventDefault()
     router.visit(href, options)
   }
