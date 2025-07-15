@@ -36,9 +36,10 @@
     if (!shouldIntercept(event)) return
     const href = event.target.closest('[href]')?.getAttribute('href')
     const method = event.target.closest('[data-method]')?.getAttribute('data-method') || 'get'
+    const frame = event.target.closest('[data-target]')?.getAttribute('data-target')
     if (!href) return
     event.preventDefault()
-    router.visit(href, {method})
+    router.visit(href, {method, frame})
   }
 
   if (name == "_top") topResolveComponent = resolveComponent

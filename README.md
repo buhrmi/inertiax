@@ -38,7 +38,11 @@ If `initialComponent` is not set, the child content is shown until the request h
 
 When making a request from within a frame, the `referer` request header will still be the current window location. 
 
-That's where the new `X-Inertia-Frame-Src` header comes in. The Inertia router sets this header to the url of the originating frame. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL. 
+That's where the new `X-Inertia-Frame-Src` header comes in. The Inertia router sets this header to the url of the originating frame. You can use this instead of the `referer` header if you want to redirect the user back to the previous URL.
+
+#### Checking the originating frame
+
+On the backend side, you can get the name of the originating frame from the `X-Inertia-Frame` header. The default top frame name is `_top`.
 
 #### New router defaults
 
@@ -52,6 +56,7 @@ To render a response in a frame that is not the originating frame, you have mult
 
 - Use the new `frame` router visit option: `router.visit('/url', {frame: 'otherFrame'})`.
 - Set an `X-Inertia-Frame` response header containing the name of the target frame.
+- Set a `data-target="frame"` attribute on the `a` tag.
 
 You can also grab the router of a frame by accessing it directly on the component:
 
