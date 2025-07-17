@@ -158,7 +158,7 @@ document.addEventListener('inertia:navigate', ...)
 Follow the installation guide for your backend adapter on https://inertiajs.com, but replace the `@inertiajs/svelte` package with `inertiax-svelte`.
 
 ```bash
-npm i -D inertiax-svelte@^10.0.0
+npm i -D inertiax-svelte
 ```
 
 Then use the package like you would use the original:
