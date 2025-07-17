@@ -115,6 +115,8 @@ You can still use the `inertia` action and `<Link>` component as usual.
 - `data-preserve-url`: Preserve URL
 - `data-replace`: Replace history state (instead of pushing new state)
 
+Note that in frames other than the top frame, `replace` and `preserve-url` default to `true`.
+
 #### Example
 
 ```html
