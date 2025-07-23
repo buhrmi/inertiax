@@ -389,8 +389,8 @@ export class Router {
     const mergedOptions: Visit = {
       method: 'get',
       data: {},
-      replace: this.name !== '_top',
-      preserveUrl: this.name !== '_top',
+      replace: (options.frame || this.name) !== '_top',
+      preserveUrl: (options.frame || this.name) !== '_top',
       preserveScroll: false,
       preserveState: false,
       only: [],
