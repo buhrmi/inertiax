@@ -44,7 +44,7 @@
     "svelte": "^5.0.0"
   },
   "dependencies": {
-    "inertiax-core": "^10.2.0",
+    "inertiax-core": "^10.2.2",
     "es-toolkit": "^1.39.5",
     "html-escape": "^2.0.0"
   },
