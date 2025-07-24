@@ -1,3 +1,4 @@
+import { Router } from 'inertiax-core'
 export { default as Frame } from './components/Frame.svelte'
 export { default as Deferred } from './components/Deferred.svelte'
 export { default as Link } from './components/Link.svelte'
@@ -9,3 +10,7 @@ export { default as useForm, type InertiaForm, type InertiaFormProps } from './u
 export { default as usePoll } from './usePoll'
 export { default as usePrefetch } from './usePrefetch'
 export { default as useRemember } from './useRemember'
+
+export function getRouter(name:string) {
+  return Router.for(name)
+}

@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   import type { ComponentResolver, ResolvedComponent } from '../types'
   import { shouldIntercept, type Page } from 'inertiax-core'
   import { BROWSER } from 'esm-env'
@@ -21,14 +21,30 @@
   import { onDestroy, setContext } from 'svelte'
   import { writable } from 'svelte/store'
 
-  export let initialComponent: InertiaFrameProps['initialComponent']
-  export let initialPage: InertiaFrameProps['initialPage']
-  export let resolveComponent: InertiaFrameProps['resolveComponent'] = topResolveComponent
-  export let name: InertiaFrameProps['name'] = Math.random().toString(36).slice(6)
 
-  export let renderLayout = name == "_top"
-  export let src
-  export let onclick = () => {}
+  interface Props {
+    initialComponent: InertiaFrameProps['initialComponent'];
+    initialPage: InertiaFrameProps['initialPage'];
+    resolveComponent?: InertiaFrameProps['resolveComponent'];
+    name?: InertiaFrameProps['name'];
+    renderLayout?: any;
+    src: any;
+    onclick?: any;
+    children?: import('svelte').Snippet;
+    [key: string]: any
+  }
+
+  let {
+    initialComponent,
+    initialPage,
+    resolveComponent = topResolveComponent,
+    name = Math.random().toString(36).slice(6),
+    renderLayout = name == "_top",
+    src,
+    onclick = () => {},
+    children,
+    ...rest
+  }: Props = $props();
 
   function handleClick(event: MouseEvent) {
     if (event.target.closest('[data-inertia-ignore]')) return;
@@ -69,7 +85,22 @@
     ...initialPage,
     url: initialPage?.url || src
   }
-  let renderProps = null
+  let renderProps = $state(null)
+
+  let router: Router | null
+  
+  if (BROWSER) router = new Router({
+    name,
+    initialPage: page,
+    resolveComponent,
+    swapComponent: async (args) => {
+      component = args.component as ResolvedComponent
+      page = args.page
+      key = args.preserveState ? key : Date.now()
+      renderProps = resolveRenderProps(component, page, key)
+      setPage(page)
+    },
+  })
 
   // Handle initialComponent being a promise
   if (initialComponent instanceof Promise) {
@@ -85,20 +116,7 @@
 
   setPage(page)
   
-  let router: Router | null
   
-  if (BROWSER) router = new Router({
-    name,
-    initialPage: page,
-    resolveComponent,
-    swapComponent: async (args) => {
-      component = args.component as ResolvedComponent
-      page = args.page
-      key = args.preserveState ? key : Date.now()
-      renderProps = resolveRenderProps(component, page, key)
-      setPage(page)
-    },
-  })
   onDestroy(() => {
     router?.destroy()
   })
@@ -115,7 +133,7 @@
    * Resolves the render props for the current page component, including layouts.
    */
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
-    const child = h(component.default || component, {...$$restProps, ...page.props}, [], key)
+    const child = h(component.default || component, {router, ...rest, ...page.props}, [], key)
     const layout = renderLayout && component.layout
     
     return layout ? resolveLayout(layout, child, page.props, key) : child
@@ -168,11 +186,11 @@
   }
 </script>
 
-<div style="display: contents" on:click={handleClick} role="presentation" data-frame={name}>
+<div style="display: contents" onclick={handleClick} role="presentation" data-frame={name}>
   {#if renderProps}
     {""} <!-- without this empty string, Svelte runs into a hydration mismatch error. No clue why. Don't remove this string. -->
     <Render {...renderProps} />
   {:else}
-    <slot />
+    {@render children?.()}
   {/if}
 </div>

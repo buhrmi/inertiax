@@ -10,12 +10,12 @@
     "test:svelte:watch": "cd packages/svelte/test-app && npm run watch"
   },
   "dependencies": {
-    "prettier": "^3.2.5",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-svelte": "^3.2.3",
-    "prettier-plugin-tailwindcss": "^0.6.9"
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "prettier-plugin-svelte": "^3.4.0",
+    "prettier-plugin-tailwindcss": "^0.6.14"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.28.1"
+    "@rollup/rollup-linux-x64-gnu": "^4.45.1"
   }
 }

@@ -68,13 +68,14 @@ You can also access a frame's router directly from the component:
   }
 </script>
 
-<Frame bind:this={frame} />
+<Frame name="modal" bind:this={frame} />
 ```
 
-or globally:
+or get it globally:
 
 ```js
-Router.for("modal").post("/users")
+import { getRouter } from 'inertiax-svelte'
+getRouter("modal").post("/users")
 ```
 
 ### External history state
@@ -134,6 +135,12 @@ The global `router` and `page` stores have been removed. Each frame now has its 
 + const { router, page } = getContext('inertia')
 // OR
 + const { router, page } = getContext('inertia:_top')
+```
+
+For convenience, the current Frame's router is also passed to the Frame's component as a prop:
+
+```js
+const { router } = $props()
 ```
 
 ### Global and frame-specific events

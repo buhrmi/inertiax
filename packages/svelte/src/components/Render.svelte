@@ -1,16 +1,16 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   import type { PageProps } from 'inertiax-core'
   import type { ComponentType } from 'svelte'
 
   export type RenderProps = {
     component: ComponentType
-    props?: PageProps
+    pageProps?: PageProps
     children?: RenderProps[]
     key?: number | null
   }
 
   export type RenderFunction = {
-    (component: ComponentType, props?: PageProps, children?: RenderProps[], key?: number | null): RenderProps
+    (component: ComponentType, pageProps?: PageProps, children?: RenderProps[], key?: number | null): RenderProps
     (component: ComponentType, children?: RenderProps[], key?: number | null): RenderProps
   }
 
@@ -20,7 +20,7 @@
     return {
       component,
       key: hasProps ? key : typeof childrenOrKey === 'number' ? childrenOrKey : null,
-      props: hasProps ? propsOrChildren : {},
+      pageProps: hasProps ? propsOrChildren : {},
       children: hasProps
         ? ((Array.isArray(childrenOrKey)
             ? childrenOrKey
@@ -37,26 +37,37 @@
 </script>
 
 <script lang="ts">
-  export let component: ComponentType
-  export let props: PageProps = {}
-  export let children: RenderProps[] = []
-  export let key: number | null = null
+  import Render from './Render.svelte';
+  interface Props {
+    component: ComponentType;
+    pageProps?: PageProps;
+    children?: RenderProps[];
+    key?: number | null;
+  }
+
+  let {
+    component,
+    pageProps = {},
+    children = [],
+    key = null
+  }: Props = $props();
 </script>
 
 {#if component}
+  {@const SvelteComponent = component}
   <!--
   Add the `key` only to the last (page) component in the tree.
   This ensures that the page component re-renders when `preserveState` is disabled,
   while the layout components are persisted across page changes. -->
   {#key children?.length === 0 ? key : null}
     {#if children.length > 0}
-      <svelte:component this={component} {...props}>
+      <SvelteComponent {...pageProps}>
         {#each children as child}
-          <svelte:self {...child} />
+          <Render {...child} />
         {/each}
-      </svelte:component>
+      </SvelteComponent>
     {:else}
-      <svelte:component this={component} {...props} />
+      <SvelteComponent {...pageProps} />
     {/if}
   {/key}
 {/if}
