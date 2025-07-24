@@ -6,7 +6,7 @@ Inertia X is a drop-in replacement for the [Inertia](https://github.com/inertiaj
 
 ### `<Frame>` component
 
-The `<Frame>` component lets you embed one Inertia page inside another Inertia page, each with its own navigation. This is useful for modals, wizards, sidebars, and more. You can find an example modal implementation using Frames [here](https://github.com/shitcoinswap/platform/blob/master/app/frontend/lib/ui/Modal.svelte).
+The `<Frame>` component lets you embed one Inertia page inside another Inertia page, each with its own navigation. This is useful for modals, wizards, sidebars, and more. You can find an example modal implementation using Frames [here](https://github.com/shitcoinsociety/shitcoinswap/blob/master/app/frontend/lib/ui/Modal.svelte).
 
 #### Usage
 
