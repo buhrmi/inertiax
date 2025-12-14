@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite time='2.409918' skipped='0' failures='0' errors='0' name="ActiveStateTest" assertions='3' tests='1' timestamp="2025-12-15T05:46:22+07:00">
+  <testcase time='2.409918' file="test/system/inertia_test.rb" name="test_basic_nav" assertions='3'>
+  </testcase>
+</testsuite>
