@@ -1,6 +1,6 @@
 # Inertia X
 
-Inertia X is a drop-in replacement for the [Inertia](https://github.com/inertiajs/inertia) client-side adapter with additional features. Currently only available for Svelte 5.
+Inertia X is a drop-in replacement for the [Inertia](https://github.com/inertiajs/inertia) client-side adapter for Svelte 5. It replaces Inertia's singleton router and page object with instantiable versions (meaning that one app can have multiple routers). This enables interesting new features:
 
 ## New Features
 
@@ -178,7 +178,4 @@ createInertiaApp( ... ) {
 }
 ```
 
-## How does it work?
-
-The "secret sauce" is actually quite simple: Instead of one global router instance for your Inertia app, Inertia X creates one router instance per frame. The top-level app component is also a `<Frame>` (the `<App>` component has been removed in Inertia X).
 
