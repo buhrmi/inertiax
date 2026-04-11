@@ -1,5 +1,7 @@
 # Inertia X
 
+> A note on Inertia 3: Inertia 3 and Inertia X have diverged quite a bit, and there will not be a rebase onto Inertia 3. Instead, the Inertia X feature set will be reimplemented from scratch on top of Inertia 3. Stay tuned.
+
 Inertia X is a drop-in replacement for the [Inertia](https://github.com/inertiajs/inertia) client-side adapter for Svelte 5. It replaces Inertia's singleton router and page object with instantiable versions (meaning that one app can have multiple routers). This enables interesting new features:
 
 ## New Features
