@@ -106,9 +106,21 @@ Here is a list of all available props on the Frame component:
 
 All other props (restProps) are being passed to the rendered page component.
 
-## `X-Inertia-Referer` header
+## Redirections within Frames
 
-To enable server-side `redirect_back` functionality within frames, Inertia X sends an `X-Inertia-Referer` header containing the `src` URL of the initiating frame. Use this URL instead of the referer when generating your 30X response, to redirect the frame back to the previous page.
+Inertia X introduces two requests headers and one response header to make it easier to handle redirections within frames.  
+
+To enable server-side `redirect_back` functionality within frames, Inertia X sends an `X-Inertia-Referer` header containing the `src` URL of the initiating frame. Use this URL instead of the standard referer header when generating your 30X response, to redirect the frame back to the previous page.
+
+Inertia X also sends an `X-Inertia-Frame` request header on every request. Its value is the ID of the **originating frame** — the frame whose router called `visit()`.
+
+This is useful server-side when you need to know which frame triggered the request (e.g. to route a redirect back to the correct frame).
+
+### Routing the response to a specific frame
+
+By default the response is applied to whatever frame was set in `visitOptions.frameId`. If you return an `X-Inertia-Frame` **response** header the client will apply the response to the named frame instead, overriding `visitOptions.frameId`.
+
+A common use-case is validation errors: when a form inside a modal frame submits to an action that might succeed in a different frame (e.g. updating the page behind the modal), but the server returns validation errors, you want those errors to appear in the originating modal frame, not the target frame.
 
 
 ## Global Click handler

@@ -30,7 +30,7 @@ export class Response {
     protected response: HttpResponse,
     protected originatingPage: Page,
     protected router?: Router,
-  ) {}
+  ) { }
 
   public static create(params: RequestParams, response: HttpResponse, originatingPage: Page, router?: Router): Response {
     return new Response(params, response, originatingPage, router)
@@ -86,6 +86,14 @@ export class Response {
     await history.processQueue()
 
     history.preserveUrl = this.requestParams.all().preserveUrl
+
+    // If the server specifies a target frame via the response header, honour it —
+    // this lets the server redirect the response to the originating frame (e.g. for
+    // validation errors) regardless of what frameId was set in the visitOptions.
+    const responseFrameId = this.getHeader('x-inertia-frame')
+    if (responseFrameId) {
+      this.requestParams.merge({ frameId: responseFrameId })
+    }
 
     await this.setPage()
 

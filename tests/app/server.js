@@ -1873,6 +1873,60 @@ app.post('/svelte/multi-frame/:frame/submit', (req, res) => {
   })
 })
 
+// ─── X-Inertia-Frame header feature test routes ───────────────────────────────
+//
+// GET  /svelte/inertia-frame-header            — top-level host page
+// GET  /svelte/inertia-frame-header/:frame     — individual frame page
+// POST /svelte/inertia-frame-header/:frame/submit       — echoes originating frame back via X-Inertia-Frame response header
+// POST /svelte/inertia-frame-header/:frame/submit-echo  — same, but without client-side frameId override
+
+app.get('/svelte/inertia-frame-header', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/InertiaFrameHeader', props: {} }),
+)
+
+app.get('/svelte/inertia-frame-header/:frame', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/InertiaFramePane',
+    props: { frame: req.params.frame, message: 'loaded' },
+  }),
+)
+
+// This endpoint responds with `X-Inertia-Frame` set to the *originating* frame
+// (read from the X-Inertia-Frame request header), so the client routes the response
+// back to that frame even if the visit specified a different frameId in visitOptions.
+app.post('/svelte/inertia-frame-header/:frame/submit', (req, res) => {
+  const originatingFrame = req.headers['x-inertia-frame'] || req.params.frame
+
+  if (req.get('X-Inertia')) {
+    res.header('Vary', 'Accept')
+    res.header('X-Inertia', true)
+    res.header('X-Inertia-Frame', originatingFrame)
+  }
+
+  return inertia.render(req, res, {
+    component: 'Svelte/InertiaFramePane',
+    props: { frame: originatingFrame, message: 'updated' },
+  })
+})
+
+// Same as above — demonstrates the echo behaviour when there is no client-side frameId override.
+app.post('/svelte/inertia-frame-header/:frame/submit-echo', (req, res) => {
+  const originatingFrame = req.headers['x-inertia-frame'] || req.params.frame
+
+  if (req.get('X-Inertia')) {
+    res.header('Vary', 'Accept')
+    res.header('X-Inertia', true)
+    res.header('X-Inertia-Frame', originatingFrame)
+  }
+
+  return inertia.render(req, res, {
+    component: 'Svelte/InertiaFramePane',
+    props: { frame: originatingFrame, message: 'echo-updated' },
+  })
+})
+
+
+
 app.get('/remember/users', (req, res) => {
   const users = [
     { id: 1, name: 'User One', email: 'user1@example.com' },
