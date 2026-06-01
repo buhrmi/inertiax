@@ -7,13 +7,12 @@ permissions:
 jobs:
   test-chromium:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
-    name: Chromium (${{ matrix.adapter }}${{ matrix.http == 'axios' && ', axios' || '' }})
+    name: Chromium (${{ matrix.adapter }})
     timeout-minutes: 15
     runs-on: ubuntu-24.04
     strategy:
       matrix:
         adapter: ['svelte']
-        http: ['default', 'axios']
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -58,14 +57,12 @@ jobs:
 
       - name: Run Playwright Tests
         run: pnpm test:${{ matrix.adapter }}
-        env:
-          VITE_HTTP_CLIENT: ${{ matrix.http }}
 
       - name: Upload failure screenshots
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: playwright-failure-screenshots-${{ matrix.adapter }}-chromium-${{ matrix.http }}
+          name: playwright-failure-screenshots-${{ matrix.adapter }}-chromium
           path: test-results
 
   test-chromium-ssr:

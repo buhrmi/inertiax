@@ -1,5 +1,5 @@
 import type { HttpClient, HttpClientOptions, Page } from 'inertiax-core'
-import { axiosAdapter, type VisitOptions } from 'inertiax-core'
+import { type VisitOptions } from 'inertiax-core'
 import { createInertiaApp, type ResolvedComponent, router } from 'inertiax-svelte'
 import { hydrate, mount } from 'svelte'
 import AppLayout from './Layouts/AppLayout.svelte'
@@ -15,10 +15,6 @@ function getHttpConfig(): HttpClient | HttpClientOptions | undefined {
 
   if (customXsrf) {
     return { xsrfCookieName: customXsrf, xsrfHeaderName: `X-${customXsrf}` }
-  }
-
-  if (import.meta.env.VITE_HTTP_CLIENT === 'axios') {
-    return axiosAdapter()
   }
 
   return undefined

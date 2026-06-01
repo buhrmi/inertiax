@@ -50,7 +50,6 @@
     "@sveltejs/kit": "^2.60.1",
     "@sveltejs/package": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
-    "axios": "^1.16.1",
     "es-check": "9.5.3",
     "publint": "^0.3.17",
     "svelte": "^5.55.7",
