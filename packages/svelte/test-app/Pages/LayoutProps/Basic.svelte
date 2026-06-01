@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import { Link, setLayoutProps } from '@inertiajs/svelte'
+  import { Link, setLayoutProps } from 'inertiax-svelte'
 
   let sidebarVisible = $state(true)
 

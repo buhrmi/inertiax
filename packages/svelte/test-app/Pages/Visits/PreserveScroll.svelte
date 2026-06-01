@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
 
   const { foo = 'default' }: { foo?: string } = $props()
 

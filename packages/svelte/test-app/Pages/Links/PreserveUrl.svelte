@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router, Link } from '@inertiajs/svelte'
+  import { router, Link } from 'inertiax-svelte'
 
   interface Props {
     foo?: string

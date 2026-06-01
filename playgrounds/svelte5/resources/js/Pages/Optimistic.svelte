@@ -1,5 +1,5 @@
 <script>
-  import { router, useForm } from '@inertiajs/svelte'
+  import { router, useForm } from 'inertiax-svelte'
 
   let { appName, todos } = $props()
 

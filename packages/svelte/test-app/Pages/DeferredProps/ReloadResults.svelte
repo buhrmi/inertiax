@@ -1,5 +1,5 @@
 <script>
-  import { page } from '@inertiajs/svelte'
+  import { page } from 'inertiax-svelte'
 
   const results = $derived(page.props.results)
 </script>

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { QueryStringArrayFormatOption } from '@inertiajs/core'
-  import { config, Form } from '@inertiajs/svelte'
+  import type { QueryStringArrayFormatOption } from 'inertiax-core'
+  import { config, Form } from 'inertiax-svelte'
 
   interface Props {
     queryStringArrayFormat: QueryStringArrayFormatOption | 'force-brackets'

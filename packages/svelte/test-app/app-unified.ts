@@ -1,5 +1,5 @@
-import type { VisitOptions } from '@inertiajs/core'
-import { createInertiaApp, type ResolvedComponent, router } from '@inertiajs/svelte'
+import type { VisitOptions } from 'inertiax-core'
+import { createInertiaApp, type ResolvedComponent, router } from 'inertiax-svelte'
 
 window.testing = { Inertia: router }
 

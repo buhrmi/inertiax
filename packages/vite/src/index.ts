@@ -99,7 +99,7 @@ export default function inertia(options: InertiaPluginOptions = {}): Plugin {
   let devServer: ViteDevServer | null = null
 
   return {
-    name: '@inertiajs/vite',
+    name: 'inertiax-vite',
 
     config(config, env) {
       if (ssrDisabled || !env.isSsrBuild) {

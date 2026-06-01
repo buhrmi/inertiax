@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page, router } from '@inertiajs/svelte'
+  import { page, router } from 'inertiax-svelte'
   import { onMount } from 'svelte'
 
   const { foo, bar, baz, headers } = $props()

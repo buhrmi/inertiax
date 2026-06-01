@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isSameUrlWithoutQueryOrHash, router, partialReloadRequestsSomeProps } from '@inertiajs/core'
+  import { isSameUrlWithoutQueryOrHash, router, partialReloadRequestsSomeProps } from 'inertiax-core'
   import { get } from 'es-toolkit/compat'
   import { page } from '../index'
 

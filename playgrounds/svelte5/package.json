@@ -1,5 +1,5 @@
 {
-  "name": "@inertiajs/svelte5-playground",
+  "name": "inertiax-svelte5-playground",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,9 +9,9 @@
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch"
   },
   "devDependencies": {
-    "@inertiajs/core": "workspace:*",
-    "@inertiajs/svelte": "workspace:*",
-    "@inertiajs/vite": "workspace:*",
+    "inertiax-core": "workspace:*",
+    "inertiax-svelte": "workspace:*",
+    "inertiax-vite": "workspace:*",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "@tsconfig/svelte": "^5.0.8",

@@ -1,4 +1,4 @@
-import { createInertiaApp } from '@inertiajs/svelte'
+import { createInertiaApp } from 'inertiax-svelte'
 import Layout from './Components/Layout.svelte'
 
 createInertiaApp({

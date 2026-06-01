@@ -1,7 +1,7 @@
-import { config as coreConfig } from '@inertiajs/core'
+import { config as coreConfig } from 'inertiax-core'
 import type { SvelteInertiaAppConfig } from './types'
 
-export { createRouter, http, progress, router } from '@inertiajs/core'
+export { createRouter, http, progress, router } from 'inertiax-core'
 export { default as App } from './components/App.svelte'
 export { default as Frame } from './components/Frame.svelte'
 export { createForm } from './components/createForm'

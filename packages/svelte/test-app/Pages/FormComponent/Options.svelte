@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Method, QueryStringArrayFormatOption } from '@inertiajs/core'
-  import { Form } from '@inertiajs/svelte'
+  import type { Method, QueryStringArrayFormatOption } from 'inertiax-core'
+  import { Form } from 'inertiax-svelte'
   import Article from '../Article.svelte'
 
   let only: string[] = $state([])

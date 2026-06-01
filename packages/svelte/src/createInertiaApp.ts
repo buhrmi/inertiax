@@ -10,7 +10,7 @@ import {
   type Page,
   type PageProps,
   type SharedPageProps,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import { hydrate, mount } from 'svelte'
 import App, { type InertiaAppProps } from './components/App.svelte'
 import { config } from './index'

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, Form } from '@inertiajs/svelte'
+  import { Link, Form } from 'inertiax-svelte'
 
   let { lastLoaded, propType } = $props()
 </script>

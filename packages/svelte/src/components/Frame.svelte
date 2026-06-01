@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { type Page, type PageProps, type Router } from '@inertiajs/core'
+  import { type Page, type PageProps, type Router } from 'inertiax-core'
   import type { ComponentResolver, ResolvedComponent } from '../types'
 
   export interface InertiaFrameProps<SharedProps extends PageProps = PageProps> {
@@ -10,6 +10,8 @@
     initialPage?: Page<SharedProps>
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
+    /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
+    onClickLink?: (event: MouseEvent, href: string) => void
     children?: import('svelte').Snippet
   }
 
@@ -17,7 +19,7 @@
 </script>
 
 <script lang="ts">
-  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts } from '@inertiajs/core'
+  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onMount } from 'svelte'
   import type { Component } from 'svelte'
   import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext } from '../frameContext.svelte'
@@ -34,6 +36,7 @@
     initialPage?: InertiaFrameProps['initialPage']
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
+    onClickLink?: InertiaFrameProps['onClickLink']
     children?: InertiaFrameProps['children']
   }
 
@@ -45,6 +48,7 @@
     initialPage = undefined,
     resolveComponent = undefined,
     defaultLayout,
+    onClickLink,
     children,
   }: Props = $props()
 
@@ -298,10 +302,89 @@
 
     return child
   }
+
+  function attachClickHandler(node: HTMLElement) {
+    const parent = node.parentElement
+
+    if (!parent) {
+      return
+    }
+
+    parent.addEventListener('click', handleClick)
+
+    return () => {
+      parent.removeEventListener('click', handleClick)
+    }
+  }
+
+  function handleClick(event: MouseEvent): void {
+    // Find the closest anchor from the click target (handles clicks on child elements)
+    const target = (event.target as HTMLElement).closest('a')
+
+    if (!target) {
+      return
+    }
+
+    const href = target.getAttribute('href')
+
+    // Ignore: no href, fragment-only, mailto/tel/other non-http schemes
+    if (!href || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+      return
+    }
+
+    // Ignore: opens in a new context
+    if (target.hasAttribute('target')) {
+      return
+    }
+
+    // Ignore: file download
+    if (target.hasAttribute('download')) {
+      return
+    }
+
+    // Ignore: explicitly opted out
+    if (target.hasAttribute('data-inertia-ignore')) {
+      return
+    }
+
+    // Ignore: external URLs (different origin)
+    try {
+      const url = new URL(href, window.location.href)
+      if (url.origin !== window.location.origin) {
+        return
+      }
+    } catch {
+      return
+    }
+
+    // Honour modifier keys, non-left-button clicks, content-editable, and
+    // already-prevented events (shouldIntercept checks all of these)
+    if (!shouldIntercept({ ...event, currentTarget: target })) {
+      return
+    }
+
+    onClickLink?.(event, href)
+
+    if (event.defaultPrevented) {
+      return
+    }
+
+    event.preventDefault()
+    frameRouter.visit(href)
+  }
 </script>
 
 {#if renderProps}
   <Render {...renderProps} />
 {:else}
   {@render children?.()}
+{/if}
+
+<!--
+  Invisible anchor used solely to find the nearest DOM parent so we can attach a
+  delegated click handler that intercepts plain <a> clicks inside this Frame.
+  We use "display:contents" so it adds no layout box.
+-->
+{#if !isServer}
+  <span style="display:contents" {@attach attachClickHandler}></span>
 {/if}

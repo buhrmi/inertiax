@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, router } from '@inertiajs/svelte'
+  import { Link, router } from 'inertiax-svelte'
 
   let { foo, auth, errors }: { foo: string; auth?: { user: string }; errors?: Record<string, string> } = $props()
 

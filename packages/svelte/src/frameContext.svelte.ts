@@ -1,6 +1,6 @@
 import { getContext, hasContext, setContext } from 'svelte'
-import { router as globalRouter, type Router } from '@inertiajs/core'
-import type { Page } from '@inertiajs/core'
+import { router as globalRouter, type Router } from 'inertiax-core'
+import type { Page } from 'inertiax-core'
 import type { ComponentResolver } from './types'
 
 export const DEFAULT_FRAME_ID = '_top'

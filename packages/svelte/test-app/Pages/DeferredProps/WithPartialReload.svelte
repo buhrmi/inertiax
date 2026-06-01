@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, inertia, router } from '@inertiajs/svelte'
+  import { Deferred, inertia, router } from 'inertiax-svelte'
 
   interface Props {
     withOnly?: string[]

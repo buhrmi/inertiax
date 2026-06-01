@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
   import { onMount } from 'svelte'
 
   let isPrefetched = $state(false)

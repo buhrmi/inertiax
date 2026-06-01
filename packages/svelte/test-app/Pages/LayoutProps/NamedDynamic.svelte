@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  import { setLayoutProps } from '@inertiajs/svelte'
+  import { setLayoutProps } from 'inertiax-svelte'
 </script>
 
 <div>

@@ -1,6 +1,6 @@
 <!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script lang="ts" generics="T extends Record<string, any>">
-  import { useForm, type InertiaForm } from '@inertiajs/svelte'
+  import { useForm, type InertiaForm } from 'inertiax-svelte'
   import type { Snippet } from 'svelte'
 
   let { data, children }: { data: T; children: Snippet<[InertiaForm<T>]> } = $props()

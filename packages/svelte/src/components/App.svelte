@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { type Page, type PageProps } from '@inertiajs/core'
+  import { type Page, type PageProps } from 'inertiax-core'
   import type { ComponentResolver, ResolvedComponent } from '../types'
 
   export interface InertiaAppProps<SharedProps extends PageProps = PageProps> {
@@ -11,7 +11,7 @@
 </script>
 
 <script lang="ts">
-  import { router } from '@inertiajs/core'
+  import { router } from 'inertiax-core'
   import { DEFAULT_FRAME_ID } from '../frameContext.svelte'
   import Frame from './Frame.svelte'
 

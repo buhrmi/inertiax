@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
 
   let successCalled = $state(false)
   let errorCalled = $state(false)

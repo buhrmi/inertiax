@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router, type ReloadOptions } from '@inertiajs/core'
+  import { router, type ReloadOptions } from 'inertiax-core'
   import { get } from 'es-toolkit/compat'
   import { useFrameContext } from '../frameContext.svelte'
   import globalPage from '../page.svelte'

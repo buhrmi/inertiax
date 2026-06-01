@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { InfiniteScroll, useForm } from '@inertiajs/svelte'
+  import { InfiniteScroll, useForm } from 'inertiax-svelte'
   import { onDestroy, untrack } from 'svelte'
   import UserCard, { type User } from './UserCard.svelte'
 

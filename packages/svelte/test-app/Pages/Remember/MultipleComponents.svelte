@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, useRemember } from '@inertiajs/svelte'
+  import { inertia, useRemember } from 'inertiax-svelte'
   import ComponentA from '@/Pages/Remember/Components/ComponentA.svelte'
   import ComponentB from '@/Pages/Remember/Components/ComponentB.svelte'
 

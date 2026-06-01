@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import { progress } from '@inertiajs/svelte'
+  import { progress } from 'inertiax-svelte'
 
   window.progressTests = []
 

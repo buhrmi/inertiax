@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia } from '@inertiajs/svelte'
+  import { inertia } from 'inertiax-svelte'
 
   let { foo = 0, bar, baz, headers } = $props()
 </script>

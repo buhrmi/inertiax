@@ -1,8 +1,8 @@
 // This file is used for checking the TypeScript implementation; there is no Playwright test depending on it.
-import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
+import { createInertiaApp, type ResolvedComponent } from 'inertiax-svelte'
 import { mount } from 'svelte'
 
-declare module '@inertiajs/core' {
+declare module 'inertiax-core' {
   export interface InertiaConfig {
     sharedPageProps: {
       auth: { user: { name: string } | null }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WhenVisible } from '@inertiajs/svelte'
+  import { WhenVisible } from 'inertiax-svelte'
 
   interface Props {
     stats?: {

@@ -2,7 +2,7 @@
   import { createBubbler, preventDefault } from 'svelte/legacy'
 
   const bubble = createBubbler()
-  import { inertia, router, useForm } from '@inertiajs/svelte'
+  import { inertia, router, useForm } from 'inertiax-svelte'
   interface Props {
     /* eslint-disable  @typescript-eslint/no-explicit-any */
     pageNumber: any

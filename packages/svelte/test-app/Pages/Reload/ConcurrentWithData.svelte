@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
 
   let { foo, bar, timeframe }: { foo?: string; bar?: string; timeframe?: string } = $props()
 

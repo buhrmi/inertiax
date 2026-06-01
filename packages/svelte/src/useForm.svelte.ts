@@ -21,8 +21,8 @@ import type {
   UseFormTransformCallback,
   UseFormWithPrecognitionArguments,
   VisitOptions,
-} from '@inertiajs/core'
-import { UseFormUtils } from '@inertiajs/core'
+} from 'inertiax-core'
+import { UseFormUtils } from 'inertiax-core'
 import { cloneDeep } from 'es-toolkit'
 import type { NamedInputEvent, PrecognitionPath, ValidationConfig, Validator } from 'laravel-precognition'
 import { useFrameRouter } from './frameContext.svelte'

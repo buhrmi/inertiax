@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Method } from '@inertiajs/core'
-  import { Form } from '@inertiajs/svelte'
+  import type { Method } from 'inertiax-core'
+  import { Form } from 'inertiax-svelte'
 
   let method: Method = $state('get')
 </script>

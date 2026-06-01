@@ -1,6 +1,6 @@
 <!-- This component is used for checking the TypeScript implementation; there is no Playwright test depending on it. -->
 <script lang="ts">
-  import { createForm } from '@inertiajs/svelte'
+  import { createForm } from 'inertiax-svelte'
 
   interface UserForm {
     name: string

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { InfiniteScroll, WhenVisible } from '@inertiajs/svelte'
+  import { InfiniteScroll, WhenVisible } from 'inertiax-svelte'
   import UserCard, { type User } from './UserCard.svelte'
 
   interface Props {

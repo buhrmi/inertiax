@@ -1,5 +1,5 @@
 <script>
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
 
   let { appName, foo, bar, quux } = $props()
 

@@ -20,8 +20,8 @@
     "vite": "^8.0.10"
   },
   "dependencies": {
-    "@inertiajs/core": "workspace:*",
-    "@inertiajs/svelte": "workspace:*",
-    "@inertiajs/vite": "workspace:*"
+    "inertiax-core": "workspace:*",
+    "inertiax-svelte": "workspace:*",
+    "inertiax-vite": "workspace:*"
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, useHttp } from '@inertiajs/svelte'
+  import { Link, useHttp } from 'inertiax-svelte'
 
   const form = useHttp('useHttpRemember', {
     name: 'initial',

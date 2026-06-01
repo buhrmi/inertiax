@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getScrollableParent } from '@inertiajs/core'
+  import { getScrollableParent } from 'inertiax-core'
   import { onMount } from 'svelte'
 
   let overflowXHidden: HTMLDivElement = $state(null!)

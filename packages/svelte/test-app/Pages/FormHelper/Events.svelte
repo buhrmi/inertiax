@@ -8,8 +8,8 @@
 </script>
 
 <script lang="ts">
-  import type { ActiveVisit, CancelToken, Page, Progress, Errors } from '@inertiajs/core'
-  import { page, useForm } from '@inertiajs/svelte'
+  import type { ActiveVisit, CancelToken, Page, Progress, Errors } from 'inertiax-core'
+  import { page, useForm } from 'inertiax-svelte'
   import { preventDefault } from 'svelte/legacy'
 
   window.events = []

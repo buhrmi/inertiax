@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const transformData = (data: Record<string, any>) => {

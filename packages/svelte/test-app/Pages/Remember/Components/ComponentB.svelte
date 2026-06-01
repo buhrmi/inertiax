@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useRemember } from '@inertiajs/svelte'
+  import { useRemember } from 'inertiax-svelte'
 
   let { ...rest } = $props()
 

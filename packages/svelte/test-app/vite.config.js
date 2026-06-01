@@ -1,5 +1,5 @@
 import { resolve } from 'path'
-import inertia from '@inertiajs/vite'
+import inertia from 'inertiax-vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import { defineConfig } from 'vite'
 

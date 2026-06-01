@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { InfiniteScroll, Link, router } from '@inertiajs/svelte'
+  import { InfiniteScroll, Link, router } from 'inertiax-svelte'
   import { preventDefault } from 'svelte/legacy'
   import UserCard, { type User } from './UserCard.svelte'
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useForm } from '@inertiajs/svelte'
+  import { useForm } from 'inertiax-svelte'
   import type { NamedInputEvent } from 'laravel-precognition'
 
   const form = useForm({

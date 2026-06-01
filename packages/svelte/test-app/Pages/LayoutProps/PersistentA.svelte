@@ -9,7 +9,7 @@
 </script>
 
 <script lang="ts">
-  import { Link } from '@inertiajs/svelte'
+  import { Link } from 'inertiax-svelte'
 </script>
 
 <div>

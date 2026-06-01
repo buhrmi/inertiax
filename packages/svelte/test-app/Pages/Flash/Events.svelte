@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import { router, page } from '@inertiajs/svelte'
+  import { router, page } from 'inertiax-svelte'
 
   window.messages = []
 

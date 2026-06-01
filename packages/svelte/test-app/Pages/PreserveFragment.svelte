@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { inertia, usePage } from '@inertiajs/svelte'
-  import { router } from '@inertiajs/svelte'
+  import { inertia, usePage } from 'inertiax-svelte'
+  import { router } from 'inertiax-svelte'
 
   const page = usePage()
 

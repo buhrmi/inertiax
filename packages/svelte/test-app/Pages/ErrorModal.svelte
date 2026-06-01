@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
 
   const invalidVisit = () => {
     router.post('/non-inertia')

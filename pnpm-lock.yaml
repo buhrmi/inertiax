@@ -61,12 +61,12 @@ importers:
 
   packages/svelte:
     dependencies:
-      '@inertiajs/core':
-        specifier: workspace:*
-        version: link:../core
       es-toolkit:
         specifier: ^1.33.0
         version: 1.45.1
+      inertiax-core:
+        specifier: workspace:*
+        version: link:../core
       laravel-precognition:
         specifier: ^2.0.0
         version: 2.0.0(axios@1.15.2)
@@ -110,13 +110,13 @@ importers:
 
   packages/svelte/test-app:
     dependencies:
-      '@inertiajs/core':
+      inertiax-core:
         specifier: workspace:*
         version: link:../../core
-      '@inertiajs/svelte':
+      inertiax-svelte:
         specifier: workspace:*
         version: link:..
-      '@inertiajs/vite':
+      inertiax-vite:
         specifier: workspace:*
         version: link:../../vite
     devDependencies:
@@ -150,7 +150,7 @@ importers:
 
   packages/vite:
     dependencies:
-      '@inertiajs/core':
+      inertiax-core:
         specifier: workspace:*
         version: link:../core
       tinyglobby:
@@ -181,15 +181,6 @@ importers:
 
   playgrounds/svelte5:
     devDependencies:
-      '@inertiajs/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@inertiajs/svelte':
-        specifier: workspace:*
-        version: link:../../packages/svelte
-      '@inertiajs/vite':
-        specifier: workspace:*
-        version: link:../../packages/vite
       '@sveltejs/vite-plugin-svelte':
         specifier: ^7.0.0
         version: 7.0.0(svelte@5.55.7)(vite@8.0.5(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1))
@@ -199,6 +190,15 @@ importers:
       '@tsconfig/svelte':
         specifier: ^5.0.8
         version: 5.0.8
+      inertiax-core:
+        specifier: workspace:*
+        version: link:../../packages/core
+      inertiax-svelte:
+        specifier: workspace:*
+        version: link:../../packages/svelte
+      inertiax-vite:
+        specifier: workspace:*
+        version: link:../../packages/vite
       laravel-vite-plugin:
         specifier: ^3.0.0
         version: 3.0.0(vite@8.0.5(@types/node@24.10.13)(esbuild@0.27.3)(jiti@2.6.1))

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, InfiniteScroll } from '@inertiajs/svelte'
+  import { inertia, InfiniteScroll } from 'inertiax-svelte'
   import UserCard, { type User } from './UserCard.svelte'
 
   interface Props {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useFormContext } from '@inertiajs/svelte'
+  import { useFormContext } from 'inertiax-svelte'
 
   const form = useFormContext()
 

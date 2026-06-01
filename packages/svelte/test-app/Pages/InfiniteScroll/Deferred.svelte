@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, InfiniteScroll } from '@inertiajs/svelte'
+  import { Deferred, InfiniteScroll } from 'inertiax-svelte'
   import UserCard, { type User } from './UserCard.svelte'
 
   interface Props {

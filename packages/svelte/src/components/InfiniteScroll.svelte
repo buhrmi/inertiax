@@ -7,7 +7,7 @@
     type InfiniteScrollSlotProps,
     type ReloadOptions,
     useInfiniteScroll,
-  } from '@inertiajs/core'
+  } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
   import { usePage } from '../page.svelte'
 

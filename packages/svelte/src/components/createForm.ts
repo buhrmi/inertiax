@@ -1,4 +1,4 @@
-import type { FormComponentProps, FormComponentSlotProps } from '@inertiajs/core'
+import type { FormComponentProps, FormComponentSlotProps } from 'inertiax-core'
 import type { Component, ComponentProps, Snippet } from 'svelte'
 import Form from './Form.svelte'
 

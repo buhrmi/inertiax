@@ -16,7 +16,7 @@ import type {
   UseFormWithPrecognitionArguments,
   UseHttpSubmitArguments,
   UseHttpSubmitOptions,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import {
   hasFiles,
   http,
@@ -25,7 +25,7 @@ import {
   mergeDataIntoQueryString,
   objectToFormData,
   UseFormUtils,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import { cloneDeep } from 'es-toolkit'
 import type { NamedInputEvent, ValidationConfig, Validator } from 'laravel-precognition'
 import { toSimpleValidationErrors } from 'laravel-precognition'

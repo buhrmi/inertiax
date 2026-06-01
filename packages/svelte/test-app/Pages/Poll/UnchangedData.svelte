@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { usePoll } from '@inertiajs/svelte'
+  import { usePoll } from 'inertiax-svelte'
   import { onMount } from 'svelte'
 
   let replaceStateCalls = $state(0)

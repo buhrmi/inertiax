@@ -1,4 +1,4 @@
-import type { FormComponentRef } from '@inertiajs/core'
+import type { FormComponentRef } from 'inertiax-core'
 import { createContext } from 'svelte'
 
 const [getFormContext, setFormContext] = createContext<FormComponentRef>()

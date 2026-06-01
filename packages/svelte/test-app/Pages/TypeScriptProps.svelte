@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  declare module '@inertiajs/core' {
+  declare module 'inertiax-core' {
     export interface InertiaConfig {
       sharedPageProps: {
         auth: { user: { name: string } | null }
@@ -10,7 +10,7 @@
 
 <script lang="ts">
   // This component is used for checking the TypeScript implementation; there is no Playwright test depending on it.
-  import { router, usePage } from '@inertiajs/svelte'
+  import { router, usePage } from 'inertiax-svelte'
 
   type PageProps = {
     posts: { id: number; title: string }[]

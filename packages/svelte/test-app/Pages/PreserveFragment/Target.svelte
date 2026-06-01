@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { usePage } from '@inertiajs/svelte'
+  import { usePage } from 'inertiax-svelte'
 
   const page = usePage()
 </script>

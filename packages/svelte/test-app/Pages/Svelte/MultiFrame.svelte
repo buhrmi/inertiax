@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { Page } from '@inertiajs/core'
-  import { Frame } from '@inertiajs/svelte'
-  import type { ResolvedComponent } from '@inertiajs/svelte'
+  import type { Page } from 'inertiax-core'
+  import { Frame } from 'inertiax-svelte'
+  import type { ResolvedComponent } from 'inertiax-svelte'
   import MultiFramePane from './MultiFramePane.svelte'
 
   const pages = import.meta.glob<ResolvedComponent>('./*.svelte', { eager: true })

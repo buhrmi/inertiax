@@ -1,5 +1,5 @@
 <script>
-  import { inertia, router } from '@inertiajs/svelte'
+  import { inertia, router } from 'inertiax-svelte'
   import MainLayout from '../../Components/Layout.svelte'
 
   let { children } = $props()

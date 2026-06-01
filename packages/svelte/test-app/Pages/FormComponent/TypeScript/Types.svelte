@@ -1,7 +1,7 @@
 <!-- This component is used for checking the TypeScript implementation; there is no Playwright test depending on it. -->
 <script lang="ts">
-  import type { FormComponentOnSubmitCompleteArguments } from '@inertiajs/core'
-  import { createForm } from '@inertiajs/svelte'
+  import type { FormComponentOnSubmitCompleteArguments } from 'inertiax-core'
+  import { createForm } from 'inertiax-svelte'
 
   interface UserForm {
     name: string

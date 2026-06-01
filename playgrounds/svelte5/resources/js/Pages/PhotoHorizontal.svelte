@@ -1,5 +1,5 @@
 <script>
-  import { InfiniteScroll } from '@inertiajs/svelte'
+  import { InfiniteScroll } from 'inertiax-svelte'
   import Image from '../Components/Image.svelte'
   import Spinner from '../Components/Spinner.svelte'
 

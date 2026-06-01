@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
   import ChildComponent from './ChildComponent.svelte'
 </script>
 

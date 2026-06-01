@@ -1,5 +1,5 @@
 <script>
-  import { Link, usePage, router } from '@inertiajs/svelte'
+  import { Link, usePage, router } from 'inertiax-svelte'
 
   let { appName } = $props()
 

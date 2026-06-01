@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { usePage } from '@inertiajs/svelte'
+  import { usePage } from 'inertiax-svelte'
 
   interface Props {
     parentPage: ReturnType<typeof usePage>

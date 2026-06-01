@@ -7,7 +7,7 @@
 </script>
 
 <script lang="ts">
-  import { inertia, page, router } from '@inertiajs/svelte'
+  import { inertia, page, router } from 'inertiax-svelte'
 
   const payloadWithFile = {
     file: new File(['foobar'], 'example.bin'),

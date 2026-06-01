@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, page, useForm } from '@inertiajs/svelte'
+  import { Link, page, useForm } from 'inertiax-svelte'
 
   const form = useForm({})
 

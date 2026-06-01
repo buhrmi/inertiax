@@ -1,4 +1,4 @@
-import { type PollOptions, type ReloadOptions } from '@inertiajs/core'
+import { type PollOptions, type ReloadOptions } from 'inertiax-core'
 import { onDestroy, onMount } from 'svelte'
 import { useFrameRouter } from './frameContext.svelte'
 

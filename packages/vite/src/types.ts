@@ -21,7 +21,7 @@
  * @example
  * ```ts
  * const template: SSRTemplate = (configureCall, options) => `
- *   import createServer from '@inertiajs/svelte/server'
+ *   import createServer from 'inertiax-svelte/server'
  *   import { render } from 'svelte/server'
  *
  *   const ssr = await ${configureCall}
@@ -58,7 +58,7 @@ export interface FrameworkConfig {
    * The npm package name that identifies this framework.
    * The plugin detects the framework by looking for imports from this package.
    *
-    * Example: '@inertiajs/svelte'
+    * Example: 'inertiax-svelte'
    */
   package: string
 

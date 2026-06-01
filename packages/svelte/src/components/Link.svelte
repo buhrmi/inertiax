@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { isUrlMethodPair, resolveUrlMethodPairComponent } from '@inertiajs/core'
-  import type { LinkComponentBaseProps } from '@inertiajs/core'
+  import { isUrlMethodPair, resolveUrlMethodPairComponent } from 'inertiax-core'
+  import type { LinkComponentBaseProps } from 'inertiax-core'
   import { useFrameRouter } from '../frameContext.svelte'
   import { inertia } from '../index'
 

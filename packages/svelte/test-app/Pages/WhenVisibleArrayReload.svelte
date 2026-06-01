@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router, WhenVisible } from '@inertiajs/svelte'
+  import { router, WhenVisible } from 'inertiax-svelte'
 
   interface Props {
     firstData?:

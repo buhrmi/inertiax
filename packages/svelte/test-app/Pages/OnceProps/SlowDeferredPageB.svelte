@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, Link } from '@inertiajs/svelte'
+  import { Deferred, Link } from 'inertiax-svelte'
 
   interface Props {
     foo: string | undefined

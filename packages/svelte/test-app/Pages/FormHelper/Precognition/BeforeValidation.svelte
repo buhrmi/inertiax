@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useForm } from '@inertiajs/svelte'
+  import { useForm } from 'inertiax-svelte'
   import { isEqual } from 'es-toolkit'
 
   const form = useForm({

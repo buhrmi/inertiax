@@ -1,4 +1,4 @@
-import { type LayoutCallbackReturn, type Page, type SharedPageProps } from '@inertiajs/core'
+import { type LayoutCallbackReturn, type Page, type SharedPageProps } from 'inertiax-core'
 import type { Component } from 'svelte'
 import type { RenderFunction, RenderProps } from './components/Render.svelte'
 

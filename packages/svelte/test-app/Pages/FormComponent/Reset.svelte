@@ -7,8 +7,8 @@
 </script>
 
 <script lang="ts">
-  import type { FormComponentMethods } from '@inertiajs/core'
-  import { Form } from '@inertiajs/svelte'
+  import type { FormComponentMethods } from 'inertiax-core'
+  import { Form } from 'inertiax-svelte'
 
   let formRef: FormComponentMethods = $state(null!)
 

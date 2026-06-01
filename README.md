@@ -4,12 +4,12 @@ Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds
 
 Note: This is the documentation for the 3.x branch of Inertia X, which has not yet been released on NPM. To see the documentation for Inertia X based on Inertia 2.0, please see the current [master branch](https://github.com/buhrmi/inertiax/tree/master).
 
-## Frame Component
+## Added feature: Frame Component
 
 The `Frame` component enables multiple independent Inertia page regions on the same document.
 Each frame owns its own router and page state, so links/forms inside one frame only update that frame.
 
-The main use case for this are modals, side panels, wizards, etc.
+The main use cases for this are modals, side panels, wizards, etc.
 
 ## Basic Usage
 
@@ -25,7 +25,7 @@ Inside a component rendered by a `Frame`, use `useFrameRouter()` to access the r
 
 ```svelte
 <script lang="ts">
-  import { useFrameRouter } from '@inertiajs/svelte'
+  import { useFrameRouter } from 'inertiax-svelte'
 
   const router = useFrameRouter()
 
@@ -41,7 +41,7 @@ If you need more than the router, `useFrameContext()` gives you the active frame
 
 ```svelte
 <script lang="ts">
-  import { useFrameContext } from '@inertiajs/svelte'
+  import { useFrameContext } from 'inertiax-svelte'
 
   const {
     id,
@@ -59,7 +59,7 @@ If you want to initiate a visit for another frame, pass that frame's id in the v
 
 ```svelte
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
 
   function openDetailsPanel(userId: number) {
     router.get(`/users/${userId}/details`, {}, { frameId: 'details' })
@@ -75,7 +75,7 @@ If you prefer explicit router instances, create one router per frame and reuse t
 
 ```svelte
 <script lang="ts">
-  import { createRouter, Frame } from '@inertiajs/svelte'
+  import { createRouter, Frame } from 'inertiax-svelte'
 
   const detailsRouter = createRouter('details')
 
@@ -92,3 +92,33 @@ If you prefer explicit router instances, create one router per frame and reuse t
 ```
 
 By default, visits on non-top frames update that frame's history state without replacing the browser URL. If you want a frame visit to also update the address bar, pass `updateBrowserUrl: true` in the visit options.
+
+---
+
+## Upgrading from Inertia to Inertia X
+
+### 1. Replace the packages
+
+Remove the official Inertia packages and install Inertia X:
+
+```bash
+# npm
+npm remove @inertiajs/svelte @inertiajs/vite @inertiajs/core
+npm install inertiax-svelte inertiax-vite inertiax-core
+
+# pnpm
+pnpm remove @inertiajs/svelte @inertiajs/vite @inertiajs/core
+pnpm add inertiax-svelte inertiax-vite inertiax-core
+```
+
+### 2. Update your imports
+
+Find and replace all occurrences in your source files:
+
+| Before | After |
+|---|---|
+| `from '@inertiajs/svelte'` | `from 'inertiax-svelte'` |
+| `from '@inertiajs/core'` | `from 'inertiax-core'` |
+| `from '@inertiajs/vite'` | `from 'inertiax-vite'` |
+
+That's it. Now you're ready to use all the new features.

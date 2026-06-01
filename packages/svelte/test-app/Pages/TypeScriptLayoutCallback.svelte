@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  declare module '@inertiajs/core' {
+  declare module 'inertiax-core' {
     export interface InertiaConfig {
       sharedPageProps: {
         auth: { user: { name: string } | null }
@@ -7,7 +7,7 @@
     }
   }
 
-  import type { LayoutCallback } from '@inertiajs/svelte'
+  import type { LayoutCallback } from 'inertiax-svelte'
   import AppLayout from '@/Layouts/AppLayout.svelte'
 
   export const layout: LayoutCallback = (props) => {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page, router } from '@inertiajs/svelte'
+  import { page, router } from 'inertiax-svelte'
 
   interface Props {
     count: number

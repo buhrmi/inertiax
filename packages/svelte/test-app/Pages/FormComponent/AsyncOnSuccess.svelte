@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
 
   const onSuccess = () => new Promise<void>((resolve) => setTimeout(resolve, 1500))
 </script>

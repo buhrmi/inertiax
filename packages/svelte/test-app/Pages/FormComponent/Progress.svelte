@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
   import { onMount, onDestroy } from 'svelte'
 
   let showProgress: boolean | undefined = $state(undefined)

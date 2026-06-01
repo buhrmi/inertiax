@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { usePoll } from '@inertiajs/svelte'
+  import { usePoll } from 'inertiax-svelte'
 
   let { mode, time } = $props<{ mode: string; time: number }>()
 

@@ -70,9 +70,9 @@ export type DefaultInertiaConfig = {
  * @example
  * ```ts
  * // global.d.ts
- * import '@inertiajs/core'
+ * import 'inertiax-core'
  *
- * declare module '@inertiajs/core' {
+ * declare module 'inertiax-core' {
  *   export interface InertiaConfig {
  *     errorValueType: string[]
  *     flashDataType: {

@@ -14,7 +14,7 @@
     isUrlMethodPair,
     resolveUrlMethodPairComponent,
     UseFormUtils,
-  } from '@inertiajs/core'
+  } from 'inertiax-core'
   import { isEqual } from 'es-toolkit'
   import { type NamedInputEvent, type ValidationConfig, type Validator } from 'laravel-precognition'
   import { onMount } from 'svelte'

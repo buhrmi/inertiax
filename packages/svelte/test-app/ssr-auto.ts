@@ -1,4 +1,4 @@
-import { createInertiaApp, type ResolvedComponent } from '@inertiajs/svelte'
+import { createInertiaApp, type ResolvedComponent } from 'inertiax-svelte'
 
 // This file uses createInertiaApp as a standalone expression (not exported)
 // The Vite plugin SSR transform will automatically:

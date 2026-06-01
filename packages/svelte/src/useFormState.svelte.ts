@@ -8,8 +8,8 @@ import type {
   UrlMethodPair,
   UseFormTransformCallback,
   UseFormWithPrecognitionArguments,
-} from '@inertiajs/core'
-import { UseFormUtils } from '@inertiajs/core'
+} from 'inertiax-core'
+import { UseFormUtils } from 'inertiax-core'
 import { cloneDeep, isEqual } from 'es-toolkit'
 import { get, has, set } from 'es-toolkit/compat'
 import type { NamedInputEvent, ValidationConfig, Validator } from 'laravel-precognition'

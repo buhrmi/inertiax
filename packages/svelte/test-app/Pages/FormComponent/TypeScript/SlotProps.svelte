@@ -4,7 +4,7 @@
   See https://github.com/sveltejs/language-tools/issues/1026
 -->
 <script lang="ts">
-  import { createForm } from '@inertiajs/svelte'
+  import { createForm } from 'inertiax-svelte'
 
   interface UserForm {
     name: string

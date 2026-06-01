@@ -1,4 +1,4 @@
-import { createLayoutPropsStore, type LayoutProps, type NamedLayoutProps } from '@inertiajs/core'
+import { createLayoutPropsStore, type LayoutProps, type NamedLayoutProps } from 'inertiax-core'
 
 const store = createLayoutPropsStore()
 

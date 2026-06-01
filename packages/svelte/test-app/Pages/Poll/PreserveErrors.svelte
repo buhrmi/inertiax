@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useForm, usePoll, page } from '@inertiajs/svelte'
+  import { useForm, usePoll, page } from 'inertiax-svelte'
 
   interface Props {
     time: number

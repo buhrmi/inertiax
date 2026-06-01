@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form } from '@inertiajs/svelte'
+  import { Form } from 'inertiax-svelte'
 
   let headers: Record<string, string> = $state({
     'X-Foo': 'Bar',

@@ -1,4 +1,4 @@
-import type { Method, Page, PageProps, Router } from '@inertiajs/core'
+import type { Method, Page, PageProps, Router } from 'inertiax-core'
 
 declare global {
   interface Window {

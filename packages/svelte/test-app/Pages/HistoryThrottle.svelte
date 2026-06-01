@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, router } from '@inertiajs/svelte'
+  import { inertia, router } from 'inertiax-svelte'
 
   let callCount = $state(0)
 

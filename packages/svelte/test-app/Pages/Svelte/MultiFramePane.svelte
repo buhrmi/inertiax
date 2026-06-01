@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Form, Link } from '@inertiajs/svelte'
+  import { Form, Link } from 'inertiax-svelte'
 
   interface Props {
     frame: 'left' | 'right'

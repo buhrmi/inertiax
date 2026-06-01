@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, page, usePage, useForm } from '@inertiajs/svelte'
+  import { inertia, page, usePage, useForm } from 'inertiax-svelte'
   import { onMount } from 'svelte'
 
   type PageProps = {

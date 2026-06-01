@@ -23,7 +23,7 @@ const frameworks: FrameworkConfig[] = [svelte]
  *
  * Example:
  * {
- *   '@inertiajs/svelte': { package: '@inertiajs/svelte', extensions: ['.svelte'], ... }
+ *   'inertiax-svelte': { package: 'inertiax-svelte', extensions: ['.svelte'], ... }
  * }
  */
 export const defaultFrameworks: Record<string, FrameworkConfig> = Object.fromEntries(

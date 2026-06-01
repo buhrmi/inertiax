@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { config, Form } from '@inertiajs/svelte'
+  import { config, Form } from 'inertiax-svelte'
 
   // Set global config for withAllErrors (no prop on the Form component)
   config.set('form.withAllErrors', true)

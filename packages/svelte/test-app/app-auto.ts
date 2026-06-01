@@ -1,4 +1,4 @@
-import { createInertiaApp, router } from '@inertiajs/svelte'
+import { createInertiaApp, router } from 'inertiax-svelte'
 
 window.testing = { Inertia: router }
 

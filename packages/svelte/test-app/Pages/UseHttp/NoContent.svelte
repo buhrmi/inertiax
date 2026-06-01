@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { useHttp } from '@inertiajs/svelte'
+  import { useHttp } from 'inertiax-svelte'
 
   const form = useHttp<{ name: string }>({
     name: '',

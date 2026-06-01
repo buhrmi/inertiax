@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, Link, router, page } from '@inertiajs/svelte'
+  import { Deferred, Link, router, page } from 'inertiax-svelte'
 
   let id = $derived(page.props.id as string)
   let users = $derived(page.props.users as { text: string } | undefined)

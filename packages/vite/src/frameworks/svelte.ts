@@ -7,7 +7,7 @@
  * The SSR template shows what the plugin generates. For a user's SSR entry:
  *
  * ```js
- * import { createInertiaApp } from '@inertiajs/svelte'
+ * import { createInertiaApp } from 'inertiax-svelte'
  *
  * createInertiaApp({
  *   resolve: (name) => resolvePageComponent(name),
@@ -17,8 +17,8 @@
  * The plugin transforms it to:
  *
  * ```js
- * import { createInertiaApp } from '@inertiajs/svelte'
- * import createServer from '@inertiajs/svelte/server'
+ * import { createInertiaApp } from 'inertiax-svelte'
+ * import createServer from 'inertiax-svelte/server'
  * import { render } from 'svelte/server'
  *
  * const ssr = await createInertiaApp({
@@ -40,7 +40,7 @@ import type { FrameworkConfig } from '../types'
 
 export const config: FrameworkConfig = {
   // Package name used to detect Svelte usage via import statements
-  package: '@inertiajs/svelte',
+  package: 'inertiax-svelte',
 
   // Svelte components use .svelte extension
   extensions: ['.svelte'],
@@ -52,7 +52,7 @@ export const config: FrameworkConfig = {
   // Uses import.meta.env.PROD to skip the standalone server in dev mode
   // Note: Svelte uses a different variable name (ssr) and render function import
   ssr: (configureCall, options) => `
-import createServer from '@inertiajs/svelte/server'
+import createServer from 'inertiax-svelte/server'
 import { render } from 'svelte/server'
 
 const ssr = await ${configureCall}

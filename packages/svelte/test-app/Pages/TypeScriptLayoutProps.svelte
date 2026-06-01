@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  declare module '@inertiajs/core' {
+  declare module 'inertiax-core' {
     export interface InertiaConfig {
       layoutProps: {
         title: string
@@ -15,7 +15,7 @@
 
 <script lang="ts">
   // This component is used for checking the TypeScript implementation; there is no Playwright test depending on it.
-  import { setLayoutProps, resetLayoutProps } from '@inertiajs/svelte'
+  import { setLayoutProps, resetLayoutProps } from 'inertiax-svelte'
 
   // setLayoutProps accepts configured layout props
   setLayoutProps({ title: 'Hello' })

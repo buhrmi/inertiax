@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router } from '@inertiajs/svelte'
+  import { router } from 'inertiax-svelte'
 
   const prefetchPage = () => {
     router.prefetch('/prefetch/swr/1', { method: 'get' }, { cacheFor: 5000 })

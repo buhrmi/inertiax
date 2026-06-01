@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { config, useForm } from '@inertiajs/svelte'
+  import { config, useForm } from 'inertiax-svelte'
 
   // Set global config for withAllErrors (no .withAllErrors() call on the form)
   config.set('form.withAllErrors', true)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router, useForm } from '@inertiajs/svelte'
+  import { router, useForm } from 'inertiax-svelte'
 
   interface Todo {
     id: number

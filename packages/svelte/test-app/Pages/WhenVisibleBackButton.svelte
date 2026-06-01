@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, WhenVisible } from '@inertiajs/svelte'
+  import { Link, WhenVisible } from 'inertiax-svelte'
 
   interface Props {
     lazyData?:

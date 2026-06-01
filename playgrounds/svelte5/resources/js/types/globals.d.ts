@@ -1,6 +1,6 @@
-import '@inertiajs/core'
+import 'inertiax-core'
 
-declare module '@inertiajs/core' {
+declare module 'inertiax-core' {
   export interface InertiaConfig {
     sharedPageProps: {
       appName: string

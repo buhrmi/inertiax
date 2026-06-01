@@ -1,4 +1,4 @@
-import { type VisitOptions } from '@inertiajs/core'
+import { type VisitOptions } from 'inertiax-core'
 import { onDestroy, onMount } from 'svelte'
 import { useFrameRouter } from './frameContext.svelte'
 

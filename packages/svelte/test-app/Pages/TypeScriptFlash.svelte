@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  declare module '@inertiajs/core' {
+  declare module 'inertiax-core' {
     export interface InertiaConfig {
       flashDataType: {
         toast?: { type: 'success' | 'error'; message: string }
@@ -10,7 +10,7 @@
 
 <script lang="ts">
   // This component is used for checking the TypeScript implementation; there is no Playwright test depending on it.
-  import { router, page } from '@inertiajs/svelte'
+  import { router, page } from 'inertiax-svelte'
 
   // page.flash is always an object
   let flash = $derived(page.flash)

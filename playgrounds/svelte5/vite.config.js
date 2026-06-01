@@ -1,4 +1,4 @@
-import inertia from '@inertiajs/vite'
+import inertia from 'inertiax-vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
 import tailwindcss from '@tailwindcss/vite'
 import laravel from 'laravel-vite-plugin'

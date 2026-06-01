@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  import { router, http } from '@inertiajs/svelte'
+  import { router, http } from 'inertiax-svelte'
   import { onDestroy, onMount } from 'svelte'
 
   onMount(() => {

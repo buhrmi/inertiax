@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { FormDataConvertible } from '@inertiajs/core'
-  import { Form } from '@inertiajs/svelte'
+  import type { FormDataConvertible } from 'inertiax-core'
+  import { Form } from 'inertiax-svelte'
 
   let transformType = $state('none')
 

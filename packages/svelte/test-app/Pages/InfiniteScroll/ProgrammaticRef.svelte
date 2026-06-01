@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { InfiniteScrollRef } from '@inertiajs/core'
-  import { InfiniteScroll } from '@inertiajs/svelte'
+  import type { InfiniteScrollRef } from 'inertiax-core'
+  import { InfiniteScroll } from 'inertiax-svelte'
   import { onMount } from 'svelte'
   import UserCard, { type User } from './UserCard.svelte'
   interface Props {

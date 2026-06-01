@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, router } from '@inertiajs/svelte'
+  import { Deferred, router } from 'inertiax-svelte'
 
   interface Props {
     users?: { id: number; name: string; email: string }[]

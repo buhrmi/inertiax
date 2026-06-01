@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, router, usePoll } from '@inertiajs/svelte'
+  import { Link, router, usePoll } from 'inertiax-svelte'
 
   let { counter, last_received } = $props()
 

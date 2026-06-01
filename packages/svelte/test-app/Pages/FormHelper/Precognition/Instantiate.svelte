@@ -1,8 +1,8 @@
 <!-- @migration-task Error while migrating Svelte code: Cannot bind to constant
 https://svelte.dev/e/constant_binding -->
 <script lang="ts">
-  import type { Method, UrlMethodPair } from '@inertiajs/core'
-  import { useForm } from '@inertiajs/svelte'
+  import type { Method, UrlMethodPair } from 'inertiax-core'
+  import { useForm } from 'inertiax-svelte'
 
   const wayfinderUrl = (): UrlMethodPair => ({
     url: '/precognition/default',

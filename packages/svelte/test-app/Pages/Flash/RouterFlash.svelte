@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { router, page } from '@inertiajs/svelte'
+  import { router, page } from 'inertiax-svelte'
 
   const setFlash = () => {
     router.flash({ foo: 'bar' })

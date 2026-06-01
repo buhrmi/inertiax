@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { WhenVisible, useForm, page } from '@inertiajs/svelte'
+  import { WhenVisible, useForm, page } from 'inertiax-svelte'
 
   interface Props {
     foo?: string

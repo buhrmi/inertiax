@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, usePage } from '@inertiajs/svelte'
+  import { inertia, usePage } from 'inertiax-svelte'
   import Child from './Child.svelte'
 
   interface Props {

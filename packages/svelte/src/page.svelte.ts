@@ -1,4 +1,4 @@
-import { type Page, type PageProps, type SharedPageProps } from '@inertiajs/core'
+import { type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
 import { useFrameContext } from './frameContext.svelte'
 
 type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {

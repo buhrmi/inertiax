@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { VisitOptions } from '@inertiajs/core'
-  import { config, Link, useForm, page } from '@inertiajs/svelte'
+  import type { VisitOptions } from 'inertiax-core'
+  import { config, Link, useForm, page } from 'inertiax-svelte'
 
   const form = useForm({})
 

@@ -1,5 +1,5 @@
 <script>
-  import { WhenVisible } from '@inertiajs/svelte'
+  import { WhenVisible } from 'inertiax-svelte'
 
   let { lazyData } = $props()
 

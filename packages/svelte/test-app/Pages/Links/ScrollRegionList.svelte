@@ -3,8 +3,8 @@
 </script>
 
 <script lang="ts">
-  import type { VisitHelperOptions } from '@inertiajs/core'
-  import { router } from '@inertiajs/svelte'
+  import type { VisitHelperOptions } from 'inertiax-core'
+  import { router } from 'inertiax-svelte'
 
   interface Props {
     user_id?: number | undefined

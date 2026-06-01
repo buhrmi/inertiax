@@ -1,5 +1,5 @@
 <script>
-  import { Deferred, router } from '@inertiajs/svelte'
+  import { Deferred, router } from 'inertiax-svelte'
 
   let { results } = $props()
 

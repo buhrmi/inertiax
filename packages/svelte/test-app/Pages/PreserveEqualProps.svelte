@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link } from '@inertiajs/svelte'
+  import { Link } from 'inertiax-svelte'
   import { untrack } from 'svelte'
 
   type NestedA = { count: number }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Deferred, page, useForm } from '@inertiajs/svelte'
+  import { Deferred, page, useForm } from 'inertiax-svelte'
 
   interface Props {
     foo: { text: string } | undefined

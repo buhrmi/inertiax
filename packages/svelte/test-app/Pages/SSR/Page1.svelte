@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inertia, usePage } from '@inertiajs/svelte'
+  import { inertia, usePage } from 'inertiax-svelte'
 
   interface Props {
     user: { name: string; email: string }

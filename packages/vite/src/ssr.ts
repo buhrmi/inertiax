@@ -21,7 +21,7 @@
 import { existsSync } from 'node:fs'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { resolve } from 'node:path'
-import { classifySSRError, formatConsoleError } from '@inertiajs/core/ssrErrors'
+import { classifySSRError, formatConsoleError } from 'inertiax-core/ssrErrors'
 import type { ResolvedConfig, ViteDevServer } from 'vite'
 import { collectCSSFromModuleGraph } from './css'
 

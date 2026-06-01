@@ -13,7 +13,7 @@ import {
   type Method,
   type Router,
   type VisitOptions,
-} from '@inertiajs/core'
+} from 'inertiax-core'
 import type { ActionReturn } from 'svelte/action'
 import { config } from '.'
 
