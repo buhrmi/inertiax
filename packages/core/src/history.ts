@@ -53,7 +53,11 @@ class History {
       return { frames: {} }
     }
 
-    return window.history.state ?? { frames: {} }
+    const state = window.history.state
+    if (state?.frames) {
+      return state
+    }
+    return { frames: {} }
   }
 
   protected getFrameState(frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
