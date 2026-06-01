@@ -10,6 +10,7 @@
     initialPage?: Page<SharedProps>
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
+    renderLayout?: boolean
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
     onClickLink?: (event: MouseEvent, href: string) => void
     children?: import('svelte').Snippet
@@ -21,6 +22,7 @@
 <script lang="ts">
   import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
+  import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
   import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
@@ -36,6 +38,7 @@
     initialPage?: InertiaFrameProps['initialPage']
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
+    renderLayout?: InertiaFrameProps['renderLayout']
     onClickLink?: InertiaFrameProps['onClickLink']
     children?: InertiaFrameProps['children']
   }
@@ -48,8 +51,10 @@
     initialPage = undefined,
     resolveComponent = undefined,
     defaultLayout,
+    renderLayout = undefined,
     onClickLink,
     children,
+    ...restProps
   }: Props = $props()
 
   const parentFrameContext = useFrameContext()
@@ -64,6 +69,7 @@
   }
 
   const frameId = id ?? (parentFrameContext ? createFrameId() : DEFAULT_FRAME_ID)
+  const shouldRenderLayout = renderLayout ?? frameId === DEFAULT_FRAME_ID
 
   function resolveFrameComponent(name: string, page?: Page) {
     if (!frameResolveComponent) {
@@ -106,10 +112,7 @@
     id: frameId,
     router: frameRouter,
     resolveComponent: frameResolveComponent,
-    getPage: () => page ?? emptyPage,
-    setPage: (nextPage) => {
-      page = nextPage
-    },
+    page: toStore(() => page ?? emptyPage),
   })
 
   if (frameId === DEFAULT_FRAME_ID && page) {
@@ -235,6 +238,10 @@
 
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
     const child = h(component.default, page.props, [], key)
+
+    if (!shouldRenderLayout) {
+      return child
+    }
 
     if (component.layout && isRenderFunction(component.layout)) {
       return (component.layout as LayoutResolver)(h, child)
@@ -383,7 +390,7 @@
 </script>
 
 {#if renderProps}
-  <Render {...renderProps} />
+  <Render {...renderProps} {...restProps} />
 {:else}
   {@render children?.()}
 {/if}

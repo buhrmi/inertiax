@@ -55,5 +55,5 @@
     data-testid="reset-callback">Reset Scroll (Callback)</a
   >
 
-  <a href="/non-inertia" class="off-site">Off-site link</a>
+  <a href="/non-inertia" data-inertia-ignore class="off-site">Off-site link</a>
 </div>

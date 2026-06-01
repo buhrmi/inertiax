@@ -1,4 +1,5 @@
 import { type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
+import { get } from 'svelte/store'
 import { useFrameContext } from './frameContext.svelte'
 
 type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {
@@ -22,7 +23,7 @@ export function usePage<TPageProps extends PageProps = PageProps>(): SveltePage<
   const context = useFrameContext()
 
   if (context) {
-    return context.getPage() as SveltePage<TPageProps>
+    return get(context.page) as SveltePage<TPageProps>
   }
 
   return page as SveltePage<TPageProps>

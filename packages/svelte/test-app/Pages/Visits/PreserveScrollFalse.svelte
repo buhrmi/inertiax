@@ -87,5 +87,5 @@
   <a href={'#'} onclick={preserveGet} class="preserve-get">Preserve Scroll (GET)</a>
   <a href={'#'} onclick={preserveGetFalse} class="reset-get">Reset Scroll (GET)</a>
 
-  <a href="/non-inertia" class="off-site">Off-site link</a>
+  <a href="/non-inertia" data-inertia-ignore class="off-site">Off-site link</a>
 </div>

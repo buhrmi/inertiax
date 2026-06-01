@@ -182,3 +182,12 @@ test("multi-frame unchanged frame doesn't rerun effects on browser navigation", 
   await expect(page.getByTestId('right-step')).toHaveText('0')
   await expect(messages).toEqual(['Frame left step 0'])
 })
+
+test('frame layout renders on top frame but not on nested frame by default', async ({ page }) => {
+  await page.goto('/svelte/frame-layout')
+
+  await expect(page.getByTestId('top-frame-layout')).toBeVisible()
+  await expect(page.getByTestId('top-frame-page')).toBeVisible()
+  await expect(page.getByTestId('nested-frame-pane')).toBeVisible()
+  await expect(page.getByTestId('nested-frame-layout')).toHaveCount(0)
+})

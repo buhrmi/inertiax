@@ -1,27 +1,26 @@
 # Inertia X
 
-Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features to the Svelte adapter.
+Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds the `<Frame>` component to the Svelte adapter.
 
-Note: This is the documentation for the 3.x branch of Inertia X, which has not yet been released on NPM. To see the documentation for Inertia X based on Inertia 2.0, please see the current [master branch](https://github.com/buhrmi/inertiax/tree/master).
+The `Frame` component enables multiple independent Inertia page regions on the same document, where each frame owns its own router and page state, so links/forms inside one frame only update that frame.
 
-## Added feature: Frame Component
-
-The `Frame` component enables multiple independent Inertia page regions on the same document.
-Each frame owns its own router and page state, so links/forms inside one frame only update that frame.
-
-The main use cases for this are modals, side panels, wizards, etc.
+This is extremely useful for modals, side panels, wizards, etc.
 
 ## Basic Usage
 
 ```svelte
-<Frame id="sidebar" src="/app/sidebar">
-  <p>Loading sidebar...</p>
+<script>
+  import { Frame } from 'inertiax-svelte'
+</script>
+
+<Frame id="sidebar" src="/users/42/edit">
+  <p>Loading user...</p>
 </Frame>
 ```
 
-## Using The Current Frame Router
+### Accessing the router
 
-Inside a component rendered by a `Frame`, use `useFrameRouter()` to access the router for that frame.
+Within a frame, you can call `useFrameRouter()` to access its router. The global top-level router is still available via `import { router } from 'inertiax-svelte'`.
 
 ```svelte
 <script lang="ts">
@@ -37,25 +36,19 @@ Inside a component rendered by a `Frame`, use `useFrameRouter()` to access the r
 <button on:click={nextStep}>Next step</button>
 ```
 
-If you need more than the router, `useFrameContext()` gives you the active frame id, router, resolver, and page accessors.
+You can also access it along with the frame's page store via the frame context:
 
 ```svelte
-<script lang="ts">
+<script>
   import { useFrameContext } from 'inertiax-svelte'
 
-  const {
-    id,
-    router,
-    resolveComponent,
-    getPage,
-    setPage
-  } = useFrameContext()
+  const { id, page, router} = useFrameContext()
 </script>
 ```
 
-## Visiting A Different Frame
+### Visiting A Different Frame
 
-If you want to initiate a visit for another frame, pass that frame's id in the visit options.
+If you want to initiate a visit for another frame, pass that frame's id in the visit options:
 
 ```svelte
 <script lang="ts">
@@ -93,9 +86,83 @@ If you prefer explicit router instances, create one router per frame and reuse t
 
 By default, visits on non-top frames update that frame's history state without replacing the browser URL. If you want a frame visit to also update the address bar, pass `updateBrowserUrl: true` in the visit options.
 
----
+### Frame Props
 
-## Upgrading from Inertia to Inertia X
+Here is a list of all available props on the Frame component:
+
+
+| Prop | Type | Description |
+|---|---|---|
+| `id` | `string` | Unique frame id. Used for routing/history isolation and for targeting visits via `frameId`. If omitted, top frame uses `'_top'`; nested frames get an auto-generated id. |
+| `src` | `string` | URL to load when the frame mounts (useful for lazy-loading frame content). |
+| `router` | `Router` | Optional router instance to control this frame. If omitted, the frame creates its own router with the frame id. |
+| `initialComponent` | `ResolvedComponent` | Initial resolved component to render before or without loading from `src`. |
+| `initialPage` | `Page` | Initial Inertia page payload for the frame. |
+| `resolveComponent` | `ComponentResolver` | Component resolver for frame pages. Required unless inherited from a parent frame context. |
+| `defaultLayout` | `(name: string, page: Page) => unknown` | Fallback layout resolver used when the page does not provide its own layout. |
+| `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
+| `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
+| `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
+
+All other props (restProps) are being passed to the rendered page component.
+
+## `X-Inertia-Referer` header
+
+To enable server-side `redirect_back` functionality within frames, Inertia X sends an `X-Inertia-Referer` header containing the `src` URL of the initiating frame. Use this URL instead of the referer when generating your 30X response, to redirect the frame back to the previous page.
+
+
+## Global Click handler
+
+Inertia X adds a global click handler that automatically intercepts plain `<a>` clicks within a frame and performs a frame-scoped Inertia visit.
+
+This means you can often use regular anchor tags inside a frame without manually calling `router.visit(...)`.
+
+### What gets intercepted
+
+- Same-origin links inside the frame
+- Left-clicks without modifier keys (Ctrl/Cmd/Alt/Shift)
+- Clicks that don't have their default prevented
+
+### What is ignored
+
+- Links without `href`
+- Fragment links (`#...`)
+- `mailto:` / `tel:` links
+- Links with `target`
+- Links with `download`
+- Links with `data-inertia-ignore`
+- Cross-origin links
+
+### Opt out per-link
+
+If you want native browser navigation for a specific link, add `data-inertia-ignore`:
+
+```svelte
+<a href="/non-inertia" data-inertia-ignore>Open outside Inertia</a>
+```
+
+### Customize behavior with `onClickLink`
+
+Use `onClickLink` to inspect or override the default handling. If you call `event.preventDefault()` in this callback, Frame will not perform `frameRouter.visit(...)`.
+
+```svelte
+<script lang="ts">
+  import { Frame } from 'inertiax-svelte'
+
+  function onClickLink(event: MouseEvent, href: string) {
+    if (href.startsWith('/admin')) {
+      event.preventDefault()
+      // custom logic
+    }
+  }
+</script>
+
+<Frame id="sidebar" src="/users/42/edit" {onClickLink} />
+```
+
+## Installation
+
+To use Inertia X, you just have to replace 
 
 ### 1. Replace the packages
 

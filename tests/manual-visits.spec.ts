@@ -244,6 +244,17 @@ test.describe('Headers', () => {
     await expect(dump.headers['accept']).toBe('text/html, application/xhtml+xml')
   })
 
+  test('sends the X-Inertia-Referer header with the current page URL', async ({ page }) => {
+    pageLoads.watch(page)
+    await page.goto('/visits/headers')
+
+    await page.getByRole('link', { name: 'Standard visit Link' }).click()
+
+    const dump = await shouldBeDumpPage(page, 'get')
+
+    await expect(dump.headers['x-inertia-referer']).toBe('/visits/headers')
+  })
+
   test('starts using the x-inertia-version header when a version was given from the back-end', async ({ page }) => {
     pageLoads.watch(page)
     await page.goto('/visits/headers/version')

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { router, type ReloadOptions } from 'inertiax-core'
   import { get } from 'es-toolkit/compat'
+  import { fromStore } from 'svelte/store'
   import { useFrameContext } from '../frameContext.svelte'
   import globalPage from '../page.svelte'
 
@@ -21,11 +22,12 @@
   let observer: IntersectionObserver | null = null
 
   const frameContext = useFrameContext()
+  const framePage = frameContext ? fromStore(frameContext.page) : null
 
   // Read the page reactively inside $derived so that when the frame's page signal
   // is replaced (via page = args.page in swapComponent), the derived re-evaluates.
   let loaded = $derived.by(() => {
-    const page = frameContext ? frameContext.getPage() : globalPage
+    const page = framePage ? framePage.current : globalPage
     return keys.length > 0 && keys.every((key) => get(page.props, key) !== undefined)
   })
 

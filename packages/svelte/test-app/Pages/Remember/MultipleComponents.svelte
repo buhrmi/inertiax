@@ -29,5 +29,5 @@
   <ComponentB class="component-b" />
 
   <a href="/dump/get" use:inertia class="link">Navigate away</a>
-  <a href="/non-inertia" class="off-site">Navigate off-site</a>
+  <a href="/non-inertia" data-inertia-ignore class="off-site">Navigate off-site</a>
 </div>
