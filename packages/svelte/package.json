@@ -1,6 +1,6 @@
 {
   "name": "inertiax-svelte",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "license": "MIT",
   "description": "The Svelte adapter for Inertia.js",
   "contributors": [
@@ -63,8 +63,8 @@
     "svelte": "^5.0.0"
   },
   "dependencies": {
-    "inertiax-core": "workspace:*",
     "es-toolkit": "^1.33.0",
+    "inertiax-core": "workspace:*",
     "laravel-precognition": "^2.0.0"
   }
 }
