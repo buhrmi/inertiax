@@ -1,7 +1,8 @@
 <script lang="ts">
   import { router, type ReloadOptions } from '@inertiajs/core'
   import { get } from 'es-toolkit/compat'
-  import { usePage } from '../page.svelte'
+  import { useFrameContext } from '../frameContext.svelte'
+  import globalPage from '../page.svelte'
 
   interface Props {
     data?: string | string[]
@@ -16,11 +17,17 @@
   let { data = '', params = {}, buffer = 0, as = 'div', always = false, children, fallback }: Props = $props()
 
   let keys = $derived(data ? (Array.isArray(data) ? data : [data]) : [])
-  let loaded = $derived(keys.length > 0 && keys.every((key) => get(page.props, key) !== undefined))
   let fetching = $state(false)
   let observer: IntersectionObserver | null = null
 
-  const page = usePage()
+  const frameContext = useFrameContext()
+
+  // Read the page reactively inside $derived so that when the frame's page signal
+  // is replaced (via page = args.page in swapComponent), the derived re-evaluates.
+  let loaded = $derived.by(() => {
+    const page = frameContext ? frameContext.getPage() : globalPage
+    return keys.length > 0 && keys.every((key) => get(page.props, key) !== undefined)
+  })
 
   function attachObserver(el: HTMLElement) {
     observer = new IntersectionObserver(
