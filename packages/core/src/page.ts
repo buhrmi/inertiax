@@ -8,7 +8,9 @@ import { Scroll } from './scroll'
 import { Component, FlashData, Page, PageEvent, PageHandler, PageResolver, RouterInitParams, Visit } from './types'
 import { hrefToUrl, isSameUrlWithoutHash } from './url'
 
-class CurrentPage {
+const DEFAULT_FRAME_ID = '_top'
+
+class CurrentFramePage {
   protected page!: Page
   protected swapComponent!: PageHandler<any>
   protected resolveComponent!: PageResolver
@@ -26,6 +28,8 @@ class CurrentPage {
   protected pendingOptimistics: { id: number; callback: (props: Page['props']) => Partial<Page['props']> | void }[] = []
   protected optimisticCounter = 0
 
+  constructor(protected readonly frameId: string) {}
+
   public init<ComponentType = Component>({
     initialPage,
     swapComponent,
@@ -37,8 +41,10 @@ class CurrentPage {
     this.resolveComponent = resolveComponent
     this.onFlashCallback = onFlash
 
-    eventHandler.on('historyQuotaExceeded', () => {
-      this.historyQuotaExceeded = true
+    eventHandler.on('historyQuotaExceeded', (frameId?: string) => {
+      if (!frameId || frameId === this.frameId) {
+        this.historyQuotaExceeded = true
+      }
     })
 
     return this
@@ -65,7 +71,6 @@ class CurrentPage {
         url: page.url,
       }
 
-      // Preserve original deferred props for back button handling
       if (page.initialDeferredProps === undefined) {
         page.initialDeferredProps = page.deferredProps
       }
@@ -81,7 +86,6 @@ class CurrentPage {
 
     return this.resolve(page.component, page).then((component) => {
       if (componentId !== this.componentId) {
-        // Component has changed since we started resolving this component, bail
         return
       }
 
@@ -92,16 +96,16 @@ class CurrentPage {
       const scrollRegions = !isServer && preserveScroll ? Scroll.getScrollRegions() : []
       replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), location)
 
-      // Clear flash data from the page object, we don't want it when navigating back/forward...
       const pageForHistory = { ...page, flash: {} }
 
       return new Promise<void>((resolve) =>
-        replace ? history.replaceState(pageForHistory, resolve) : history.pushState(pageForHistory, resolve),
+        replace
+          ? history.replaceState(pageForHistory, resolve, this.frameId)
+          : history.pushState(pageForHistory, resolve, this.frameId),
       ).then(() => {
         const isNewComponent = !this.isTheSame(page)
 
         if (!isNewComponent && Object.keys(page.props.errors || {}).length > 0) {
-          // Don't use view transition if the page stays the same and there are (new) errors...
           viewTransition = false
         }
 
@@ -109,7 +113,7 @@ class CurrentPage {
         this.cleared = false
 
         if (this.hasOnceProps()) {
-          prefetchedRequests.updateCachedOncePropsFromCurrentPage()
+          prefetchedRequests.updateCachedOncePropsFromCurrentPage(this.frameId)
         }
 
         if (isNewComponent) {
@@ -123,8 +127,6 @@ class CurrentPage {
         this.isFirstPageLoad = false
 
         if (this.historyQuotaExceeded) {
-          // If we exceeded the history quota, don't attempt to swap the
-          // component as we're performing a full page reload instead.
           this.historyQuotaExceeded = false
           return
         }
@@ -136,9 +138,6 @@ class CurrentPage {
           viewTransition,
         }).then(() => {
           if (preserveScroll) {
-            // Scroll regions must be explicitly restored since the DOM elements are destroyed
-            // and recreated during the component 'swap'. Document scroll is naturally
-            // preserved as the document element itself persists across navigations.
             window.requestAnimationFrame(() => Scroll.restoreScrollRegions(scrollRegions))
           } else {
             Scroll.reset()
@@ -149,7 +148,7 @@ class CurrentPage {
             this.pendingDeferredProps.component === page.component &&
             this.pendingDeferredProps.url === page.url
           ) {
-            eventHandler.fireInternalEvent('loadDeferredProps', this.pendingDeferredProps.deferredProps)
+            eventHandler.fireInternalEvent('loadDeferredProps', this.frameId, this.pendingDeferredProps.deferredProps)
           }
 
           this.pendingDeferredProps = null
@@ -173,7 +172,7 @@ class CurrentPage {
     return this.resolve(page.component, page).then((component) => {
       this.page = page
       this.cleared = false
-      history.setCurrent(page)
+      history.setCurrent(page, this.frameId)
       return this.swap({ component, page, preserveState, viewTransition: false })
     })
   }
@@ -354,4 +353,140 @@ class CurrentPage {
   }
 }
 
-export const page = new CurrentPage()
+class PageStore {
+  protected frames = new Map<string, CurrentFramePage>()
+
+  protected forFrame(frameId = DEFAULT_FRAME_ID): CurrentFramePage {
+    if (!this.frames.has(frameId)) {
+      this.frames.set(frameId, new CurrentFramePage(frameId))
+    }
+
+    return this.frames.get(frameId)!
+  }
+
+  public init<ComponentType = Component>(params: RouterInitParams<ComponentType>, frameId = DEFAULT_FRAME_ID) {
+    return this.forFrame(frameId).init(params)
+  }
+
+  public set(page: Page, options?: Parameters<CurrentFramePage['set']>[1], frameId = DEFAULT_FRAME_ID): Promise<void> {
+    return this.forFrame(frameId).set(page, options)
+  }
+
+  public setQuietly(
+    page: Page,
+    options?: Parameters<CurrentFramePage['setQuietly']>[1],
+    frameId = DEFAULT_FRAME_ID,
+  ): Promise<unknown> {
+    return this.forFrame(frameId).setQuietly(page, options)
+  }
+
+  public clear(frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).clear()
+  }
+
+  public isCleared(frameId = DEFAULT_FRAME_ID): boolean {
+    return this.forFrame(frameId).isCleared()
+  }
+
+  public get(frameId = DEFAULT_FRAME_ID): Page {
+    return this.forFrame(frameId).get()
+  }
+
+  public getWithoutFlashData(frameId = DEFAULT_FRAME_ID): Page {
+    return this.forFrame(frameId).getWithoutFlashData()
+  }
+
+  public hasOnceProps(frameId = DEFAULT_FRAME_ID): boolean {
+    return this.forFrame(frameId).hasOnceProps()
+  }
+
+  public merge(data: Partial<Page>, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).merge(data)
+  }
+
+  public setPropsQuietly(props: Page['props'], frameId = DEFAULT_FRAME_ID): Promise<unknown> {
+    return this.forFrame(frameId).setPropsQuietly(props)
+  }
+
+  public setFlash(flash: FlashData, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).setFlash(flash)
+  }
+
+  public setUrlHash(hash: string, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).setUrlHash(hash)
+  }
+
+  public remember(data: Page['rememberedState'], frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).remember(data)
+  }
+
+  public swap(args: Parameters<CurrentFramePage['swap']>[0], frameId = DEFAULT_FRAME_ID): Promise<unknown> {
+    return this.forFrame(frameId).swap(args)
+  }
+
+  public resolve(component: string, page?: Page, frameId = DEFAULT_FRAME_ID): Promise<Component> {
+    return this.forFrame(frameId).resolve(component, page)
+  }
+
+  public nextOptimisticId(frameId = DEFAULT_FRAME_ID): number {
+    return this.forFrame(frameId).nextOptimisticId()
+  }
+
+  public setBaseline(key: string, value: unknown, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).setBaseline(key, value)
+  }
+
+  public updateBaseline(key: string, value: unknown, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).updateBaseline(key, value)
+  }
+
+  public hasBaseline(key: string, frameId = DEFAULT_FRAME_ID): boolean {
+    return this.forFrame(frameId).hasBaseline(key)
+  }
+
+  public registerOptimistic(
+    id: number,
+    callback: (props: Page['props']) => Partial<Page['props']> | void,
+    frameId = DEFAULT_FRAME_ID,
+  ): void {
+    this.forFrame(frameId).registerOptimistic(id, callback)
+  }
+
+  public unregisterOptimistic(id: number, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).unregisterOptimistic(id)
+  }
+
+  public replayOptimistics(frameId = DEFAULT_FRAME_ID): Partial<Page['props']> {
+    return this.forFrame(frameId).replayOptimistics()
+  }
+
+  public pendingOptimisticCount(frameId = DEFAULT_FRAME_ID): number {
+    return this.forFrame(frameId).pendingOptimisticCount()
+  }
+
+  public clearOptimisticState(frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).clearOptimisticState()
+  }
+
+  public isTheSame(page: Page, frameId = DEFAULT_FRAME_ID): boolean {
+    return this.forFrame(frameId).isTheSame(page)
+  }
+
+  public on(event: PageEvent, callback: VoidFunction, frameId = DEFAULT_FRAME_ID): VoidFunction {
+    return this.forFrame(frameId).on(event, callback)
+  }
+
+  public fireEventsFor(event: PageEvent, frameId = DEFAULT_FRAME_ID): void {
+    this.forFrame(frameId).fireEventsFor(event)
+  }
+
+  public mergeOncePropsIntoResponse(
+    response: Page,
+    options: { force?: boolean } = {},
+    frameId = DEFAULT_FRAME_ID,
+  ): void {
+    this.forFrame(frameId).mergeOncePropsIntoResponse(response, options)
+  }
+}
+
+export const page = new PageStore()

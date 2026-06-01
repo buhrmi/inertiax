@@ -1,13 +1,17 @@
-import { router, type VisitOptions } from '@inertiajs/core'
+import { type VisitOptions } from '@inertiajs/core'
 import { onDestroy, onMount } from 'svelte'
+import { useFrameRouter } from './frameContext.svelte'
 
 export default function usePrefetch(options: VisitOptions = {}) {
+  const frameRouter = useFrameRouter()
+
   let isPrefetched = $state(false)
   let isPrefetching = $state(false)
   let lastUpdatedAt = $state<number | null>(null)
 
-  const cached = typeof window === 'undefined' ? null : router.getCached(window.location.pathname, options)
-  const inFlight = typeof window === 'undefined' ? null : router.getPrefetching(window.location.pathname, options)
+  const cached = typeof window === 'undefined' ? null : frameRouter.getCached(window.location.pathname, options)
+  const inFlight =
+    typeof window === 'undefined' ? null : frameRouter.getPrefetching(window.location.pathname, options)
 
   isPrefetched = cached !== null
   isPrefetching = inFlight !== null
@@ -17,13 +21,13 @@ export default function usePrefetch(options: VisitOptions = {}) {
   let removePrefetchingListener: () => void
 
   onMount(() => {
-    removePrefetchingListener = router.on('prefetching', ({ detail }) => {
+    removePrefetchingListener = frameRouter.on('prefetching', ({ detail }) => {
       if (detail.visit.url.pathname === window.location.pathname) {
         isPrefetching = true
       }
     })
 
-    removePrefetchedListener = router.on('prefetched', ({ detail }) => {
+    removePrefetchedListener = frameRouter.on('prefetched', ({ detail }) => {
       if (detail.visit.url.pathname === window.location.pathname) {
         isPrefetched = true
         isPrefetching = false
@@ -52,7 +56,7 @@ export default function usePrefetch(options: VisitOptions = {}) {
       return lastUpdatedAt
     },
     flush() {
-      router.flush(window.location.pathname, options)
+      frameRouter.flush(window.location.pathname, options)
     },
   }
 }

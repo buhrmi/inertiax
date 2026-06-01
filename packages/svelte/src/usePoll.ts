@@ -1,5 +1,6 @@
-import { router, type PollOptions, type ReloadOptions } from '@inertiajs/core'
+import { type PollOptions, type ReloadOptions } from '@inertiajs/core'
 import { onDestroy, onMount } from 'svelte'
+import { useFrameRouter } from './frameContext.svelte'
 
 export default function usePoll(
   interval: number,
@@ -9,7 +10,9 @@ export default function usePoll(
     autoStart: true,
   },
 ) {
-  const { stop, start, destroy } = router.poll(interval, requestOptions, {
+  const frameRouter = useFrameRouter()
+
+  const { stop, start, destroy } = frameRouter.poll(interval, requestOptions, {
     ...options,
     autoStart: false,
   })

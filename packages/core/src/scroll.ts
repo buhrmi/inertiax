@@ -6,8 +6,8 @@ const isServer = typeof window === 'undefined'
 const isFirefox = !isServer && /Firefox/i.test(window.navigator.userAgent)
 
 export class Scroll {
-  public static save(): void {
-    history.saveScrollPositions(this.getScrollRegions())
+  public static save(frameId = '_top'): void {
+    history.saveScrollPositions(this.getScrollRegions(), frameId)
   }
 
   public static getScrollRegions(): ScrollRegion[] {
@@ -64,13 +64,13 @@ export class Scroll {
     }
   }
 
-  public static restore(scrollRegions: ScrollRegion[]): void {
+  public static restore(scrollRegions: ScrollRegion[], frameId = '_top'): void {
     if (isServer) {
       return
     }
 
     window.requestAnimationFrame(() => {
-      this.restoreDocument()
+      this.restoreDocument(frameId)
       this.restoreScrollRegions(scrollRegions)
     })
   }
@@ -96,8 +96,8 @@ export class Scroll {
     })
   }
 
-  public static restoreDocument(): void {
-    const scrollPosition = history.getDocumentScrollPosition()
+  public static restoreDocument(frameId = '_top'): void {
+    const scrollPosition = history.getDocumentScrollPosition(frameId)
     window.scrollTo(scrollPosition.left, scrollPosition.top)
   }
 
@@ -109,10 +109,10 @@ export class Scroll {
     }
   }
 
-  public static onWindowScroll(): void {
+  public static onWindowScroll(frameId = '_top'): void {
     history.saveDocumentScrollPosition({
       top: window.scrollY,
       left: window.scrollX,
-    })
+    }, frameId)
   }
 }

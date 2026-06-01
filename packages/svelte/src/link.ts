@@ -11,6 +11,7 @@ import {
   type LinkComponentBaseProps,
   type LinkPrefetchOption,
   type Method,
+  type Router,
   type VisitOptions,
 } from '@inertiajs/core'
 import type { ActionReturn } from 'svelte/action'
@@ -24,7 +25,10 @@ interface ActionElement extends HTMLElement {
   href?: string
 }
 
-type ActionParameters = Omit<LinkComponentBaseProps, 'onCancelToken'> & Omit<VisitOptions, keyof LinkComponentBaseProps>
+type ActionParameters = Omit<LinkComponentBaseProps, 'onCancelToken'> &
+  Omit<VisitOptions, keyof LinkComponentBaseProps> & {
+    router?: Router
+  }
 
 type SelectedEventKeys =
   | 'start'
@@ -60,6 +64,7 @@ function link(
   let method: Method
   let href: string
   let data
+  let currentRouter: Router = router
   let baseParams: VisitOptions
   let visitParams: VisitOptions
 
@@ -67,7 +72,7 @@ function link(
     click: (event: MouseEvent) => {
       if (shouldIntercept(event)) {
         event.preventDefault()
-        router.visit(href, visitParams)
+        currentRouter.visit(href, visitParams)
       }
     },
   }
@@ -94,13 +99,13 @@ function link(
     mouseup: (event: MouseEvent) => {
       if (shouldIntercept(event)) {
         event.preventDefault()
-        router.visit(href, visitParams)
+        currentRouter.visit(href, visitParams)
       }
     },
     keyup: (event: KeyboardEvent) => {
       if (shouldNavigate(event)) {
         event.preventDefault()
-        router.visit(href, visitParams)
+        currentRouter.visit(href, visitParams)
       }
     },
     click: (event: MouseEvent) => {
@@ -112,6 +117,7 @@ function link(
   }
 
   function update({
+    router: routerProp,
     cacheFor = 0,
     prefetch = false,
     cacheTags: cacheTagValues = [],
@@ -121,6 +127,8 @@ function link(
     pageProps: pagePropsProp = null,
     ...params
   }: ActionParameters) {
+    currentRouter = routerProp ?? router
+
     prefetchModes = (() => {
       if (prefetch === true) {
         return ['hover']
@@ -225,7 +233,7 @@ function link(
   }
 
   function prefetch() {
-    router.prefetch(
+    currentRouter.prefetch(
       href,
       {
         ...baseParams,

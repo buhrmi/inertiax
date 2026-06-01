@@ -1845,6 +1845,32 @@ app.get('/svelte/props-and-page-store', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/PropsAndPageStore', props: { foo: req.query.foo || 'default' } }),
 )
 
+app.get('/svelte/multi-frame', (req, res) => inertia.render(req, res, { component: 'Svelte/MultiFrame', props: {} }))
+
+app.get('/svelte/multi-frame/:frame', (req, res) => {
+  const step = parseInt(req.query.step || '0', 10)
+
+  return inertia.render(req, res, {
+    component: 'Svelte/MultiFramePane',
+    props: {
+      frame: req.params.frame,
+      step,
+    },
+  })
+})
+
+app.post('/svelte/multi-frame/:frame/submit', (req, res) => {
+  const step = parseInt(req.body.step || '0', 10) + 1
+
+  return inertia.render(req, res, {
+    component: 'Svelte/MultiFramePane',
+    props: {
+      frame: req.params.frame,
+      step,
+    },
+  })
+})
+
 app.get('/remember/users', (req, res) => {
   const users = [
     { id: 1, name: 'User One', email: 'user1@example.com' },

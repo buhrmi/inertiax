@@ -6,37 +6,86 @@ import Queue from './queue'
 import { SessionStorage } from './sessionStorage'
 import { Page, ScrollRegion } from './types'
 
+const DEFAULT_FRAME_ID = '_top'
 const isServer = typeof window === 'undefined'
 const queue = new Queue<Promise<void>>()
 const isChromeIOS = !isServer && /CriOS/.test(window.navigator.userAgent)
+
+type FrameHistoryState = {
+  page: Page | ArrayBuffer
+  scrollRegions?: ScrollRegion[]
+  documentScrollPosition?: ScrollRegion
+}
+
+type InertiaHistoryState = {
+  frames: Record<string, FrameHistoryState>
+}
 
 class History {
   public rememberedState = 'rememberedState' as const
   public scrollRegions = 'scrollRegions' as const
   public preserveUrl = false
-  protected current: Partial<Page> = {}
-  // We need initialState for `restore`
-  protected initialState: Partial<Page> | null = null
+  protected current = new Map<string, Partial<Page>>()
+  protected initialState = new Map<string, Partial<Page> | null>()
 
-  public remember(data: unknown, key: string): void {
-    this.replaceState({
-      ...currentPage.getWithoutFlashData(),
-      rememberedState: {
-        ...(currentPage.get()?.rememberedState ?? {}),
-        [key]: data,
-      },
-    })
+  protected getCurrent(frameId: string): Partial<Page> {
+    return this.current.get(frameId) ?? {}
   }
 
-  public restore(key: string): unknown {
+  protected setCurrentState(page: Partial<Page>, frameId: string): void {
+    this.current.set(frameId, page)
+  }
+
+  protected getInitial(frameId: string): Partial<Page> | null {
+    if (!this.initialState.has(frameId)) {
+      this.initialState.set(frameId, null)
+    }
+
+    return this.initialState.get(frameId) ?? null
+  }
+
+  protected setInitial(page: Partial<Page> | null, frameId: string): void {
+    this.initialState.set(frameId, page)
+  }
+
+  protected getWindowState(): InertiaHistoryState {
+    if (isServer) {
+      return { frames: {} }
+    }
+
+    return window.history.state ?? { frames: {} }
+  }
+
+  protected getFrameState(frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
+    return this.getWindowState().frames[frameId] ?? null
+  }
+
+  public remember(data: unknown, key: string, frameId = DEFAULT_FRAME_ID): void {
+    this.replaceState(
+      {
+        ...currentPage.getWithoutFlashData(frameId),
+        rememberedState: {
+          ...(currentPage.get(frameId)?.rememberedState ?? {}),
+          [key]: data,
+        },
+      },
+      null,
+      frameId,
+    )
+  }
+
+  public restore(key: string, frameId = DEFAULT_FRAME_ID): unknown {
     if (!isServer) {
-      return this.current[this.rememberedState]?.[key] !== undefined
-        ? this.current[this.rememberedState]?.[key]
-        : this.initialState?.[this.rememberedState]?.[key]
+      const current = this.getCurrent(frameId)
+      const initial = this.getInitial(frameId)
+
+      return current[this.rememberedState]?.[key] !== undefined
+        ? current[this.rememberedState]?.[key]
+        : initial?.[this.rememberedState]?.[key]
     }
   }
 
-  public pushState(page: Page, cb: (() => void) | null = null): void {
+  public pushState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID): void {
     if (isServer) {
       return
     }
@@ -46,13 +95,11 @@ class History {
       return
     }
 
-    this.current = page
+    this.setCurrentState(page, frameId)
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        // Defer history.pushState to the next event loop tick to prevent timing conflicts.
-        // Ensure any previous history.replaceState completes before pushState is executed.
-        const doPush = () => this.doPushState({ page: data }, page.url).then(() => cb?.())
+        const doPush = () => this.doPushState({ page: data }, page.url, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -70,8 +117,6 @@ class History {
       structuredClone(page.props)
       return page
     } catch {
-      // Props contain non-serializable data (e.g., Proxies, functions).
-      // Clone them to ensure they can be safely stored in browser history.
       return {
         ...page,
         props: cloneDeep(page.props),
@@ -91,22 +136,22 @@ class History {
     return queue.process()
   }
 
-  public decrypt(page: Page | null = null): Promise<Page> {
+  public decrypt(page: Page | ArrayBuffer | null = null, frameId = DEFAULT_FRAME_ID): Promise<Page> {
     if (isServer) {
-      return Promise.resolve(page ?? currentPage.get())
+      return Promise.resolve(page instanceof ArrayBuffer ? ({} as Page) : page ?? currentPage.get(frameId))
     }
 
-    const pageData = page ?? window.history.state?.page
+    const pageData = page ?? this.getFrameState(frameId)?.page ?? null
 
     return this.decryptPageData(pageData).then((data) => {
       if (!data) {
         throw new Error('Unable to decrypt history')
       }
 
-      if (this.initialState === null) {
-        this.initialState = data ?? undefined
+      if (this.getInitial(frameId) === null) {
+        this.setInitial(data ?? undefined, frameId)
       } else {
-        this.current = data ?? {}
+        this.setCurrentState(data ?? {}, frameId)
       }
 
       return data
@@ -117,62 +162,72 @@ class History {
     return pageData instanceof ArrayBuffer ? decryptHistory(pageData) : Promise.resolve(pageData)
   }
 
-  public saveScrollPositions(scrollRegions: ScrollRegion[]): void {
+  public saveScrollPositions(scrollRegions: ScrollRegion[], frameId = DEFAULT_FRAME_ID): void {
     queue.add(() => {
       return Promise.resolve().then(() => {
-        if (!window.history.state?.page) {
+        const frameState = this.getFrameState(frameId)
+
+        if (!frameState?.page) {
           return
         }
 
-        if (isEqual(this.getScrollRegions(), scrollRegions)) {
+        if (isEqual(this.getScrollRegions(frameId), scrollRegions)) {
           return
         }
 
-        return this.doReplaceState({
-          page: window.history.state.page,
-          scrollRegions,
-        })
+        return this.doReplaceState(
+          {
+            page: frameState.page,
+            scrollRegions,
+          },
+          undefined,
+          frameId,
+        )
       })
     })
   }
 
-  public saveDocumentScrollPosition(scrollRegion: ScrollRegion): void {
+  public saveDocumentScrollPosition(scrollRegion: ScrollRegion, frameId = DEFAULT_FRAME_ID): void {
     queue.add(() => {
       return Promise.resolve().then(() => {
-        if (!window.history.state?.page) {
+        const frameState = this.getFrameState(frameId)
+
+        if (!frameState?.page) {
           return
         }
 
-        if (isEqual(this.getDocumentScrollPosition(), scrollRegion)) {
+        if (isEqual(this.getDocumentScrollPosition(frameId), scrollRegion)) {
           return
         }
 
-        return this.doReplaceState({
-          page: window.history.state.page,
-          documentScrollPosition: scrollRegion,
-        })
+        return this.doReplaceState(
+          {
+            page: frameState.page,
+            documentScrollPosition: scrollRegion,
+          },
+          undefined,
+          frameId,
+        )
       })
     })
   }
 
-  public getScrollRegions(): ScrollRegion[] {
-    return window.history.state?.scrollRegions || []
+  public getScrollRegions(frameId = DEFAULT_FRAME_ID): ScrollRegion[] {
+    return this.getFrameState(frameId)?.scrollRegions || []
   }
 
-  public getDocumentScrollPosition(): ScrollRegion {
-    return window.history.state?.documentScrollPosition || { top: 0, left: 0 }
+  public getDocumentScrollPosition(frameId = DEFAULT_FRAME_ID): ScrollRegion {
+    return this.getFrameState(frameId)?.documentScrollPosition || { top: 0, left: 0 }
   }
 
-  public replaceState(page: Page, cb: (() => void) | null = null): void {
-    if (isEqual(this.current, page)) {
+  public replaceState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID): void {
+    if (isEqual(this.getCurrent(frameId), page)) {
       cb && cb()
       return
     }
 
-    // Exclude flash from the merge to prevent callers (like router.remember())
-    // from accidentally clearing flash data on the current page.
     const { flash, ...pageWithoutFlash } = page
-    currentPage.merge(pageWithoutFlash)
+    currentPage.merge(pageWithoutFlash, frameId)
 
     if (isServer) {
       return
@@ -183,13 +238,11 @@ class History {
       return
     }
 
-    this.current = page
+    this.setCurrentState(page, frameId)
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        // Defer history.replaceState to the next event loop tick to prevent timing conflicts.
-        // Ensure any previous history.pushState completes before replaceState is executed.
-        const doReplace = () => this.doReplaceState({ page: data }, page.url).then(() => cb?.())
+        const doReplace = () => this.doReplaceState({ page: data }, page.url, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -235,17 +288,24 @@ class History {
       documentScrollPosition?: ScrollRegion
     },
     url?: string,
+    frameId = DEFAULT_FRAME_ID,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
-      window.history.replaceState(
-        {
-          ...data,
-          scrollRegions: data.scrollRegions ?? window.history.state?.scrollRegions,
-          documentScrollPosition: data.documentScrollPosition ?? window.history.state?.documentScrollPosition,
+      const existing = this.getWindowState()
+      const previous = existing.frames[frameId] ?? {}
+
+      const nextState: InertiaHistoryState = {
+        frames: {
+          ...existing.frames,
+          [frameId]: {
+            page: data.page,
+            scrollRegions: data.scrollRegions ?? previous.scrollRegions ?? [],
+            documentScrollPosition: data.documentScrollPosition ?? previous.documentScrollPosition ?? { top: 0, left: 0 },
+          },
         },
-        '',
-        url,
-      )
+      }
+
+      window.history.replaceState(nextState, '', url)
     })
   }
 
@@ -256,39 +316,59 @@ class History {
       documentScrollPosition?: ScrollRegion
     },
     url: string,
+    frameId = DEFAULT_FRAME_ID,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
+      const existing = this.getWindowState()
+      const previous = existing.frames[frameId] ?? {}
+
+      const nextState: InertiaHistoryState = {
+        frames: {
+          ...existing.frames,
+          [frameId]: {
+            page: data.page,
+            scrollRegions: data.scrollRegions ?? previous.scrollRegions ?? [],
+            documentScrollPosition: data.documentScrollPosition ?? previous.documentScrollPosition ?? { top: 0, left: 0 },
+          },
+        },
+      }
+
       try {
-        window.history.pushState(data, '', url)
+        window.history.pushState(nextState, '', url)
       } catch (error) {
         if (!this.isQuotaExceededError(error)) {
           throw error
         }
 
-        eventHandler.fireInternalEvent('historyQuotaExceeded', url)
+        eventHandler.fireInternalEvent('historyQuotaExceeded', frameId, url)
       }
     })
   }
 
-  public getState<T>(key: keyof Page, defaultValue?: T): any {
-    return this.current?.[key] ?? defaultValue
+  public getState<T>(key: keyof Page, defaultValue?: T, frameId = DEFAULT_FRAME_ID): any {
+    return this.getCurrent(frameId)?.[key] ?? defaultValue
   }
 
-  public deleteState(key: keyof Page) {
-    if (this.current[key] !== undefined) {
-      delete this.current[key]
-      this.replaceState(this.current as Page)
+  public deleteState(key: keyof Page, frameId = DEFAULT_FRAME_ID) {
+    const current = this.getCurrent(frameId)
+
+    if (current[key] !== undefined) {
+      delete current[key]
+      this.replaceState(current as Page, null, frameId)
     }
   }
 
-  public clearInitialState(key: keyof Page) {
-    if (this.initialState && this.initialState[key] !== undefined) {
-      delete this.initialState[key]
+  public clearInitialState(key: keyof Page, frameId = DEFAULT_FRAME_ID) {
+    const initial = this.getInitial(frameId)
+
+    if (initial && initial[key] !== undefined) {
+      delete initial[key]
+      this.setInitial(initial, frameId)
     }
   }
 
-  public browserHasHistoryEntry(): boolean {
-    return !isServer && !!window.history.state?.page
+  public browserHasHistoryEntry(frameId = DEFAULT_FRAME_ID): boolean {
+    return !isServer && !!this.getFrameState(frameId)?.page
   }
 
   public clear() {
@@ -296,16 +376,20 @@ class History {
     SessionStorage.remove(historySessionStorageKeys.iv)
   }
 
-  public setCurrent(page: Page): void {
-    this.current = page
+  public setCurrent(page: Page, frameId = DEFAULT_FRAME_ID): void {
+    this.setCurrentState(page, frameId)
   }
 
-  public isValidState(state: any): boolean {
-    return !!state.page
+  public isValidState(state: any, frameId = DEFAULT_FRAME_ID): boolean {
+    return !!state?.frames?.[frameId]?.page
   }
 
-  public getAllState(): Page {
-    return this.current as Page
+  public getAllState(frameId = DEFAULT_FRAME_ID): Page {
+    return this.getCurrent(frameId) as Page
+  }
+
+  public getStateForFrame(state: any, frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
+    return state?.frames?.[frameId] ?? null
   }
 }
 

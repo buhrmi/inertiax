@@ -11,6 +11,7 @@ import { HttpCancelledError, HttpResponseError } from './httpErrors'
 import { page as currentPage } from './page'
 import { RequestParams } from './requestParams'
 import { Response } from './response'
+import type { Router } from './router'
 import type { ActiveVisit, Page } from './types'
 import { HttpProgressEvent, HttpRequestHeaders } from './types'
 import { urlWithoutHash } from './url'
@@ -21,18 +22,20 @@ export class Request {
   protected requestParams: RequestParams
   protected requestHasFinished = false
   protected optimistic: boolean
+  protected router?: Router
 
   constructor(
     params: ActiveVisit,
     protected page: Page,
-    { optimistic = false }: { optimistic?: boolean } = {},
+    { optimistic = false, router }: { optimistic?: boolean; router?: Router } = {},
   ) {
     this.requestParams = RequestParams.create(params)
     this.cancelToken = new AbortController()
     this.optimistic = optimistic
+    this.router = router
   }
 
-  public static create(params: ActiveVisit, page: Page, options?: { optimistic?: boolean }): Request {
+  public static create(params: ActiveVisit, page: Page, options?: { optimistic?: boolean; router?: Router }): Request {
     return new Request(params, page, options)
   }
 
@@ -75,14 +78,14 @@ export class Request {
         onUploadProgress: this.onProgress.bind(this),
       })
       .then((response) => {
-        this.response = Response.create(this.requestParams, response, this.page)
+        this.response = Response.create(this.requestParams, response, this.page, this.router)
 
         return this.response.handle()
       })
       .catch((error) => {
         // Handle HTTP error responses (4xx/5xx)
         if (error instanceof HttpResponseError) {
-          this.response = Response.create(this.requestParams, error.response, this.page)
+          this.response = Response.create(this.requestParams, error.response, this.page, this.router)
 
           return this.response.handle()
         }
@@ -165,7 +168,12 @@ export class Request {
       'X-Inertia': true,
     }
 
-    const page = currentPage.get()
+    const frameId = this.requestParams.all().frameId
+    const page = currentPage.get(frameId)
+
+    if (page.url) {
+      headers['X-Inertia-Referer'] = page.url
+    }
 
     if (page.version) {
       headers['X-Inertia-Version'] = page.version

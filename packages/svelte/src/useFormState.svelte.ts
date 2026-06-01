@@ -9,12 +9,13 @@ import type {
   UseFormTransformCallback,
   UseFormWithPrecognitionArguments,
 } from '@inertiajs/core'
-import { router, UseFormUtils } from '@inertiajs/core'
+import { UseFormUtils } from '@inertiajs/core'
 import { cloneDeep, isEqual } from 'es-toolkit'
 import { get, has, set } from 'es-toolkit/compat'
 import type { NamedInputEvent, ValidationConfig, Validator } from 'laravel-precognition'
 import { createValidator, resolveName, toSimpleValidationErrors } from 'laravel-precognition'
 import { config } from '.'
+import { useFrameId, useFrameRouter } from './frameContext.svelte'
 
 type TransformCallback<TForm> = (data: TForm) => object
 
@@ -104,13 +105,17 @@ export interface UseFormStateReturn<TForm extends object> {
 export default function useFormState<TForm extends object>(
   options: UseFormStateOptions<TForm>,
 ): UseFormStateReturn<TForm> {
+  const frameRouter = useFrameRouter()
+  const frameId = useFrameId()
   const { data: dataOption, rememberKey, precognitionEndpoint: initialPrecognitionEndpoint } = options
+
+  const scopedRememberKey = rememberKey ? `${frameId}:${rememberKey}` : null
 
   const isDataFunction = typeof dataOption === 'function'
   const resolveData = () => (isDataFunction ? (dataOption as () => TForm)() : dataOption)
 
-  const restored = rememberKey
-    ? (router.restore(rememberKey) as { data: TForm; errors: Record<FormDataKeys<TForm>, ErrorValue> } | null)
+  const restored = scopedRememberKey
+    ? (frameRouter.restore(scopedRememberKey) as { data: TForm; errors: Record<FormDataKeys<TForm>, ErrorValue> } | null)
     : null
 
   const initialData = restored?.data ?? cloneDeep(resolveData())
@@ -386,15 +391,15 @@ export default function useFormState<TForm extends object>(
 
   // Remember functionality
   $effect(() => {
-    if (!rememberKey) {
+    if (!scopedRememberKey) {
       return
     }
 
-    const storedData = router.restore(rememberKey)
+    const storedData = frameRouter.restore(scopedRememberKey)
     const newData = (form as unknown as InternalRememberState<TForm>).__remember()
 
     if (!isEqual(storedData, newData)) {
-      router.remember(newData, rememberKey)
+      frameRouter.remember(newData, scopedRememberKey)
     }
   })
 

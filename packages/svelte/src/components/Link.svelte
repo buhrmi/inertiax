@@ -1,6 +1,7 @@
 <script lang="ts">
   import { isUrlMethodPair, resolveUrlMethodPairComponent } from '@inertiajs/core'
   import type { LinkComponentBaseProps } from '@inertiajs/core'
+  import { useFrameRouter } from '../frameContext.svelte'
   import { inertia } from '../index'
 
   interface Props {
@@ -89,6 +90,8 @@
       button: { type: 'button' },
     }[asProp] || {},
   )
+
+  const frameRouter = useFrameRouter()
 </script>
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -113,6 +116,7 @@
     viewTransition,
     component: resolvedComponent,
     pageProps,
+    router: frameRouter,
   }}
   {...rest}
   {...elProps}

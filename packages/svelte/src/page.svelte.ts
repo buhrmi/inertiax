@@ -1,4 +1,5 @@
 import { type Page, type PageProps, type SharedPageProps } from '@inertiajs/core'
+import { useFrameContext } from './frameContext.svelte'
 
 type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {
   props: Page<TPageProps & SharedPageProps>['props'] & {
@@ -18,6 +19,12 @@ export function setPage(newPage: SveltePage) {
 }
 
 export function usePage<TPageProps extends PageProps = PageProps>(): SveltePage<TPageProps> {
+  const context = useFrameContext()
+
+  if (context) {
+    return context.getPage() as SveltePage<TPageProps>
+  }
+
   return page as SveltePage<TPageProps>
 }
 

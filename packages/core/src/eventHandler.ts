@@ -1,24 +1,30 @@
-import { get } from 'es-toolkit/compat'
 import debounce from './debounce'
-import { fireNavigateEvent } from './events'
-import { history } from './history'
-import { router } from './index'
 import { page as currentPage } from './page'
 import { Scroll } from './scroll'
 import { GlobalEvent, GlobalEventNames, GlobalEventResult, InternalEvent } from './types'
-import { hrefToUrl } from './url'
 
 class EventHandler {
+  protected initialized = false
+
   protected internalListeners: {
     event: InternalEvent
     listener: (...args: any[]) => void
   }[] = []
 
+  protected popstateHandlers = new Map<string, (state: any) => void>()
+  protected pageshowHandlers = new Map<string, () => void>()
+
   public init() {
+    if (this.initialized) {
+      return
+    }
+
+    this.initialized = true
+
     if (typeof window !== 'undefined') {
       window.addEventListener('popstate', this.handlePopstateEvent.bind(this))
       window.addEventListener('pageshow', this.handlePageshowEvent.bind(this))
-      window.addEventListener('scroll', debounce(Scroll.onWindowScroll.bind(Scroll), 100), true)
+      window.addEventListener('scroll', debounce(() => Scroll.onWindowScroll(), 100), true)
     }
 
     if (typeof document !== 'undefined') {
@@ -49,12 +55,28 @@ class EventHandler {
     }
   }
 
-  public onMissingHistoryItem() {
+  public registerPopstateHandler(frameId: string, callback: (state: any) => void): VoidFunction {
+    this.popstateHandlers.set(frameId, callback)
+
+    return () => {
+      this.popstateHandlers.delete(frameId)
+    }
+  }
+
+  public registerPageshowHandler(frameId: string, callback: () => void): VoidFunction {
+    this.pageshowHandlers.set(frameId, callback)
+
+    return () => {
+      this.pageshowHandlers.delete(frameId)
+    }
+  }
+
+  public onMissingHistoryItem(frameId = '_top') {
     // At this point, the user has probably cleared the state
     // Mark the current page as cleared so that we don't try to write anything to it.
-    currentPage.clear()
+    currentPage.clear(frameId)
     // Fire an event so that that any listeners can handle this situation
-    this.fireInternalEvent('missingHistoryItem')
+    this.fireInternalEvent('missingHistoryItem', frameId)
   }
 
   public fireInternalEvent(event: InternalEvent, ...args: any[]): void {
@@ -69,66 +91,14 @@ class EventHandler {
     return () => document.removeEventListener(type, listener)
   }
 
-  // bfcache restores pages without firing `popstate`, so we use `pageshow` to
-  // re-validate encrypted history entries after `clearHistory` removed the keys.
-  // https://web.dev/articles/bfcache
   protected handlePageshowEvent(event: PageTransitionEvent): void {
     if (event.persisted) {
-      history.decrypt().catch(() => this.onMissingHistoryItem())
+      this.pageshowHandlers.forEach((handler) => handler())
     }
   }
 
   protected handlePopstateEvent(event: PopStateEvent): void {
-    const state = event.state || null
-
-    if (state === null) {
-      const url = hrefToUrl(currentPage.get().url)
-      url.hash = window.location.hash
-
-      history.replaceState({ ...currentPage.getWithoutFlashData(), url: url.href })
-      Scroll.reset()
-
-      return
-    }
-
-    if (!history.isValidState(state)) {
-      return this.onMissingHistoryItem()
-    }
-
-    history
-      .decrypt(state.page)
-      .then((data) => {
-        if (currentPage.get().version !== data.version) {
-          this.onMissingHistoryItem()
-          return
-        }
-
-        // Cancel ongoing requests except prefetch requests
-        router.cancelAll({ prefetch: false })
-
-        currentPage.setQuietly(data, { preserveState: false }).then(() => {
-          Scroll.restore(history.getScrollRegions())
-          fireNavigateEvent(currentPage.get())
-
-          const pendingDeferred: Record<string, string[]> = {}
-          const pageProps = currentPage.get().props
-
-          for (const [group, props] of Object.entries(data.initialDeferredProps ?? data.deferredProps ?? {})) {
-            const missing = props.filter((prop) => get(pageProps, prop) === undefined)
-
-            if (missing.length > 0) {
-              pendingDeferred[group] = missing
-            }
-          }
-
-          if (Object.keys(pendingDeferred).length > 0) {
-            this.fireInternalEvent('loadDeferredProps', pendingDeferred)
-          }
-        })
-      })
-      .catch(() => {
-        this.onMissingHistoryItem()
-      })
+    this.popstateHandlers.forEach((handler) => handler(event.state || null))
   }
 }
 

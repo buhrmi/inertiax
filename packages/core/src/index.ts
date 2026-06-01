@@ -42,3 +42,7 @@ export { XhrHttpClient, xhrHttpClient } from './xhrHttpClient'
 export { type Config, type Router }
 
 export const router = new Router()
+
+export function createRouter(frameId = '_top'): Router {
+  return new Router(frameId)
+}

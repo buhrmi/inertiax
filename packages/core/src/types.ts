@@ -312,6 +312,7 @@ export type CancelTokenCallback = (cancelToken: CancelToken) => void
 export type OptimisticCallback<TProps = Page<SharedPageProps>['props']> = (props: TProps) => Partial<TProps> | void
 
 export type Visit<T extends RequestPayload = RequestPayload> = {
+  frameId: string
   method: Method
   data: T
   replace: boolean
@@ -649,6 +650,7 @@ export type InertiaAppConfig = {
 export interface LinkComponentBaseProps extends Partial<
   Pick<
     Visit<RequestPayload>,
+    | 'frameId'
     | 'component'
     | 'data'
     | 'method'
@@ -750,7 +752,7 @@ export type UseHttpSubmitArguments<TResponse = unknown, TForm = unknown> =
 
 export type FormComponentOptions = Pick<
   VisitOptions,
-  'preserveScroll' | 'preserveState' | 'preserveUrl' | 'replace' | 'only' | 'except' | 'reset' | 'viewTransition'
+  'frameId' | 'preserveScroll' | 'preserveState' | 'preserveUrl' | 'replace' | 'only' | 'except' | 'reset' | 'viewTransition'
 >
 
 export type FormComponentOptimisticCallback<

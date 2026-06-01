@@ -8,38 +8,38 @@ import { SessionStorage } from './sessionStorage'
 import { LocationVisit, Page } from './types'
 
 export class InitialVisit {
-  public static handle(): void {
-    this.clearRememberedStateOnReload()
+  public static handle(frameId = '_top'): void {
+    this.clearRememberedStateOnReload(frameId)
 
     const scenarios = [this.handleBackForward, this.handleLocation, this.handleDefault]
 
-    scenarios.find((handler) => handler.bind(this)())
+    scenarios.find((handler) => handler.bind(this)(frameId))
   }
 
-  protected static clearRememberedStateOnReload(): void {
+  protected static clearRememberedStateOnReload(frameId = '_top'): void {
     if (navigationType.isReload()) {
-      history.deleteState(history.rememberedState)
-      history.clearInitialState(history.rememberedState)
+      history.deleteState(history.rememberedState, frameId)
+      history.clearInitialState(history.rememberedState, frameId)
     }
   }
 
-  protected static handleBackForward(): boolean {
-    if (!navigationType.isBackForward() || !history.browserHasHistoryEntry()) {
+  protected static handleBackForward(frameId = '_top'): boolean {
+    if (!navigationType.isBackForward() || !history.browserHasHistoryEntry(frameId)) {
       return false
     }
 
-    const scrollRegions = history.getScrollRegions()
+    const scrollRegions = history.getScrollRegions(frameId)
 
     history
-      .decrypt()
+      .decrypt(null, frameId)
       .then((data) => {
-        currentPage.set(data, { preserveScroll: true, preserveState: true }).then(() => {
-          Scroll.restore(scrollRegions)
-          fireNavigateEvent(currentPage.get())
+        currentPage.set(data, { preserveScroll: true, preserveState: true }, frameId).then(() => {
+          Scroll.restore(scrollRegions, frameId)
+          fireNavigateEvent(currentPage.get(frameId))
         })
       })
       .catch(() => {
-        eventHandler.onMissingHistoryItem()
+        eventHandler.onMissingHistoryItem(frameId)
       })
 
     return true
@@ -48,7 +48,7 @@ export class InitialVisit {
   /**
    * @link https://inertiajs.com/redirects#external-redirects
    */
-  protected static handleLocation(): boolean {
+  protected static handleLocation(frameId = '_top'): boolean {
     if (!SessionStorage.exists(SessionStorage.locationVisitKey)) {
       return false
     }
@@ -58,54 +58,54 @@ export class InitialVisit {
     SessionStorage.remove(SessionStorage.locationVisitKey)
 
     if (typeof window !== 'undefined') {
-      currentPage.setUrlHash(window.location.hash)
+      currentPage.setUrlHash(window.location.hash, frameId)
     }
 
     history
-      .decrypt(currentPage.get())
+      .decrypt(currentPage.get(frameId), frameId)
       .then(() => {
-        const rememberedState = history.getState<Page['rememberedState']>(history.rememberedState, {})
-        const scrollRegions = history.getScrollRegions()
-        currentPage.remember(rememberedState)
+        const rememberedState = history.getState<Page['rememberedState']>(history.rememberedState, {}, frameId)
+        const scrollRegions = history.getScrollRegions(frameId)
+        currentPage.remember(rememberedState, frameId)
 
         currentPage
-          .set(currentPage.get(), {
+          .set(currentPage.get(frameId), {
             preserveScroll: locationVisit.preserveScroll,
             preserveState: true,
-          })
+          }, frameId)
           .then(() => {
             if (locationVisit.preserveScroll) {
-              Scroll.restore(scrollRegions)
+              Scroll.restore(scrollRegions, frameId)
             }
 
-            this.fireInitialEvents()
+            this.fireInitialEvents(frameId)
           })
       })
       .catch(() => {
-        eventHandler.onMissingHistoryItem()
+        eventHandler.onMissingHistoryItem(frameId)
       })
 
     return true
   }
 
-  protected static handleDefault(): void {
+  protected static handleDefault(frameId = '_top'): void {
     if (typeof window !== 'undefined') {
-      currentPage.setUrlHash(window.location.hash)
+      currentPage.setUrlHash(window.location.hash, frameId)
     }
 
-    currentPage.set(currentPage.get(), { preserveScroll: true, preserveState: true }).then(() => {
+    currentPage.set(currentPage.get(frameId), { preserveScroll: true, preserveState: true }, frameId).then(() => {
       if (navigationType.isReload()) {
-        Scroll.restore(history.getScrollRegions())
+        Scroll.restore(history.getScrollRegions(frameId), frameId)
       } else {
         Scroll.scrollToAnchor()
       }
 
-      this.fireInitialEvents()
+      this.fireInitialEvents(frameId)
     })
   }
 
-  protected static fireInitialEvents(): void {
-    const page = currentPage.get()
+  protected static fireInitialEvents(frameId = '_top'): void {
+    const page = currentPage.get(frameId)
 
     fireNavigateEvent(page)
 

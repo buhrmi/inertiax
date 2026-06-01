@@ -1,6 +1,5 @@
 import { isEqual } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
-import { router } from '.'
 import dialog from './dialog'
 import {
   fireBeforeUpdateEvent,
@@ -15,6 +14,7 @@ import { page as currentPage } from './page'
 import { partialReloadRequestsProp } from './partialReload'
 import Queue from './queue'
 import { RequestParams } from './requestParams'
+import type { Router } from './router'
 import { SessionStorage } from './sessionStorage'
 import { ActiveVisit, ErrorBag, Errors, HttpResponse, Page, PageProps } from './types'
 import { hrefToUrl, isSameUrlWithoutHash, setHashIfSameUrl } from './url'
@@ -29,10 +29,11 @@ export class Response {
     protected requestParams: RequestParams,
     protected response: HttpResponse,
     protected originatingPage: Page,
+    protected router?: Router,
   ) {}
 
-  public static create(params: RequestParams, response: HttpResponse, originatingPage: Page): Response {
-    return new Response(params, response, originatingPage)
+  public static create(params: RequestParams, response: HttpResponse, originatingPage: Page, router?: Router): Response {
+    return new Response(params, response, originatingPage, router)
   }
 
   public isProcessed(): boolean {
@@ -88,14 +89,15 @@ export class Response {
 
     await this.setPage()
 
-    const { flash } = currentPage.get()
+    const frameId = this.requestParams.all().frameId
+    const { flash } = currentPage.get(frameId)
 
     if (Object.keys(flash).length > 0 && !this.requestParams.isDeferredPropsRequest()) {
       fireFlashEvent(flash)
       this.requestParams.all().onFlash(flash)
     }
 
-    const errors = currentPage.get().props.errors || {}
+    const errors = currentPage.get(frameId).props.errors || {}
 
     if (Object.keys(errors).length > 0) {
       const scopedErrors = this.getScopedErrors(errors)
@@ -105,17 +107,17 @@ export class Response {
       return this.requestParams.all().onError(scopedErrors)
     }
 
-    router.flushByCacheTags(this.requestParams.all().invalidateCacheTags || [])
+    this.router?.flushByCacheTags(this.requestParams.all().invalidateCacheTags || [])
 
     if (!this.wasPrefetched) {
       // We end up here other than from the prefetch cache, so we assume this response is
       // newer than the cached one and therefore flush the cache.
-      router.flush(currentPage.get().url)
+      this.router?.flush(currentPage.get(frameId).url)
     }
 
-    fireSuccessEvent(currentPage.get())
+    fireSuccessEvent(currentPage.get(frameId))
 
-    await this.requestParams.all().onSuccess(currentPage.get())
+    await this.requestParams.all().onSuccess(currentPage.get(frameId))
 
     history.preserveUrl = false
   }
@@ -137,7 +139,7 @@ export class Response {
 
   protected async handleNonInertiaResponse() {
     if (this.isInertiaRedirect()) {
-      router.visit(this.getHeader('x-inertia-redirect'), {
+      this.router?.visit(this.getHeader('x-inertia-redirect'), {
         ...this.requestParams.all(),
         method: 'get',
         data: {},
@@ -221,13 +223,14 @@ export class Response {
 
   protected async setPage(): Promise<void> {
     const pageResponse = this.getPageResponse()
+    const frameId = this.requestParams.all().frameId
 
     if (!this.shouldSetPage(pageResponse)) {
       return Promise.resolve()
     }
 
     this.mergeProps(pageResponse)
-    currentPage.mergeOncePropsIntoResponse(pageResponse)
+    currentPage.mergeOncePropsIntoResponse(pageResponse, {}, frameId)
     this.preserveOptimisticProps(pageResponse)
     this.preserveEqualProps(pageResponse)
 
@@ -235,7 +238,7 @@ export class Response {
 
     this.requestParams.setPreserveOptions(pageResponse)
 
-    pageResponse.url = history.preserveUrl ? currentPage.get().url : this.pageUrl(pageResponse)
+    pageResponse.url = history.preserveUrl ? currentPage.get(frameId).url : this.pageUrl(pageResponse)
 
     this.requestParams.all().onBeforeUpdate(pageResponse)
     fireBeforeUpdateEvent(pageResponse)
@@ -245,7 +248,7 @@ export class Response {
       preserveScroll: this.requestParams.all().preserveScroll as boolean,
       preserveState: this.requestParams.all().preserveState as boolean,
       viewTransition: this.requestParams.all().viewTransition,
-    })
+    }, frameId)
   }
 
   protected getDataFromResponse(response: any): any {
@@ -274,12 +277,14 @@ export class Response {
 
     // At this point, if the originating request component is different than the current component,
     // the user has since navigated and we should discard the response
-    if (this.originatingPage.component !== currentPage.get().component) {
+    const frameId = this.requestParams.all().frameId
+
+    if (this.originatingPage.component !== currentPage.get(frameId).component) {
       return false
     }
 
     const originatingUrl = hrefToUrl(this.originatingPage.url)
-    const currentPageUrl = hrefToUrl(currentPage.get().url)
+    const currentPageUrl = hrefToUrl(currentPage.get(frameId).url)
 
     // We have the same component, let's double-check the URL
     // If we're no longer on the same path name (e.g. /users/1 -> /users/2), we should not set the page
@@ -299,24 +304,28 @@ export class Response {
   }
 
   protected preserveOptimisticProps(pageResponse: Page): void {
-    if (!router.hasPendingOptimistic()) {
+    const frameId = this.requestParams.all().frameId
+
+    if (!this.router?.hasPendingOptimistic()) {
       return
     }
 
     for (const key of Object.keys(pageResponse.props)) {
-      if (currentPage.hasBaseline(key)) {
-        currentPage.updateBaseline(key, pageResponse.props[key])
-        pageResponse.props[key] = currentPage.get().props[key]
+      if (currentPage.hasBaseline(key, frameId)) {
+        currentPage.updateBaseline(key, pageResponse.props[key], frameId)
+        pageResponse.props[key] = currentPage.get(frameId).props[key]
       }
     }
   }
 
   protected preserveEqualProps(pageResponse: Page): void {
-    if (pageResponse.component !== currentPage.get().component) {
+    const frameId = this.requestParams.all().frameId
+
+    if (pageResponse.component !== currentPage.get(frameId).component) {
       return
     }
 
-    const currentPageProps = currentPage.get().props
+    const currentPageProps = currentPage.get(frameId).props
 
     Object.entries(pageResponse.props).forEach(([key, value]) => {
       if (isEqual(value, currentPageProps[key])) {
@@ -326,7 +335,9 @@ export class Response {
   }
 
   protected mergeProps(pageResponse: Page): void {
-    if (!this.requestParams.isPartial() || pageResponse.component !== currentPage.get().component) {
+    const frameId = this.requestParams.all().frameId
+
+    if (!this.requestParams.isPartial() || pageResponse.component !== currentPage.get(frameId).component) {
       return
     }
 
@@ -336,7 +347,7 @@ export class Response {
     const matchPropsOn = pageResponse.matchPropsOn || []
 
     const mergeProp = (prop: string, shouldAppend: boolean) => {
-      const currentProp = get(currentPage.get().props, prop)
+      const currentProp = get(currentPage.get(frameId).props, prop)
       const incomingProp = get(pageResponse.props, prop)
 
       if (Array.isArray(incomingProp)) {
@@ -363,7 +374,7 @@ export class Response {
     propsToPrepend.forEach((prop) => mergeProp(prop, false))
 
     propsToDeepMerge.forEach((prop) => {
-      const currentProp = get(currentPage.get().props, prop)
+      const currentProp = get(currentPage.get(frameId).props, prop)
       const incomingProp = get(pageResponse.props, prop)
 
       // Function to recursively merge objects and arrays
@@ -397,31 +408,31 @@ export class Response {
         .map((prop) => prop.split('.')[0]),
     )
     for (const key of nestedTopKeys) {
-      const currentValue = currentPage.get().props[key]
+      const currentValue = currentPage.get(frameId).props[key]
 
       if (this.isObject(currentValue) && this.isObject(pageResponse.props[key])) {
         pageResponse.props[key] = this.deepMergeObjects(currentValue as PageProps, pageResponse.props[key] as PageProps)
       }
     }
 
-    pageResponse.props = { ...currentPage.get().props, ...pageResponse.props }
+    pageResponse.props = { ...currentPage.get(frameId).props, ...pageResponse.props }
 
     if (this.shouldPreserveErrors(pageResponse)) {
-      pageResponse.props.errors = currentPage.get().props.errors
+      pageResponse.props.errors = currentPage.get(frameId).props.errors
     }
 
     // Preserve the existing scrollProps
-    if (currentPage.get().scrollProps) {
+    if (currentPage.get(frameId).scrollProps) {
       pageResponse.scrollProps = {
-        ...(currentPage.get().scrollProps || {}),
+        ...(currentPage.get(frameId).scrollProps || {}),
         ...(pageResponse.scrollProps || {}),
       }
     }
 
     // Preserve the existing onceProps
-    if (currentPage.hasOnceProps()) {
+    if (currentPage.hasOnceProps(frameId)) {
       pageResponse.onceProps = {
-        ...(currentPage.get().onceProps || {}),
+        ...(currentPage.get(frameId).onceProps || {}),
         ...(pageResponse.onceProps || {}),
       }
     }
@@ -430,10 +441,10 @@ export class Response {
     // the same flash from the initial load), but let regular partial reloads use
     // whatever the server sent (which may be empty, clearing stale flash)
     if (this.requestParams.isDeferredPropsRequest()) {
-      pageResponse.flash = { ...currentPage.get().flash }
+      pageResponse.flash = { ...currentPage.get(frameId).flash }
     }
 
-    const currentOriginalDeferred = currentPage.get().initialDeferredProps
+    const currentOriginalDeferred = currentPage.get(frameId).initialDeferredProps
     if (currentOriginalDeferred && Object.keys(currentOriginalDeferred).length > 0) {
       pageResponse.initialDeferredProps = currentOriginalDeferred
     }
@@ -442,7 +453,8 @@ export class Response {
   }
 
   protected mergeRescuedProps(pageResponse: Page): string[] {
-    const currentRescued = currentPage.get().rescuedProps ?? []
+    const frameId = this.requestParams.all().frameId
+    const currentRescued = currentPage.get(frameId).rescuedProps ?? []
     const incomingRescued = pageResponse.rescuedProps ?? []
 
     const newRescued = new Set(
@@ -465,7 +477,8 @@ export class Response {
       return false
     }
 
-    const currentErrors = currentPage.get().props.errors
+    const frameId = this.requestParams.all().frameId
+    const currentErrors = currentPage.get(frameId).props.errors
 
     if (!currentErrors || Object.keys(currentErrors).length === 0) {
       return false
@@ -592,12 +605,13 @@ export class Response {
   }
 
   protected async setRememberedState(pageResponse: Page): Promise<void> {
-    const rememberedState = await history.getState<Page['rememberedState']>(history.rememberedState, {})
+    const frameId = this.requestParams.all().frameId
+    const rememberedState = await history.getState<Page['rememberedState']>(history.rememberedState, {}, frameId)
 
     if (
       this.requestParams.all().preserveState &&
       rememberedState &&
-      pageResponse.component === currentPage.get().component
+      pageResponse.component === currentPage.get(frameId).component
     ) {
       pageResponse.rememberedState = rememberedState
     }
