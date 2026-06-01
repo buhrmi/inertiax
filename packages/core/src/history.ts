@@ -85,7 +85,7 @@ class History {
     }
   }
 
-  public pushState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID): void {
+  public pushState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID, browserUrl?: string): void {
     if (isServer) {
       return
     }
@@ -99,7 +99,7 @@ class History {
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const doPush = () => this.doPushState({ page: data }, page.url, frameId).then(() => cb?.())
+        const doPush = () => this.doPushState({ page: data }, browserUrl ?? page.url, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -220,7 +220,7 @@ class History {
     return this.getFrameState(frameId)?.documentScrollPosition || { top: 0, left: 0 }
   }
 
-  public replaceState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID): void {
+  public replaceState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID, browserUrl?: string): void {
     if (isEqual(this.getCurrent(frameId), page)) {
       cb && cb()
       return
@@ -242,7 +242,7 @@ class History {
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const doReplace = () => this.doReplaceState({ page: data }, page.url, frameId).then(() => cb?.())
+        const doReplace = () => this.doReplaceState({ page: data }, browserUrl ?? page.url, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {

@@ -271,6 +271,7 @@ export interface ClientSideVisitOptions<TProps = Page['props']> {
   flash?: ((flash: FlashData) => PageFlashData) | PageFlashData
   clearHistory?: Page['clearHistory']
   encryptHistory?: Page['encryptHistory']
+  updateBrowserUrl?: VisitOptions['updateBrowserUrl']
   preserveScroll?: VisitOptions['preserveScroll']
   preserveState?: VisitOptions['preserveState']
   errorBag?: string | null
@@ -316,6 +317,7 @@ export type Visit<T extends RequestPayload = RequestPayload> = {
   method: Method
   data: T
   replace: boolean
+  updateBrowserUrl: boolean
   preserveScroll: PreserveStateOption
   preserveState: PreserveStateOption
   only: Array<string>
@@ -655,6 +657,7 @@ export interface LinkComponentBaseProps extends Partial<
     | 'data'
     | 'method'
     | 'replace'
+    | 'updateBrowserUrl'
     | 'preserveScroll'
     | 'preserveState'
     | 'preserveUrl'
@@ -752,7 +755,7 @@ export type UseHttpSubmitArguments<TResponse = unknown, TForm = unknown> =
 
 export type FormComponentOptions = Pick<
   VisitOptions,
-  'frameId' | 'preserveScroll' | 'preserveState' | 'preserveUrl' | 'replace' | 'only' | 'except' | 'reset' | 'viewTransition'
+  'frameId' | 'preserveScroll' | 'preserveState' | 'preserveUrl' | 'replace' | 'updateBrowserUrl' | 'only' | 'except' | 'reset' | 'viewTransition'
 >
 
 export type FormComponentOptimisticCallback<

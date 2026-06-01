@@ -100,13 +100,13 @@ test('multi-frame links update only their own frame and history back/forward rep
 
   await expect(page.getByTestId('left-step')).toHaveText('1')
   await expect(page.getByTestId('right-step')).toHaveText('0')
-  await expect(page).toHaveURL(/\/svelte\/multi-frame\/left\?step=1$/)
+  await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
 
   await page.getByTestId('right-next-link').click()
 
   await expect(page.getByTestId('left-step')).toHaveText('1')
   await expect(page.getByTestId('right-step')).toHaveText('1')
-  await expect(page).toHaveURL(/\/svelte\/multi-frame\/right\?step=1$/)
+  await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
 
   await page.goBack()
 
@@ -129,9 +129,11 @@ test('multi-frame form submit updates only submit frame', async ({ page }) => {
 
   await expect(page.getByTestId('left-step')).toHaveText('1')
   await expect(page.getByTestId('right-step')).toHaveText('0')
+  await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
 
   await page.getByTestId('right-submit').click()
 
   await expect(page.getByTestId('left-step')).toHaveText('1')
   await expect(page.getByTestId('right-step')).toHaveText('1')
+  await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
 })

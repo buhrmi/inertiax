@@ -54,11 +54,13 @@ class CurrentFramePage {
     page: Page,
     {
       replace = false,
+      updateBrowserUrl = this.frameId === DEFAULT_FRAME_ID,
       preserveScroll = false,
       preserveState = false,
       viewTransition = false,
     }: {
       replace?: boolean
+      updateBrowserUrl?: boolean
       preserveScroll?: boolean
       preserveState?: boolean
       viewTransition?: Visit['viewTransition']
@@ -93,15 +95,18 @@ class CurrentFramePage {
 
       const isServer = typeof window === 'undefined'
       const location = !isServer ? window.location : new URL(page.url)
+      const currentFrameUrl = hrefToUrl(this.page?.url ?? page.url)
+      const comparisonTarget = updateBrowserUrl ? location : currentFrameUrl
       const scrollRegions = !isServer && preserveScroll ? Scroll.getScrollRegions() : []
-      replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), location)
+      replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), comparisonTarget)
 
       const pageForHistory = { ...page, flash: {} }
+      const browserUrl = !isServer && !updateBrowserUrl ? window.location.href : page.url
 
       return new Promise<void>((resolve) =>
         replace
-          ? history.replaceState(pageForHistory, resolve, this.frameId)
-          : history.pushState(pageForHistory, resolve, this.frameId),
+          ? history.replaceState(pageForHistory, resolve, this.frameId, browserUrl)
+          : history.pushState(pageForHistory, resolve, this.frameId, browserUrl),
       ).then(() => {
         const isNewComponent = !this.isTheSame(page)
 

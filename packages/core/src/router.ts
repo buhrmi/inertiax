@@ -687,6 +687,7 @@ export class Router {
     return currentPage
       .set(page, {
         replace,
+        updateBrowserUrl: params.updateBrowserUrl ?? this.frameId === DEFAULT_FRAME_ID,
         preserveScroll,
         preserveState,
         viewTransition,
@@ -745,6 +746,7 @@ export class Router {
 
     return currentPage.set(intermediatePage, {
       replace: visit.replace,
+      updateBrowserUrl: visit.updateBrowserUrl,
       preserveScroll: RequestParams.resolvePreserveOption(visit.preserveScroll, intermediatePage),
       preserveState: false,
       viewTransition: visit.viewTransition,
@@ -782,6 +784,7 @@ export class Router {
       method: 'get',
       data: {},
       replace: false,
+      updateBrowserUrl: this.frameId === DEFAULT_FRAME_ID,
       preserveScroll: false,
       preserveState: false,
       only: [],

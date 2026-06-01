@@ -7,14 +7,14 @@ test.beforeEach(async ({ page }) => {
 
 test('it will not encrypt history by default', async ({ page }) => {
   const historyState1 = await page.evaluate(() => window.history.state)
-  await expect(historyState1.page.component).toBe('History/Page')
-  await expect(historyState1.page.props.pageNumber).toBe('1')
+  await expect(historyState1.frames._top.page.component).toBe('History/Page')
+  await expect(historyState1.frames._top.page.props.pageNumber).toBe('1')
   await expect(page.getByText('This is page 1')).toBeVisible()
 
   await clickAndWaitForResponse(page, 'Page 2', '/history/2')
   const historyState2 = await page.evaluate(() => window.history.state)
-  await expect(historyState2.page.component).toBe('History/Page')
-  await expect(historyState2.page.props.pageNumber).toBe('2')
+  await expect(historyState2.frames._top.page.component).toBe('History/Page')
+  await expect(historyState2.frames._top.page.props.pageNumber).toBe('2')
   await expect(page.getByText('This is page 2')).toBeVisible()
 
   requests.listen(page)
@@ -38,7 +38,7 @@ test('it can encrypt history', async ({ page }) => {
   await expect
     .poll(async () => {
       const state = await page.evaluate(() => window.history.state)
-      return state.page
+      return state.frames._top.page
     })
     .toEqual({})
 
@@ -51,15 +51,15 @@ test('it can encrypt history', async ({ page }) => {
 
   // Double check that this history state did not get encrypted
   const historyState1 = await page.evaluate(() => window.history.state)
-  await expect(historyState1.page.component).toBe('History/Page')
-  await expect(historyState1.page.props.pageNumber).toBe('1')
+  await expect(historyState1.frames._top.page.component).toBe('History/Page')
+  await expect(historyState1.frames._top.page.props.pageNumber).toBe('1')
 
   await page.goForward()
   await page.waitForURL('/history/3')
   await expect
     .poll(async () => {
       const state = await page.evaluate(() => window.history.state)
-      return state.page
+      return state.frames._top.page
     })
     .toEqual({})
   await expect(page.getByText('This is page 3')).toBeVisible()
@@ -117,14 +117,14 @@ test('history can be cleared via props', async ({ page }) => {
 test('multi byte strings can be encrypted', async ({ page }) => {
   await clickAndWaitForResponse(page, 'Page 5', '/history/5')
 
-  // Check that the history state has a 'page' key
+  // Check that the history state has a 'frames' key
   const historyState5Keys = await page.evaluate(() => Object.keys(window.history.state))
-  await expect(historyState5Keys).toContain('page')
+  await expect(historyState5Keys).toContain('frames')
 
-  // When history is encrypted, the page is an ArrayBuffer,
+  // When history is encrypted, the frames are an ArrayBuffer,
   // but Playwright doesn't transfer it as such over the wire (page.evaluate),
   // so if the object is "empty" and the page check below works, it's working.
-  const historyState5Page = await page.evaluate(() => window.history.state.page)
+  const historyState5Page = await page.evaluate(() => window.history.state.frames._top.page)
   await expect(historyState5Page).toEqual({})
 
   await expect(page.getByText('Multi byte character: 😃')).toBeVisible()

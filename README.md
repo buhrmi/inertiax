@@ -2,81 +2,93 @@
 
 Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds additional features to the Svelte adapter.
 
+Note: This is the documentation for the 3.x branch of Inertia X, which has not yet been released on NPM. To see the documentation for Inertia X based on Inertia 2.0, please see the current [master branch](https://github.com/buhrmi/inertiax/tree/master).
+
 ## Frame Component
 
 The `Frame` component enables multiple independent Inertia page regions on the same document.
 Each frame owns its own router and page state, so links/forms inside one frame only update that frame.
 
-The main use case for this are modals, side panels, wizards, etc. Essentially, any Inertia app that requires some part of the page to update indepently from the rest.
+The main use case for this are modals, side panels, wizards, etc.
 
 ## Basic Usage
 
 ```svelte
 <Frame id="sidebar" src="/app/sidebar">
-    <p>Loading sidebar...</p>
+  <p>Loading sidebar...</p>
 </Frame>
 ```
 
-## Frame API
+## Using The Current Frame Router
 
-- `id?: string`
-- `src?: string`
-- `router?: Router`
-- `initialComponent?: ResolvedComponent`
-- `initialPage?: Page`
-- `resolveComponent: ComponentResolver`
-- `defaultLayout?: (name: string, page: Page) => unknown`
-- `children?: Snippet`
+Inside a component rendered by a `Frame`, use `useFrameRouter()` to access the router for that frame.
 
-Notes:
-- If `id` is omitted, the frame uses the default id `_top`.
-- If `initialPage` is absent and `src` exists, `Frame` boots by fetching the Inertia payload from `src`.
-- The `children` snippet is used as fallback UI while `src` loading is in progress.
+```svelte
+<script lang="ts">
+  import { useFrameRouter } from '@inertiajs/svelte'
 
-## Router and State Isolation
+  const router = useFrameRouter()
 
-Each `Frame` creates (or accepts) a router scoped to the frame id.
+  function nextStep() {
+    router.get(`/wizard/step-2`)
+  }
+</script>
 
-This means:
-- Link clicks inside a frame navigate that frame only.
-- Form submissions inside a frame update that frame only.
-- `usePage`, `useRemember`, `useForm`, `usePoll`, and `usePrefetch` resolve through frame context.
+<button on:click={nextStep}>Next step</button>
+```
 
-This isolation is what enables multiple independently interactive Inertia panes on one page.
+If you need more than the router, `useFrameContext()` gives you the active frame id, router, resolver, and page accessors.
 
-## Back/Forward Navigation Behavior
+```svelte
+<script lang="ts">
+  import { useFrameContext } from '@inertiajs/svelte'
 
-History state is frame-keyed, not single-page keyed.
+  const {
+    id,
+    router,
+    resolveComponent,
+    getPage,
+    setPage
+  } = useFrameContext()
+</script>
+```
 
-At a high level:
-- History entries store a `frames` object keyed by frame id.
-- A popstate event is dispatched to all frame routers.
-- Each frame router restores only its own frame state when that state exists on the history entry.
-- Entries for older single-frame history format are migrated on read for backward compatibility.
+## Visiting A Different Frame
 
-Practical behavior:
-- If frame A navigates and frame B does not, browser back first replays frame A's previous state.
-- Back/forward operations do not force unrelated frames to reload.
-- Default frame popstate handling preserves state to avoid remounting and resetting child frame trees.
+If you want to initiate a visit for another frame, pass that frame's id in the visit options.
 
-## Implementation Summary (New vs Previous)
+```svelte
+<script lang="ts">
+  import { router } from '@inertiajs/svelte'
 
-Previous model:
-- One global router.
-- One global current page object.
-- History state effectively modeled a single page payload.
-- Popstate restoration was global.
+  function openDetailsPanel(userId: number) {
+    router.get(`/users/${userId}/details`, {}, { frameId: 'details' })
+  }
+</script>
 
-New model:
-- Router instances are frame-scoped (`createRouter(frameId)`).
-- Page store is frame-scoped (internally keyed by frame id).
-- History state is frame-scoped (`state.frames[frameId]`).
-- Event handling fans out popstate/pageshow to registered frame handlers.
-- Svelte adapter provides frame context hooks (`useFrameRouter`, `useFrameId`, context-aware `usePage`).
-- Existing `App` remains available and delegates to the default frame for compatibility.
+<button on:click={() => openDetailsPanel(42)}>Open details</button>
+```
 
-## Compatibility Notes
+This is useful when one frame controls another frame, for example a table in the main content area opening a side panel.
 
-- Existing single-app usage remains supported through `App` and the default frame id `_top`.
-- Legacy history entries are normalized into frame format when read.
-- Multi-frame features can be adopted incrementally: start with one `Frame`, then split additional regions.
+If you prefer explicit router instances, create one router per frame and reuse that same router anywhere you need to control it.
+
+```svelte
+<script lang="ts">
+  import { createRouter, Frame } from '@inertiajs/svelte'
+
+  const detailsRouter = createRouter('details')
+
+  function showUser(userId: number) {
+    detailsRouter.visit(`/users/${userId}/details`)
+  }
+</script>
+
+<button on:click={() => showUser(42)}>Show user</button>
+
+<Frame id="details" router={detailsRouter} src="/users/42/details">
+  <p>Loading details...</p>
+</Frame>
+```
+
+By default, visits on non-top frames update that frame's history state without replacing the browser URL. If you want a frame visit to also update the address bar, pass `updateBrowserUrl: true` in the visit options.
