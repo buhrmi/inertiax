@@ -322,6 +322,24 @@ export class Router {
     }
   }
 
+  /**
+   * Clean up all resources held by this router instance. Call this when the
+   * frame that owns this router is unmounted. Safe to call multiple times.
+   */
+  public destroy(): void {
+    this.cancelAll()
+    this.removePopstateHandler?.()
+    this.removePageshowHandler?.()
+    this.removePopstateHandler = undefined
+    this.removePageshowHandler = undefined
+    // Only clean up per-frame stores for non-top frames (top-level page state
+    // must persist for the lifetime of the app).
+    if (this.frameId !== '_top') {
+      currentPage.deleteFrame(this.frameId)
+      history.deleteFrame(this.frameId)
+    }
+  }
+
   public poll(interval: number, requestOptions: ReloadOptions | (() => ReloadOptions) = {}, options: PollOptions = {}) {
     return polls.add(
       interval,

@@ -395,6 +395,11 @@ class History {
   public getStateForFrame(state: any, frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
     return state?.frames?.[frameId] ?? null
   }
+
+  public deleteFrame(frameId: string): void {
+    this.current.delete(frameId)
+    this.initialState.delete(frameId)
+  }
 }
 
 if (typeof window !== 'undefined' && window.history.scrollRestoration) {

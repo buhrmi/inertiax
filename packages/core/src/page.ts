@@ -492,6 +492,10 @@ class PageStore {
   ): void {
     this.forFrame(frameId).mergeOncePropsIntoResponse(response, options)
   }
+
+  public deleteFrame(frameId: string): void {
+    this.frames.delete(frameId)
+  }
 }
 
 export const page = new PageStore()

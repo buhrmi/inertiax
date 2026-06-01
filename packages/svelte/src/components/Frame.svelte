@@ -20,7 +20,7 @@
 
 <script lang="ts">
   import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
-  import { onMount } from 'svelte'
+  import { onDestroy, onMount } from 'svelte'
   import type { Component } from 'svelte'
   import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
@@ -152,6 +152,14 @@
   if (!isServer && initialPage && !shouldLoadFromSrc) {
     initRouter(initialPage)
   }
+
+  onDestroy(() => {
+    // Only destroy routers that were created by this Frame instance (not ones
+    // passed in via the router prop — the caller owns those).
+    if (!router) {
+      frameRouter.destroy()
+    }
+  })
 
   onMount(() => {
     if (isServer || !shouldLoadFromSrc || !src) {
