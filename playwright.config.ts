@@ -6,22 +6,22 @@ declare const process: {
   env: {
     BROWSER?: 'chromium' | 'webkit' | 'firefox'
     CI?: boolean
-    PACKAGE?: 'vue3' | 'react' | 'svelte'
+    PACKAGE?: 'svelte'
     SSR?: 'true'
   }
   platform: string
 }
 
-const adapter = process.env.PACKAGE || 'vue3'
+const adapter = process.env.PACKAGE || 'svelte'
 const runsInCI = !!process.env.CI
 const runsOnMac = process.platform === 'darwin'
 const ssrEnabled = process.env.SSR === 'true'
 
-const adapterPorts = { vue3: 13715, react: 13716, svelte: 13717 }
-const ssrAutoPorts = { vue3: 13718, react: 13719, svelte: 13720 }
+const adapterPorts = { svelte: 13717 }
+const ssrAutoPorts = { svelte: 13720 }
 const url = `http://localhost:${adapterPorts[adapter]}`
 
-const adapters = ['react', 'svelte', 'vue3']
+const adapters = ['svelte']
 
 if (!adapters.includes(adapter)) {
   throw new Error(`Invalid adapter package "${adapter}". Expected one of: ${adapters.join(', ')}.`)

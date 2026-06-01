@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('usePage', () => {
-  test.skip(process.env.PACKAGE !== 'vue3' && process.env.PACKAGE !== 'svelte')
+  test.skip(process.env.PACKAGE !== 'svelte')
 
   test('returns the same instance on multiple calls', async ({ page }) => {
     await page.goto('/use-page/page1')

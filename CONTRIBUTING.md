@@ -51,64 +51,60 @@ Then, start the development environment:
 pnpm dev
 ```
 
-This builds the core library and all adapters, and starts a file watcher that will automatically rebuild each package when changes are made.
+This builds the core library and remaining packages, and starts a file watcher that will automatically rebuild each package when changes are made.
 
 If you prefer, you can also start individual watchers from each package directory. For example:
 
 ```sh
 cd packages/core && pnpm dev
-cd packages/react && pnpm dev
+cd packages/svelte && pnpm dev
 ```
 
 > **Note:** The core package (`packages/core`) must always be running, as all adapters depend on it.
 
 ## Running Tests
 
-Inertia.js uses Playwright to run a shared end-to-end test suite against each adapter. This is how we verify that Inertia behaves the same across React, Svelte, and Vue.
+Inertia.js uses Playwright to run a shared end-to-end test suite against the Svelte adapter.
 
-Run the test suite for a specific adapter:
+Run the test suite:
 
 ```sh
-pnpm test:react
 pnpm test:svelte
-pnpm test:vue
 ```
 
-These commands automatically set a `PACKAGE` environment variable that tells the Node.js test server which adapter to serve. For example, when running `pnpm test:react`, the test server loads the React test application.
+This command automatically sets a `PACKAGE` environment variable that tells the Node.js test server which adapter to serve.
 
 If you want to run Playwright directly, you can pass the environment variable yourself:
 
 ```sh
-PACKAGE=react playwright test
+PACKAGE=svelte playwright test
 ```
 
 You may filter tests by name:
 
 ```sh
-pnpm test:react -g "partial reload"
+pnpm test:svelte -g "partial reload"
 ```
 
 Run tests in headed mode (to see the browser):
 
 ```sh
-pnpm test:vue --headed
+pnpm test:svelte --headed
 ```
 
 Or in debug mode:
 
 ```sh
-pnpm test:vue --debug
+pnpm test:svelte --debug
 ```
 
 ### How the Test Setup Works
 
-All adapters use the same Node.js backend and Playwright test suite. The only difference is which adapter's test app is served.
+The test setup uses the same Node.js backend and Playwright test suite.
 
 ```
 tests/app/server.js         Shared Node.js backend
-├── serves: react test app  (when PACKAGE=react)
-├── serves: svelte test app (when PACKAGE=svelte)
-└── serves: vue test app    (when PACKAGE=vue3)
+└── serves: svelte test app (when PACKAGE=svelte)
 
 tests/*.spec.ts             Shared Playwright test suite
 ```
@@ -117,9 +113,7 @@ When running a test command, the correct adapter is selected automatically:
 
 | Adapter | `PACKAGE` value | Test server port | App URL                                            |
 | ------- | --------------- | ---------------- | -------------------------------------------------- |
-| React   | `react`         | 13716            | [http://localhost:13716/](http://localhost:13716/) |
 | Svelte  | `svelte`        | 13717            | [http://localhost:13717/](http://localhost:13717/) |
-| Vue 3   | `vue3`          | 13715            | [http://localhost:13715/](http://localhost:13715/) |
 
 ### Automatic Test Server Boot
 
@@ -129,18 +123,16 @@ You do not need to start the test server manually. When you run a test, Playwrig
 
 The test applications are the primary development environments for Inertia.js. These minimal apps cover all supported features and are used for both manual development and automated end-to-end testing.
 
-Run all test apps at once:
+Run the test app:
 
 ```sh
 pnpm dev:test-app
 ```
 
-Or start an individual one:
+Or start it directly:
 
 ```sh
-pnpm dev:test-app:react
 pnpm dev:test-app:svelte
-pnpm dev:test-app:vue
 ```
 
 Each test app runs two servers:
@@ -152,19 +144,15 @@ If you are developing a new feature or fixing a bug, you can use these test apps
 
 ## Adding Tests
 
-If you are fixing a bug, adding a feature, or improving existing functionality, please verify that your changes work across all adapters, not just one.
+If you are fixing a bug, adding a feature, or improving existing functionality, please verify behavior in the Svelte test app.
 
 ### 1. Add Frontend Pages
 
-Create the same frontend page in each test application:
+Create the frontend page in the Svelte test application:
 
 ```
-packages/react/test-app/Pages/YourFeature.jsx
 packages/svelte/test-app/Pages/YourFeature.svelte
-packages/vue3/test-app/Pages/YourFeature.vue
 ```
-
-Each page should provide the same behavior and functionality.
 
 ### 2. Add Backend Routes (If Needed)
 
@@ -182,7 +170,7 @@ app.get('/your-feature', (req, res) =>
 
 ### 3. Write a Playwright Test
 
-Add a new Playwright test to verify your change. Playwright allows us to test features across all adapters without duplicating test logic.
+Add a new Playwright test to verify your change.
 
 ```typescript
 // tests/your-feature.spec.ts
@@ -194,17 +182,13 @@ test('your feature works', async ({ page }) => {
 })
 ```
 
-### 4. Run the Tests in All Adapters
+### 4. Run the Tests
 
-Be sure to run your test for each adapter:
+Be sure to run your test:
 
 ```sh
-pnpm test:react -g "your feature"
 pnpm test:svelte -g "your feature"
-pnpm test:vue -g "your feature"
 ```
-
-Your work is not considered complete until it works consistently across all frameworks.
 
 ## Using the Playgrounds (Optional)
 
@@ -217,7 +201,7 @@ The playgrounds are provided as-is and are not part of the automated test setup.
 To start a playground, simply run:
 
 ```sh
-pnpm playground:react
+pnpm playground:svelte
 ```
 
 The playground script will automatically handle initial setup if needed:
@@ -234,9 +218,7 @@ Visit the application at [http://127.0.0.1:8000](http://127.0.0.1:8000).
 Each playground has its own pnpm script:
 
 ```sh
-pnpm playground:react
 pnpm playground:svelte
-pnpm playground:vue
 ```
 
 ## Publishing (Maintainers Only)

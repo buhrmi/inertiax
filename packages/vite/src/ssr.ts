@@ -105,24 +105,7 @@ export async function handleSSRRequest(
   let component: string | undefined
   let url: string | undefined
 
-  // We temporarily override console.warn to suppress Vue's verbose component
-  // trace warnings during SSR, and show our own cleaner error output instead.
-  const originalWarn = console.warn
   const suppressedWarnings: string[] = []
-
-  console.warn = (...args: unknown[]) => {
-    const message = args[0]?.toString() ?? ''
-
-    if (message.includes('[Vue warn]') || message.includes('at <')) {
-      if (formatErrors) {
-        suppressedWarnings.push(args.map(String).join(' '))
-      }
-
-      return
-    }
-
-    originalWarn.apply(console, args)
-  }
 
   try {
     const page = await readRequestBody<{ component: string; url: string }>(req)
@@ -146,8 +129,6 @@ export async function handleSSRRequest(
     res.end(JSON.stringify(result))
   } catch (error) {
     handleSSRError(server, res, error as Error, component, url, formatErrors, suppressedWarnings)
-  } finally {
-    console.warn = originalWarn
   }
 }
 

@@ -46,7 +46,6 @@ export const config: FrameworkConfig = {
   extensions: ['.svelte'],
 
   // Svelte components ARE the module - no .default extraction needed
-  // This is different from Vue/React where components use `export default`
   extractDefault: false,
 
   // SSR template that wraps the createInertiaApp call with server bootstrap code

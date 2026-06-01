@@ -21,11 +21,11 @@
  * @example
  * ```ts
  * const template: SSRTemplate = (configureCall, options) => `
- *   import createServer from '@inertiajs/vue3/server'
- *   import { renderToString } from 'vue/server-renderer'
+ *   import createServer from '@inertiajs/svelte/server'
+ *   import { render } from 'svelte/server'
  *
- *   const render = await ${configureCall}
- *   const renderPage = (page) => render(page, renderToString)
+ *   const ssr = await ${configureCall}
+ *   const renderPage = (page) => ssr(page, render)
  *
  *   if (import.meta.env.PROD) {
  *     createServer(renderPage${options})
@@ -41,7 +41,7 @@ export type SSRTemplate = (configureCall: string, options: string) => string
  * Configuration for a framework adapter.
  *
  * This defines how the Vite plugin should handle page resolution and SSR
- * for a specific framework (Vue, React, Svelte, or custom).
+ * for a specific framework (Svelte by default, or custom).
  *
  * @example
  * ```ts
@@ -58,7 +58,7 @@ export interface FrameworkConfig {
    * The npm package name that identifies this framework.
    * The plugin detects the framework by looking for imports from this package.
    *
-   * Examples: '@inertiajs/vue3', '@inertiajs/react', '@inertiajs/svelte'
+    * Example: '@inertiajs/svelte'
    */
   package: string
 
@@ -66,18 +66,14 @@ export interface FrameworkConfig {
    * File extensions for page components.
    * Used when building the import.meta.glob pattern.
    *
-   * Examples:
-   * - Vue: ['.vue']
-   * - React: ['.tsx', '.jsx']
-   * - Svelte: ['.svelte']
+    * Example: ['.svelte']
    */
   extensions: string[]
 
   /**
    * Whether to extract the default export from page modules.
    *
-   * - `true` (default): Return `module.default ?? module` - used by Vue and React
-   *   where components are typically exported as `export default`
+    * - `true` (default): Return `module.default ?? module`
    * - `false`: Return `module` directly - used by Svelte where the component
    *   is the module itself
    */

@@ -11,7 +11,7 @@
  *    code and exposes an HTTP endpoint that Laravel can call to render pages server-side.
  *    This eliminates the need to run a separate Node.js SSR server during development.
  *
- * The plugin is framework-agnostic - it detects which Inertia adapter (Vue, React, Svelte)
+ * The plugin is framework-agnostic - it detects which Inertia adapter (Svelte by default)
  * is being used by looking at import statements, then applies the appropriate transforms.
  * Custom frameworks can be added via the `frameworks` option.
  */
@@ -43,7 +43,7 @@ export interface InertiaPluginOptions {
 
   /**
    * Custom framework configurations. Use this to add support for frameworks
-   * beyond the built-in Vue, React, and Svelte adapters.
+    * beyond the built-in Svelte adapter.
    *
    * @example
    * ```ts
