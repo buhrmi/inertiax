@@ -17,7 +17,6 @@
     "type-check:test-app:svelte": "cd packages/svelte/test-app && pnpm run type-check",
     "test:svelte": "PACKAGE=svelte node playwright.js",
     "test:ssr:svelte": "PACKAGE=svelte SSR=true npx playwright test",
-    "test:vite": "cd packages/vite && pnpm test",
     "playground:svelte": "cd playgrounds/svelte5 && ./init.sh && composer run dev",
     "format": "oxfmt"
   },
