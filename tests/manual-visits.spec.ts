@@ -796,7 +796,7 @@ test.describe('Preserve scroll', () => {
 })
 
 test.describe('URL fragment navigation (& automatic scrolling)', () => {
-  /** @see https://github.com/inertiajs/inertia/pull/257 */
+  /** @see https://github.com/buhrmi/inertiax/pull/257 */
 
   test.beforeEach(async ({ page }) => {
     pageLoads.watch(page)

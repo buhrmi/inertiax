@@ -819,7 +819,7 @@ test.describe('scroll region with scrollable list', () => {
 })
 
 test.describe('URL fragment navigation (& automatic scrolling)', () => {
-  /** @see https://github.com/inertiajs/inertia/pull/257 */
+  /** @see https://github.com/buhrmi/inertiax/pull/257 */
 
   test.beforeEach(async ({ page }) => {
     pageLoads.watch(page)
@@ -862,7 +862,7 @@ test.describe('scroll', () => {
   })
 
   test('does not scroll when clicking the same fragment link', async ({ page }) => {
-    /** @see https://github.com/inertiajs/inertia/issues/1921 */
+    /** @see https://github.com/buhrmi/inertiax/issues/1921 */
     await page.goto('/article#far-down')
 
     await page.getByRole('button', { exact: true, name: 'Enable Smooth Scroll' }).click()

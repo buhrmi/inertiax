@@ -40,7 +40,7 @@ inertia/
 Clone the repository and install the dependencies:
 
 ```sh
-git clone https://github.com/inertiajs/inertia.git inertia
+git clone https://github.com/buhrmi/inertiax.git inertia
 cd inertia
 pnpm install
 ```

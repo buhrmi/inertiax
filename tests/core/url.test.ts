@@ -240,7 +240,7 @@ test.describe('url.ts', () => {
       })
 
       test('replaces previous array values completely when using index notation', () => {
-        // See: https://github.com/inertiajs/inertia/pull/2416
+        // See: https://github.com/buhrmi/inertiax/pull/2416
         const [href, data] = mergeDataIntoQueryString('get', '/edit?items[0]=a&items[1]=b', { items: ['c'] }, 'indices')
 
         expect(href).toBe('/edit?items[0]=c')
@@ -257,7 +257,7 @@ test.describe('url.ts', () => {
       })
 
       test('retains indexed object keys in the query string during parsing and stringification', () => {
-        // See: https://github.com/inertiajs/inertia/issues/2404
+        // See: https://github.com/buhrmi/inertiax/issues/2404
         const [href, data] = mergeDataIntoQueryString('get', '/search?filter[12]=213', { q: 'bar' })
 
         expect(href).toBe('/search?filter[12]=213&q=bar')
