@@ -137,3 +137,48 @@ test('multi-frame form submit updates only submit frame', async ({ page }) => {
   await expect(page.getByTestId('right-step')).toHaveText('1')
   await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
 })
+
+test("multi-frame unchanged frame doesn't rerun effects on browser navigation", async ({ page }) => {
+  const messages: string[] = []
+
+  page.on('console', (msg) => {
+    if (msg.type() !== 'log') {
+      return
+    }
+
+    const text = msg.text()
+
+    if (text.startsWith('Frame left step ') || text.startsWith('Frame right step ')) {
+      messages.push(text)
+    }
+  })
+
+  await page.goto('/svelte/multi-frame')
+
+  await expect(page.getByTestId('left-step')).toHaveText('0')
+  await expect(page.getByTestId('right-step')).toHaveText('0')
+
+  messages.length = 0
+  await page.getByTestId('left-next-link').click()
+  await expect(page.getByTestId('left-step')).toHaveText('1')
+  await expect(page.getByTestId('right-step')).toHaveText('0')
+  await expect(messages).toEqual(['Frame left step 1'])
+
+  messages.length = 0
+  await page.getByTestId('right-next-link').click()
+  await expect(page.getByTestId('left-step')).toHaveText('1')
+  await expect(page.getByTestId('right-step')).toHaveText('1')
+  await expect(messages).toEqual(['Frame right step 1'])
+
+  messages.length = 0
+  await page.goBack()
+  await expect(page.getByTestId('left-step')).toHaveText('1')
+  await expect(page.getByTestId('right-step')).toHaveText('0')
+  await expect(messages).toEqual(['Frame right step 0'])
+
+  messages.length = 0
+  await page.goBack()
+  await expect(page.getByTestId('left-step')).toHaveText('0')
+  await expect(page.getByTestId('right-step')).toHaveText('0')
+  await expect(messages).toEqual(['Frame left step 0'])
+})

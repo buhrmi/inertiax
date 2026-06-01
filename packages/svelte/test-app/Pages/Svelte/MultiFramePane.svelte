@@ -7,6 +7,10 @@
   }
 
   let { frame, step }: Props = $props()
+
+  $effect(() => {
+    console.log(`Frame ${frame} step ${step}`)
+  })
 </script>
 
 <div data-testid={frame + '-pane'}>
@@ -17,9 +21,9 @@
   </Link>
 
   <Form data-testid={frame + '-form'} action={`/svelte/multi-frame/${frame}/submit`} method="post">
-    {#snippet children()}
-      <input type="hidden" name="step" value={step} />
-      <button data-testid={frame + '-submit'} type="submit">Submit ({frame})</button>
-    {/snippet}
+
+    <input type="hidden" name="step" value={step} />
+    <button data-testid={frame + '-submit'} type="submit">Submit ({frame})</button>
+
   </Form>
 </div>

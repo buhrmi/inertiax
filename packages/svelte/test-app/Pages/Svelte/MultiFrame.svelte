@@ -34,11 +34,16 @@
     flash: {},
     rememberedState: {},
   }
+
+  const { parentVar = Math.random() } = $props()
+  $effect(() => {
+    console.log(`Parent var: ${parentVar}`)
+  })
 </script>
 
 <div>
   <h1>Svelte Multi Frame</h1>
-
+  
   <section>
     <h2>Left Frame</h2>
     <Frame id="left" initialComponent={paneComponent} initialPage={leftPage} {resolveComponent} />

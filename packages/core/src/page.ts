@@ -1,4 +1,4 @@
-import { cloneDeep } from 'es-toolkit'
+import { cloneDeep, isEqual } from 'es-toolkit'
 import { get, set } from 'es-toolkit/compat'
 import { eventHandler } from './eventHandler'
 import { fireNavigateEvent } from './events'
@@ -174,10 +174,15 @@ class CurrentFramePage {
       preserveState?: boolean
     } = {},
   ) {
+    history.setCurrent(page, this.frameId)
+
+    if (!this.cleared && isEqual(this.page, page)) {
+      return Promise.resolve()
+    }
+
     return this.resolve(page.component, page).then((component) => {
       this.page = page
       this.cleared = false
-      history.setCurrent(page, this.frameId)
       return this.swap({ component, page, preserveState, viewTransition: false })
     })
   }
