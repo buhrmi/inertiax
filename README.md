@@ -1,10 +1,10 @@
 # Inertia X
 
-Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds the `<Frame>` component to the Svelte adapter.
+Inertia X is a fork of [Inertia](https://github.com/inertiajs/inertia) that adds a handful new features to the Svelte adapter, including the `<Frame>` component.
 
-The `Frame` component enables multiple independent Inertia page regions on the same document, where each frame owns its own router and page state, so links/forms inside one frame only update that frame.
+The `Frame` component enables multiple independent Inertia page regions on the same document, where each frame owns its own router and page state, so links/forms inside one frame only update that frame. The main use cases for this are modals, side bars, dialogs, etc. You get the idea.
 
-This is extremely useful for modals, side panels, wizards, etc.
+In addition to the Frame component, it also introduces a [global click handler](https://github.com/buhrmi/inertiax#global-click-handler).
 
 ## Basic Usage
 
