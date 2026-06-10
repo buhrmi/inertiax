@@ -1849,6 +1849,12 @@ app.get('/svelte/multi-frame', (req, res) => inertia.render(req, res, { componen
 
 app.get('/svelte/frame-layout', (req, res) => inertia.render(req, res, { component: 'Svelte/FrameLayout', props: {} }))
 
+app.get('/svelte/frame-src-only', (req, res) => inertia.render(req, res, { component: 'Svelte/FrameSrcOnly', props: {} }))
+
+app.get('/svelte/frame-src-only/pane', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameSrcOnlyPane', props: {} }),
+)
+
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

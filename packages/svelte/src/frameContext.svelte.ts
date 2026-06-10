@@ -14,6 +14,7 @@ export type FrameContext = {
 }
 
 const FRAME_CONTEXT_KEY = Symbol('inertia:frame-context')
+let globalResolveComponent: ComponentResolver | undefined
 
 export function setFrameContext(context: FrameContext): void {
   setContext(FRAME_CONTEXT_KEY, context)
@@ -29,6 +30,14 @@ export function useFrameRouter(): Router {
 
 export function useFrameResolveComponent(): ComponentResolver | undefined {
   return useFrameContext()?.resolveComponent
+}
+
+export function setGlobalResolveComponent(resolveComponent: ComponentResolver | undefined): void {
+  globalResolveComponent = resolveComponent
+}
+
+export function useGlobalResolveComponent(): ComponentResolver | undefined {
+  return globalResolveComponent
 }
 
 export function useFrameId(): string {

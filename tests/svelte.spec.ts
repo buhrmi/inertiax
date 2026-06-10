@@ -192,3 +192,10 @@ test('frame layout renders on top frame but not on nested frame by default', asy
   await expect(page.getByTestId('nested-frame-forwarded-message')).toHaveText('Forwarded from Frame')
   await expect(page.getByTestId('nested-frame-layout')).toHaveCount(0)
 })
+
+test('frame loads and renders with only a src prop', async ({ page }) => {
+  await page.goto('/svelte/frame-src-only')
+
+  await expect(page.getByTestId('frame-src-only-page')).toBeVisible()
+  await expect(page.getByTestId('frame-src-only-pane')).toBeVisible()
+})

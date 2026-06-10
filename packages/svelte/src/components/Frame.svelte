@@ -24,7 +24,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
-  import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext } from '../frameContext.svelte'
+  import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext, useGlobalResolveComponent } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
   import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
@@ -58,7 +58,8 @@
   }: Props & Record<string, unknown> = $props()
 
   const parentFrameContext = useFrameContext()
-  const frameResolveComponent = resolveComponent ?? parentFrameContext?.resolveComponent
+  // svelte-ignore state_referenced_locally
+  const frameResolveComponent = resolveComponent ?? parentFrameContext?.resolveComponent ?? useGlobalResolveComponent()
 
   function createFrameId(): string {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {

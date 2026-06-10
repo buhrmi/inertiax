@@ -13,6 +13,7 @@ import {
 } from 'inertiax-core'
 import { hydrate, mount } from 'svelte'
 import App, { type InertiaAppProps } from './components/App.svelte'
+import { setGlobalResolveComponent } from './frameContext.svelte'
 import { config } from './index'
 import type { ComponentResolver, ResolvedComponent, SvelteInertiaAppConfig } from './types'
 
@@ -99,6 +100,7 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
   const isServer = typeof window === 'undefined'
 
   const resolveComponent = (name: string, page?: Page) => Promise.resolve(resolve!(name, page))
+  setGlobalResolveComponent(resolveComponent)
 
   // SSR render function factory - when on server without page, return a render function
   // This is used by the Vite plugin's SSR transform
