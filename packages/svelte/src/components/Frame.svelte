@@ -26,7 +26,7 @@
   import type { Component } from 'svelte'
   import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
-  import { setPage } from '../page.svelte'
+  import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
   import Render, { h, type RenderProps } from './Render.svelte'
 
@@ -170,7 +170,7 @@
     }
 
     const load = async () => {
-      const version = page?.version ?? (window as any)?.initialPage?.version ?? null
+      const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
       const response = await http.getClient().request({
         method: 'get',
