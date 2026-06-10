@@ -198,4 +198,5 @@ test('frame loads and renders with only a src prop', async ({ page }) => {
 
   await expect(page.getByTestId('frame-src-only-page')).toBeVisible()
   await expect(page.getByTestId('frame-src-only-pane')).toBeVisible()
+  await expect(page).toHaveURL(/\/svelte\/frame-src-only$/)
 })

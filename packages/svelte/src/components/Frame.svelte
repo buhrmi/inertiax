@@ -69,7 +69,9 @@
     return `frame-${Math.random().toString(36).slice(2, 10)}`
   }
 
-  const frameId = id ?? (parentFrameContext ? createFrameId() : DEFAULT_FRAME_ID)
+  // App passes DEFAULT_FRAME_ID explicitly for the top frame. All other
+  // implicit frames get an isolated generated id.
+  const frameId = id ?? createFrameId()
   const shouldRenderLayout = renderLayout ?? frameId === DEFAULT_FRAME_ID
 
   function resolveFrameComponent(name: string, page?: Page) {
