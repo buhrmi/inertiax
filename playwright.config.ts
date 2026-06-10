@@ -46,7 +46,7 @@ const projects = [
  * See https://playwright.dev/docs/test-configuration.
  */
 // Build commands
-const buildCommand = `pnpm -r --filter './packages/${adapter}/test-app' build`
+const buildCommand = `pnpm -C packages/core build && pnpm -r --filter './packages/${adapter}/test-app' build`
 const buildSSRCommand = `pnpm -r --filter './packages/${adapter}/test-app' build:ssr`
 const buildSSRAutoCommand = `pnpm -r --filter './packages/${adapter}/test-app' build:ssr-auto`
 const serveCommand = `cd tests/app && PACKAGE=${adapter} pnpm serve`

@@ -4,6 +4,7 @@ import { ScrollRegion } from './types'
 
 const isServer = typeof window === 'undefined'
 const isFirefox = !isServer && /Firefox/i.test(window.navigator.userAgent)
+const DEFAULT_FRAME_ID = '_top'
 
 export class Scroll {
   public static save(frameId = '_top'): void {
@@ -30,10 +31,10 @@ export class Scroll {
     window.scrollTo(0, 0)
   }
 
-  public static reset(): void {
+  public static reset(frameId = DEFAULT_FRAME_ID): void {
     const anchorHash = isServer ? null : window.location.hash
 
-    if (!anchorHash) {
+    if (frameId === DEFAULT_FRAME_ID && !anchorHash) {
       // Reset the document scroll position if there is no hash.
       this.scrollToTop()
     }
@@ -47,7 +48,7 @@ export class Scroll {
       }
     })
 
-    this.save()
+    this.save(frameId)
     this.scrollToAnchor()
   }
 
@@ -97,6 +98,10 @@ export class Scroll {
   }
 
   public static restoreDocument(frameId = '_top'): void {
+    if (frameId !== DEFAULT_FRAME_ID) {
+      return
+    }
+
     const scrollPosition = history.getDocumentScrollPosition(frameId)
     window.scrollTo(scrollPosition.left, scrollPosition.top)
   }

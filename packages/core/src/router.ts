@@ -146,7 +146,7 @@ export class Router {
       url.hash = window.location.hash
 
       history.replaceState({ ...currentPage.getWithoutFlashData(this.frameId), url: url.href }, null, this.frameId)
-      Scroll.reset()
+      Scroll.reset(this.frameId)
 
       return
     }

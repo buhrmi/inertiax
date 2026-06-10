@@ -145,7 +145,7 @@ class CurrentFramePage {
           if (preserveScroll) {
             window.requestAnimationFrame(() => Scroll.restoreScrollRegions(scrollRegions))
           } else {
-            Scroll.reset()
+            Scroll.reset(this.frameId)
           }
 
           if (
