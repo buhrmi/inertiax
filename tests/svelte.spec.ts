@@ -200,3 +200,13 @@ test('frame loads and renders with only a src prop', async ({ page }) => {
   await expect(page.getByTestId('frame-src-only-pane')).toBeVisible()
   await expect(page).toHaveURL(/\/svelte\/frame-src-only$/)
 })
+
+test('mounting a frame does not reset the top scroll position', async ({ page }) => {
+  await page.goto('/svelte/frame-scroll-preserve')
+
+  await page.evaluate(() => window.scrollTo(0, 1200))
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200)
+
+  await expect(page.getByTestId('frame-src-only-pane')).toBeVisible()
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(1200)
+})

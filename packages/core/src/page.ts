@@ -55,7 +55,7 @@ class CurrentFramePage {
     {
       replace = false,
       updateBrowserUrl = this.frameId === DEFAULT_FRAME_ID,
-      preserveScroll = false,
+      preserveScroll = this.frameId !== DEFAULT_FRAME_ID,
       preserveState = false,
       viewTransition = false,
     }: {
