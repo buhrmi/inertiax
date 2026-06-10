@@ -189,5 +189,6 @@ test('frame layout renders on top frame but not on nested frame by default', asy
   await expect(page.getByTestId('top-frame-layout')).toBeVisible()
   await expect(page.getByTestId('top-frame-page')).toBeVisible()
   await expect(page.getByTestId('nested-frame-pane')).toBeVisible()
+  await expect(page.getByTestId('nested-frame-forwarded-message')).toHaveText('Forwarded from Frame')
   await expect(page.getByTestId('nested-frame-layout')).toHaveCount(0)
 })

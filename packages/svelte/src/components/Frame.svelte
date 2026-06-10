@@ -55,7 +55,7 @@
     onClickLink,
     children,
     ...restProps
-  }: Props = $props()
+  }: Props & Record<string, unknown> = $props()
 
   const parentFrameContext = useFrameContext()
   const frameResolveComponent = resolveComponent ?? parentFrameContext?.resolveComponent
@@ -237,7 +237,7 @@
   }
 
   function resolveRenderProps(component: ResolvedComponent, page: Page, key: number | null = null): RenderProps {
-    const child = h(component.default, page.props, [], key)
+    const child = h(component.default, { ...page.props, ...restProps }, [], key)
 
     if (!shouldRenderLayout) {
       return child
@@ -390,7 +390,7 @@
 </script>
 
 {#if renderProps}
-  <Render {...renderProps} {...restProps} />
+  <Render {...renderProps} />
 {:else}
   {@render children?.()}
 {/if}

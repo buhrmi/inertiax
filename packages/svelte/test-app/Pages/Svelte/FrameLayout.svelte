@@ -31,4 +31,4 @@
 </script>
 
 <div data-testid="top-frame-page">Top Frame Page</div>
-<Frame id="nested-layout-test" initialPage={panePage} resolveComponent={resolvePaneComponent} />
+<Frame id="nested-layout-test" initialPage={panePage} resolveComponent={resolvePaneComponent} forwardedMessage="Forwarded from Frame" />
