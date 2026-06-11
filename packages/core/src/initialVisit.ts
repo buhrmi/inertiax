@@ -97,7 +97,7 @@ export class InitialVisit {
       if (navigationType.isReload()) {
         Scroll.restore(history.getScrollRegions(frameId), frameId)
       } else {
-        Scroll.scrollToAnchor()
+        Scroll.scrollToAnchor(frameId)
       }
 
       this.fireInitialEvents(frameId)

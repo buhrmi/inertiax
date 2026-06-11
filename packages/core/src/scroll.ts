@@ -32,9 +32,14 @@ export class Scroll {
   }
 
   public static reset(frameId = DEFAULT_FRAME_ID): void {
+    // Non-top frames should never touch the document scroll position.
+    if (frameId !== DEFAULT_FRAME_ID) {
+      return
+    }
+
     const anchorHash = isServer ? null : window.location.hash
 
-    if (frameId === DEFAULT_FRAME_ID && !anchorHash) {
+    if (!anchorHash) {
       // Reset the document scroll position if there is no hash.
       this.scrollToTop()
     }
@@ -49,10 +54,15 @@ export class Scroll {
     })
 
     this.save(frameId)
-    this.scrollToAnchor()
+    this.scrollToAnchor(frameId)
   }
 
-  public static scrollToAnchor(): void {
+  public static scrollToAnchor(frameId = DEFAULT_FRAME_ID): void {
+    // Non-top frames should not trigger document-level anchor scrolling.
+    if (frameId !== DEFAULT_FRAME_ID) {
+      return
+    }
+
     const anchorHash = isServer ? null : window.location.hash
 
     if (anchorHash) {
@@ -67,6 +77,12 @@ export class Scroll {
 
   public static restore(scrollRegions: ScrollRegion[], frameId = '_top'): void {
     if (isServer) {
+      return
+    }
+
+    // Non-top frames should not touch the document scroll or global
+    // scroll-region elements.
+    if (frameId !== DEFAULT_FRAME_ID) {
       return
     }
 
