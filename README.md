@@ -8,7 +8,7 @@ In addition to the Frame component, it also introduces a [global click handler](
 
 You might also want to check out [Inertia X UI](https://github.com/buhrmi/inertiax-ui), a companion UI library featuring Svelte components built on Inertia X.
 
-## Basic Usage
+## <Frame> component
 
 ```svelte
 <script>
