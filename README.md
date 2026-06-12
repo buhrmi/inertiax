@@ -6,6 +6,8 @@ The `Frame` component enables multiple independent Inertia page regions on the s
 
 In addition to the Frame component, it also introduces a [global click handler](https://github.com/buhrmi/inertiax#global-click-handler).
 
+For some code examples, you can also check out [Inertia X UI](https://github.com/buhrmi/inertiax-ui), a UI library featuring Svelte components built with Inertia X.
+
 ## Basic Usage
 
 ```svelte
