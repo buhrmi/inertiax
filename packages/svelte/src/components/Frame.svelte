@@ -20,7 +20,7 @@
 </script>
 
 <script lang="ts">
-  import { createRouter, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
+  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
@@ -179,26 +179,39 @@
       return
     }
 
-    // No initialPage was provided. Initialise the router with a placeholder
-    // so router.get() has a baseline. Using window.location.href as the URL
-    // prevents history operations from using an empty string. The resolver
-    // returns null for the empty component name so nothing renders until the
-    // real page loads.
-    //
-    // The version must be carried forward from the current page (or SSR-
-    // embedded initial page) so the X-Inertia-Version header is sent. Without
-    // it, the server may respond with a 409 version mismatch that triggers a
-    // full page reload via locationVisit().
-    const version = globalPage.version ?? (window as any)?.initialPage?.version ?? null
+    const load = async () => {
+      const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
-    const placeholder: Page = {
-      ...emptyPage,
-      url: window.location.href,
-      version,
+      const response = await http.getClient().request({
+        method: 'get',
+        url: src,
+        headers: {
+          Accept: 'text/html, application/xhtml+xml',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Inertia': true,
+          ...(version ? { 'X-Inertia-Version': version } : {}),
+        },
+      })
+
+      let data: any = response.data
+      if (typeof data === 'string') {
+        try {
+          data = JSON.parse(data)
+        } catch {
+          return
+        }
+      }
+
+      const loadedPage = {
+        ...data,
+        flash: data.flash ?? {},
+        rescuedProps: data.rescuedProps ?? [],
+      } as Page
+
+      initRouter(loadedPage)
     }
 
-    initRouter(placeholder)
-    frameRouter.get(src, {}, { replace: true, preserveScroll: true })
+    void load()
   })
 
   function isComponent(value: unknown): value is Component {

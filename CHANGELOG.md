@@ -6,10 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
-## [11.0.13] — Unreleased
+## [11.0.14] — Unreleased
+
+### Changed
+- Reverted `router.get()` approach for initial frame load — back to manual `http` request
+  called before `initRouter()`. Avoids `InitialVisit.handle()` side effects with
+  placeholder data.
+- CI: Playwright browser cache key includes lockfile hash to prevent stale binaries
+
+---
+
+## [11.0.13]
 
 ### Added
-- `Frame` `src` prop loads regardless of `initialPage` — SSR hydration unchanged
 - `children` snippet on `Frame` renders as a loading placeholder while `src` fetches
 
 ### Fixed
@@ -42,12 +51,7 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 ## [11.0.11]
 
 ### Changed
-- `Frame` initial page load uses `router.get()` instead of raw HTTP request
-- Error handling modal works correctly on initial frame load
-- `Frame` sends correct `X-Inertia-Version` header (prevents 409 mismatch redirects)
-
-### Fixed
-- Placeholder page uses `window.location.href` to prevent empty-string history operations
+- `Frame` initial page load switched to `router.get()` (reverted in 11.0.14)
 
 ---
 
