@@ -46,7 +46,7 @@ export type SSRTemplate = (configureCall: string, options: string) => string
  * @example
  * ```ts
  * const solidConfig: FrameworkConfig = {
- *   package: '@inertiajs/solid',
+ *   package: 'inertiax-svelte',
  *   extensions: ['.tsx', '.jsx'],
  *   extractDefault: true,
  *   ssr: (configureCall, options) => `...`

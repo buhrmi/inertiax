@@ -3,7 +3,7 @@ import { get, set } from 'es-toolkit/compat'
 import { progress } from '.'
 import { config } from './config'
 import { eventHandler } from './eventHandler'
-import { fireBeforeEvent, fireFlashEvent, fireNavigateEvent } from './events'
+import { fireBeforeEvent, fireClientVisitEvent, fireFlashEvent, fireNavigateEvent } from './events'
 import { history } from './history'
 import { InitialVisit } from './initialVisit'
 import { stripTopLevelUndefined } from './objectUtils'
@@ -41,6 +41,7 @@ import {
   VisitHelperOptions,
   VisitOptions,
 } from './types'
+import { uid } from './uid'
 import {
   hrefToUrl,
   isSameUrlWithoutHash,
@@ -450,6 +451,7 @@ export class Router {
     if (visit.component) {
       history.processQueue().then(() => {
         this.performInstantSwap(visit).then(() => {
+          requestParams.preserveScroll = true
           requestParams.preserveState = true
           requestParams.replace = true
           requestParams.viewTransition = false
@@ -702,6 +704,8 @@ export class Router {
     const preserveScroll = RequestParams.resolvePreserveOption(params.preserveScroll ?? false, page)
     const preserveState = RequestParams.resolvePreserveOption(params.preserveState ?? false, page)
 
+    const visitId = this.createVisitId()
+
     return currentPage
       .set(page, {
         replace,
@@ -709,8 +713,11 @@ export class Router {
         preserveScroll,
         preserveState,
         viewTransition,
+        visitId,
       }, this.frameId)
       .then(() => {
+        fireClientVisitEvent(currentPage.get(this.frameId), { replace, visitId })
+
         const currentFlash = currentPage.get(this.frameId).flash
 
         if (Object.keys(currentFlash).length > 0) {
@@ -768,6 +775,7 @@ export class Router {
       preserveScroll: RequestParams.resolvePreserveOption(visit.preserveScroll, intermediatePage),
       preserveState: false,
       viewTransition: visit.viewTransition,
+      visitId: visit.id,
     }, this.frameId)
   }
 
@@ -782,6 +790,10 @@ export class Router {
       }),
       ...this.getVisitEvents(options),
     }
+  }
+
+  protected createVisitId(): string {
+    return uid()
   }
 
   protected getPendingVisit(href: string | URL | UrlMethodPair, options: VisitOptions): PendingVisit {
@@ -822,6 +834,7 @@ export class Router {
       viewTransition: false,
       component: null,
       pageProps: null,
+      cached: false,
       ...stripTopLevelUndefined(options),
       ...stripTopLevelUndefined(configuredOptions),
     }
@@ -835,6 +848,7 @@ export class Router {
     )
 
     const visit = {
+      id: this.createVisitId(),
       cancelled: false,
       completed: false,
       interrupted: false,

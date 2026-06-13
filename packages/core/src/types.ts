@@ -341,6 +341,7 @@ export type Visit<T extends RequestPayload = RequestPayload> = {
     | Record<string, unknown>
     | ((currentProps: PageProps, sharedProps: Partial<PageProps>) => Record<string, unknown>)
     | null
+  cached: boolean
 }
 
 export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
@@ -385,23 +386,37 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   navigate: {
-    parameters: [Page<SharedPageProps>]
+    parameters: [Page<SharedPageProps>, { cached?: boolean; visitId?: string }?]
     details: {
       page: Page<SharedPageProps>
+      cached?: boolean
+      visitId?: string
+    }
+    result: void
+  }
+  clientVisit: {
+    parameters: [Page<SharedPageProps>, { replace: boolean; visitId: string }]
+    details: {
+      page: Page<SharedPageProps>
+      replace: boolean
+      visitId: string
     }
     result: void
   }
   success: {
-    parameters: [Page<SharedPageProps>]
+    parameters: [Page<SharedPageProps>, { visitId?: string }?]
     details: {
       page: Page<SharedPageProps>
+      visitId?: string
     }
     result: void
   }
   error: {
-    parameters: [Errors]
+    parameters: [Errors, { page?: Page<SharedPageProps>; visitId?: string }?]
     details: {
       errors: Errors
+      page?: Page<SharedPageProps>
+      visitId?: string
     }
     result: void
   }
@@ -518,6 +533,8 @@ export type RouterInitParams<ComponentType = Component> = {
 }
 
 export type PendingVisitOptions = {
+  /** @internal */
+  id: string
   url: URL
   completed: boolean
   cancelled: boolean
@@ -533,6 +550,7 @@ export type InternalActiveVisit = ActiveVisit & {
   onPrefetchResponse?: (response: Response) => void
   onPrefetchError?: (error: Error) => void
   deferredProps?: boolean
+  cached?: boolean
 }
 
 export type VisitId = unknown
@@ -569,6 +587,8 @@ interface BaseCreateInertiaAppOptions<TComponentResolver, TSetupOptions, TSetupR
   defaults?: FirstLevelOptional<InertiaAppConfig & TAdditionalInertiaAppConfig>
   /** HTTP client or options to use for requests. Defaults to XhrHttpClient. */
   http?: HttpClient | HttpClientOptions
+  /** Enable development-only integrations. Defaults to `import.meta.env.DEV`. */
+  dev?: boolean
 }
 
 export interface CreateInertiaAppOptionsForCSR<
@@ -614,6 +634,8 @@ export interface CreateInertiaAppOptions<TComponentResolver, TSetupOptions, TSet
   defaults?: FirstLevelOptional<InertiaAppConfig & TAdditionalInertiaAppConfig>
   /** HTTP client or options to use for requests. Defaults to XhrHttpClient. */
   http?: HttpClient | HttpClientOptions
+  /** Enable development-only integrations. Defaults to `import.meta.env.DEV`. */
+  dev?: boolean
 }
 export type HeadManagerOnUpdateCallback = (elements: string[]) => void
 export type HeadManager = {
@@ -947,6 +969,7 @@ declare global {
     'inertia:finish': GlobalEvent<'finish'>
     'inertia:beforeUpdate': GlobalEvent<'beforeUpdate'>
     'inertia:navigate': GlobalEvent<'navigate'>
+    'inertia:clientVisit': GlobalEvent<'clientVisit'>
     'inertia:flash': GlobalEvent<'flash'>
   }
 }

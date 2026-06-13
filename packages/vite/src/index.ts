@@ -49,11 +49,11 @@ export interface InertiaPluginOptions {
    * ```ts
    * inertia({
    *   frameworks: {
-   *     package: '@inertiajs/solid',
+   *     package: 'inertiax-svelte',
    *     extensions: ['.tsx', '.jsx'],
    *     extractDefault: true,
    *     ssr: (configureCall, options) => `
-   *       import createServer from '@inertiajs/solid/server'
+   *       import createServer from 'inertiax-svelte/server'
    *       const render = await ${configureCall}
    *       createServer((page) => render(page)${options})
    *     `,
