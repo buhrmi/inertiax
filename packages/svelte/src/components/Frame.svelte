@@ -20,7 +20,7 @@
 </script>
 
 <script lang="ts">
-  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
+  import { createRouter, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
@@ -77,6 +77,13 @@
   function resolveFrameComponent(name: string, page?: Page) {
     if (!frameResolveComponent) {
       throw new Error(`No resolveComponent available for frame "${frameId}"`)
+    }
+
+    // Empty component names occur during initial frame setup when the router
+    // is initialised with a placeholder page before the real data arrives.
+    // Return null so the frame renders nothing until the real page loads.
+    if (!name) {
+      return null as unknown as ResolvedComponent
     }
 
     return frameResolveComponent(name, page)
@@ -172,42 +179,27 @@
       return
     }
 
-    // Use the same http client that router.get uses internally — but skip
-    // the full visit pipeline (InitialVisit.handle, events, scroll/history
-    // management) since there's no page to transition from yet.
-    const load = async () => {
-      const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
+    // Initialise the router with a placeholder page so router.get() has a
+    // baseline to work from. Using window.location.href as the URL prevents
+    // history operations from using an empty string. The resolver returns
+    // null for the empty component name so nothing renders until the real
+    // page loads. Using router.get() (instead of a raw http request) ensures
+    // the full Response pipeline runs — including HTTP error modal handling.
+    //
+    // The version must be carried forward from the current page (or SSR-
+    // embedded initial page) so the X-Inertia-Version header is sent. Without
+    // it, the server may respond with a 409 version mismatch that triggers a
+    // full page reload via locationVisit().
+    const version = globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
-      const response = await http.getClient().request({
-        method: 'get',
-        url: src,
-        headers: {
-          Accept: 'text/html, application/xhtml+xml',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-Inertia': true,
-          ...(version ? { 'X-Inertia-Version': version } : {}),
-        },
-      })
-
-      let data: any = response.data
-      if (typeof data === 'string') {
-        try {
-          data = JSON.parse(data)
-        } catch {
-          return
-        }
-      }
-
-      const loadedPage = {
-        ...data,
-        flash: data.flash ?? {},
-        rescuedProps: data.rescuedProps ?? [],
-      } as Page
-
-      initRouter(loadedPage)
+    const placeholder: Page = {
+      ...emptyPage,
+      url: window.location.href,
+      version,
     }
 
-    void load()
+    initRouter(placeholder)
+    frameRouter.get(src, {}, { replace: true, preserveScroll: true })
   })
 
   function isComponent(value: unknown): value is Component {
