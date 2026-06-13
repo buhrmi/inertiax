@@ -20,13 +20,13 @@
 </script>
 
 <script lang="ts">
-  import { createRouter, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
+  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
   import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext, useGlobalResolveComponent } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
-  import { setPage } from '../page.svelte'
+  import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
   import Render, { h, type RenderProps } from './Render.svelte'
 
@@ -172,12 +172,42 @@
       return
     }
 
-    // Init router with empty page so router.get() has a baseline to work from.
-    // The swapComponent callback handles setting component, page, and key once
-    // the response arrives — no need to duplicate the request/parse/resolve logic.
-    // replace: true prevents adding a browser history entry for the initial load.
-    initRouter(emptyPage)
-    frameRouter.get(src, {}, { replace: true, preserveScroll: true })
+    // Use the same http client that router.get uses internally — but skip
+    // the full visit pipeline (InitialVisit.handle, events, scroll/history
+    // management) since there's no page to transition from yet.
+    const load = async () => {
+      const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
+
+      const response = await http.getClient().request({
+        method: 'get',
+        url: src,
+        headers: {
+          Accept: 'text/html, application/xhtml+xml',
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-Inertia': true,
+          ...(version ? { 'X-Inertia-Version': version } : {}),
+        },
+      })
+
+      let data: any = response.data
+      if (typeof data === 'string') {
+        try {
+          data = JSON.parse(data)
+        } catch {
+          return
+        }
+      }
+
+      const loadedPage = {
+        ...data,
+        flash: data.flash ?? {},
+        rescuedProps: data.rescuedProps ?? [],
+      } as Page
+
+      initRouter(loadedPage)
+    }
+
+    void load()
   })
 
   function isComponent(value: unknown): value is Component {
