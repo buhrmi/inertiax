@@ -45,7 +45,7 @@ jobs:
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-chromium-${{ steps.playwright-version.outputs.version }}
+          key: playwright-${{ runner.os }}-chromium-${{ steps.playwright-version.outputs.version }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -103,17 +103,17 @@ jobs:
 
       - name: Cache Playwright Browsers
         uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        id: playwright-cache
+        id: playwright-cache-ssr
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-chromium-${{ steps.playwright-version.outputs.version }}
+          key: playwright-${{ runner.os }}-chromium-${{ steps.playwright-version.outputs.version }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        if: steps.playwright-cache-ssr.outputs.cache-hit != 'true'
         run: pnpm playwright install --with-deps chromium
 
       - name: Install Playwright Dependencies
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        if: steps.playwright-cache-ssr.outputs.cache-hit == 'true'
         run: npx playwright install-deps chromium
 
       - name: Run Playwright SSR Tests
