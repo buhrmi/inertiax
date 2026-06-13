@@ -116,7 +116,7 @@
     return resolveRenderProps(component, page, key)
   })
 
-  const shouldLoadFromSrc = initialPage === undefined && !!src
+
 
   setFrameContext({
     id: frameId,
@@ -162,7 +162,7 @@
     booted = true
   }
 
-  if (!isServer && initialPage && !shouldLoadFromSrc) {
+  if (!isServer && initialPage) {
     initRouter(initialPage)
   }
 
@@ -175,16 +175,15 @@
   })
 
   onMount(() => {
-    if (isServer || !shouldLoadFromSrc || !src) {
+    if (isServer || !src || initialPage) {
       return
     }
 
-    // Initialise the router with a placeholder page so router.get() has a
-    // baseline to work from. Using window.location.href as the URL prevents
-    // history operations from using an empty string. The resolver returns
-    // null for the empty component name so nothing renders until the real
-    // page loads. Using router.get() (instead of a raw http request) ensures
-    // the full Response pipeline runs — including HTTP error modal handling.
+    // No initialPage was provided. Initialise the router with a placeholder
+    // so router.get() has a baseline. Using window.location.href as the URL
+    // prevents history operations from using an empty string. The resolver
+    // returns null for the empty component name so nothing renders until the
+    // real page loads.
     //
     // The version must be carried forward from the current page (or SSR-
     // embedded initial page) so the X-Inertia-Version header is sent. Without
