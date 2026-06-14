@@ -1,6 +1,6 @@
 {
   "name": "inertiax-svelte",
-  "version": "11.0.14",
+  "version": "11.0.15",
   "license": "MIT",
   "description": "The Svelte adapter for Inertia.js",
   "contributors": [

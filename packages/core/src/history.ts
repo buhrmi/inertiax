@@ -298,7 +298,8 @@ class History {
       const existing = this.getWindowState()
       const previous = existing.frames[frameId] ?? {}
 
-      const nextState: InertiaHistoryState = {
+      const nextState = {
+        ...window.history.state,
         frames: {
           ...existing.frames,
           [frameId]: {
@@ -326,7 +327,8 @@ class History {
       const existing = this.getWindowState()
       const previous = existing.frames[frameId] ?? {}
 
-      const nextState: InertiaHistoryState = {
+      const nextState = {
+        ...window.history.state,
         frames: {
           ...existing.frames,
           [frameId]: {
