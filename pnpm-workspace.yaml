@@ -9,6 +9,7 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - esbuild@0.28.1
+  - multer@2.2.0
 
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'

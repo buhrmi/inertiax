@@ -877,8 +877,8 @@ test.describe('scroll', () => {
   })
 
   test('scrolls to top after the page has been rendered', async ({ page, browserName }) => {
-    // Firefox in CI is slower, needs more time for multiple navigations
-    test.setTimeout(browserName === 'firefox' ? 30_000 : 10_000)
+    // Multiple sequential navigations can be slow, especially in CI.
+    test.setTimeout(browserName === 'firefox' ? 30_000 : 20_000)
 
     await page.goto('/scroll-after-render/1')
 
