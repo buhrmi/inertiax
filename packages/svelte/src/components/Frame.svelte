@@ -11,6 +11,8 @@
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
     renderLayout?: boolean
+    /** When `true`, always makes an HTTP request on mount even if page data exists in the history stack. Defaults to `false`. */
+    skipHistoryRestore?: boolean
     /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Non-top frames default to `{ replace: true, updateBrowserUrl: false }`, top frame defaults to `{ replace: false, updateBrowserUrl: true }`. */
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
@@ -41,6 +43,7 @@
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
     renderLayout?: InertiaFrameProps['renderLayout']
+    skipHistoryRestore?: InertiaFrameProps['skipHistoryRestore']
     visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
     children?: InertiaFrameProps['children']
@@ -55,6 +58,7 @@
     resolveComponent = undefined,
     defaultLayout,
     renderLayout = undefined,
+    skipHistoryRestore = false,
     visitOptions,
     onClickLink,
     children,
@@ -73,9 +77,10 @@
     return `frame-${Math.random().toString(36).slice(2, 10)}`
   }
 
-  // App passes DEFAULT_FRAME_ID explicitly for the top frame. All other
-  // implicit frames get an isolated generated id.
-  const frameId = id ?? createFrameId()
+  // Use explicit id > src > random UUID.  Using src as the frameId gives
+  // frames a deterministic identity — remounts with the same src share
+  // history state, so the history-restore optimisation works naturally.
+  const frameId = id ?? src ?? createFrameId()
   const shouldRenderLayout = renderLayout ?? frameId === DEFAULT_FRAME_ID
 
   function resolveFrameComponent(name: string, page?: Page) {
@@ -191,6 +196,22 @@
     }
 
     const load = async () => {
+      // Try to restore from history state first — avoids an unnecessary
+      // request when the frame's page data is already in the history stack.
+      if (!skipHistoryRestore) {
+        try {
+          const historyPage = await frameRouter.decryptHistory()
+
+          if (historyPage && historyPage.component) {
+            initRouter(historyPage)
+
+            return
+          }
+        } catch {
+          // No history state available, fall through to HTTP request.
+        }
+      }
+
       const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
       const response = await http.getClient().request({

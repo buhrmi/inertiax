@@ -11,7 +11,7 @@ Each frame manages its own router, history, and component tree.
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `id` | `string` | auto-generated | Frame identifier. Use `"_top"` for the root frame. |
+| `id` | `string` | `src` value, then auto-generated | Frame identifier. Deterministic when derived from `src`. |
 | `src` | `string` | — | URL to load the frame content from. |
 | `router` | `Router` | auto-created | Custom router instance. |
 | `initialComponent` | `ResolvedComponent` | — | Pre-resolved component for SSR/hydration. |
@@ -21,6 +21,7 @@ Each frame manages its own router, history, and component tree.
 | `renderLayout` | `boolean` | `true` for top frame | Whether to wrap content in layouts. |
 | `visitOptions` | `VisitOptions` | `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top) | Default visit options applied to all navigations within the frame. Link/form-level options take precedence. |
 | `onClickLink` | `(event, href) => void` | — | Called when a plain `<a>` inside the frame is clicked. Call `event.preventDefault()` to prevent navigation. |
+| `skipHistoryRestore` | `boolean` | `false` | When `true`, always makes an HTTP request on mount instead of restoring from history. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
 
 ### Scroll regions

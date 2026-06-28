@@ -1883,6 +1883,19 @@ app.get('/svelte/frame-scroll-region/pane', (req, res) => {
   })
 })
 
+app.get('/svelte/frame-history-restore', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameHistoryRestore', props: {} }),
+)
+
+app.get('/svelte/frame-history-restore/pane', (req, res) => {
+  const step = parseInt(req.query.step || '0', 10)
+
+  return inertia.render(req, res, {
+    component: 'Svelte/FrameHistoryRestorePane',
+    props: { step },
+  })
+})
+
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

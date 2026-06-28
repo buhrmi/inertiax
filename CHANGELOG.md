@@ -6,6 +6,24 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.23]
+
+### Added
+- `skipHistoryRestore` prop on `Frame` — when `true`, always makes an HTTP
+  request on mount instead of restoring page data from the history stack.
+- Frame `src` is now used as the default `frameId` when no explicit `id` is
+  given. Frames with the same `src` share history state across remounts,
+  making the history-restore optimisation work naturally.
+- `Frame` now attempts to restore page data from `history.state` before
+  making the initial HTTP request (skipped when `skipHistoryRestore` is
+  set or no history state exists).
+
+### Changed
+- `CSS.escape()` used in `regionsForFrame` selector to safely handle
+  frameIds containing URL characters.
+
+---
+
 ## [11.0.22] 🎉
 
 ### Fixed

@@ -58,7 +58,7 @@ That's it. Now you're ready to use all the new features.
 
 | Prop | Type | Description |
 |---|---|---|
-| `id` | `string` | Unique frame id. Used for routing/history isolation and for targeting visits via `frameId`. If omitted, top frame uses `'_top'`; nested frames get an auto-generated id. |
+| `id` | `string` | `src` value, then auto-generated | Unique frame id. Deterministic when derived from `src` — frames with the same `src` share history state across remounts. |
 | `src` | `string` | URL to load when the frame mounts (useful for lazy-loading frame content). |
 | `router` | `Router` | Optional router instance to control this frame. If omitted, the frame creates its own router with the frame id. |
 | `initialComponent` | `ResolvedComponent` | Initial resolved component to render before or without loading from `src`. |
@@ -67,6 +67,7 @@ That's it. Now you're ready to use all the new features.
 | `defaultLayout` | `(name: string, page: Page) => unknown` | Fallback layout resolver used when the page does not provide its own layout. |
 | `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
+| `skipHistoryRestore` | `boolean` | When `true`, always makes an HTTP request on mount instead of restoring page data from the history stack. Defaults to `false`. |
 | `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 

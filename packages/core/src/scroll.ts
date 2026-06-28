@@ -31,7 +31,7 @@ export class Scroll {
       return Array.from(this.regions())
     }
 
-    const anchor = document.querySelector(`[data-inertia-frame="${frameId}"]`)
+    const anchor = document.querySelector(`[data-inertia-frame="${CSS.escape(frameId)}"]`)
 
     if (!anchor?.parentElement) {
       return []
