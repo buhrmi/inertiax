@@ -1,5 +1,5 @@
 import { getContext, hasContext, setContext } from 'svelte'
-import { router as globalRouter, type Router } from 'inertiax-core'
+import { router as globalRouter, type Router, type VisitOptions } from 'inertiax-core'
 import type { Page } from 'inertiax-core'
 import type { Readable } from 'svelte/store'
 import type { ComponentResolver } from './types'
@@ -11,6 +11,7 @@ export type FrameContext = {
   router: Router
   resolveComponent?: ComponentResolver
   page: Readable<Page>
+  visitOptions: VisitOptions
 }
 
 const FRAME_CONTEXT_KEY = Symbol('inertia:frame-context')

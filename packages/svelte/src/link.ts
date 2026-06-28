@@ -15,6 +15,7 @@ import {
   type VisitOptions,
 } from 'inertiax-core'
 import type { ActionReturn } from 'svelte/action'
+import { useFrameContext } from './frameContext.svelte'
 import { config } from '.'
 
 type ActionEventHandlers = {
@@ -67,6 +68,9 @@ function link(
   let currentRouter: Router = router
   let baseParams: VisitOptions
   let visitParams: VisitOptions
+
+  // Frame-level visit options serve as defaults; individual link params override them.
+  const frameVisitOptions = useFrameContext()?.visitOptions ?? {}
 
   const regularEvents: ActionEventHandlers = {
     click: (event: MouseEvent) => {
@@ -179,16 +183,17 @@ function link(
     }
 
     baseParams = {
+      ...frameVisitOptions,
       data,
       method,
-      replace: params.replace || false,
-      preserveScroll: params.preserveScroll || false,
-      preserveState: params.preserveState ?? method !== 'get',
-      preserveUrl: params.preserveUrl || false,
-      only: params.only || [],
-      except: params.except || [],
-      headers: params.headers || {},
-      async: params.async || false,
+      replace: params.replace ?? frameVisitOptions.replace ?? false,
+      preserveScroll: params.preserveScroll ?? frameVisitOptions.preserveScroll ?? false,
+      preserveState: params.preserveState ?? frameVisitOptions.preserveState ?? (method !== 'get'),
+      preserveUrl: params.preserveUrl ?? frameVisitOptions.preserveUrl ?? false,
+      only: params.only ?? frameVisitOptions.only ?? [],
+      except: params.except ?? frameVisitOptions.except ?? [],
+      headers: { ...(frameVisitOptions.headers || {}), ...(params.headers || {}) },
+      async: params.async ?? frameVisitOptions.async ?? false,
       component: resolvedComponent,
       pageProps: pagePropsProp,
     }

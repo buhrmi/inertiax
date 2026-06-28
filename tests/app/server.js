@@ -1894,6 +1894,40 @@ app.post('/svelte/multi-frame/:frame/submit', (req, res) => {
   })
 })
 
+// ─── visitOptions test routes ─────────────────────────────────────────────────
+//
+// GET  /svelte/visit-options              — top-level host page
+// GET  /svelte/visit-options/:frame       — individual frame page
+// POST /svelte/visit-options/:frame/submit — form submit for frame
+
+app.get('/svelte/visit-options', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/VisitOptions', props: {} }),
+)
+
+app.get('/svelte/visit-options/:frame', (req, res) => {
+  const step = parseInt(req.query.step || '0', 10)
+
+  return inertia.render(req, res, {
+    component: 'Svelte/VisitOptionsPane',
+    props: {
+      frame: req.params.frame,
+      step,
+    },
+  })
+})
+
+app.post('/svelte/visit-options/:frame/submit', (req, res) => {
+  const step = parseInt(req.body.step || '0', 10) + 1
+
+  return inertia.render(req, res, {
+    component: 'Svelte/VisitOptionsPane',
+    props: {
+      frame: req.params.frame,
+      step,
+    },
+  })
+})
+
 // ─── X-Inertia-Frame header feature test routes ───────────────────────────────
 //
 // GET  /svelte/inertia-frame-header            — top-level host page

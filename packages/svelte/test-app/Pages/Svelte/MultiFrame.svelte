@@ -46,11 +46,11 @@
   
   <section>
     <h2>Left Frame</h2>
-    <Frame id="left" initialComponent={paneComponent} initialPage={leftPage} {resolveComponent} />
+    <Frame id="left" initialComponent={paneComponent} initialPage={leftPage} {resolveComponent} visitOptions={{ replace: false }} />
   </section>
 
   <section>
     <h2>Right Frame</h2>
-    <Frame id="right" initialComponent={paneComponent} initialPage={rightPage} {resolveComponent} />
+    <Frame id="right" initialComponent={paneComponent} initialPage={rightPage} {resolveComponent} visitOptions={{ replace: false }} />
   </section>
 </div>

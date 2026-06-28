@@ -6,7 +6,26 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
-## [11.0.14] — Unreleased
+## [11.0.16]
+
+### Added
+- `Frame` component now accepts `visitOptions` prop — all Inertia visit options
+  applied as defaults to navigations within the frame. Link/form-level options
+  take precedence.
+- `visitOptions` stored in frame context so `use:inertia` and `useForm` also
+  inherit frame-level visit options as defaults.
+- Frame-level visit defaults centralized in one place:
+  - **Top frame** (`_top`): `{ replace: false, updateBrowserUrl: true, preserveScroll: false }`
+  - **Non-top frames**: `{ replace: true, updateBrowserUrl: false, preserveScroll: true }`
+
+### Fixed
+- `use:inertia` action now correctly applies frame-level `visitOptions` defaults;
+  previously hardcoded `|| false` overrides would shadow frame defaults for
+  `replace`, `preserveScroll`, etc.
+
+---
+
+## [11.0.14]
 
 ### Changed
 - Reverted `router.get()` approach for initial frame load — back to manual `http` request

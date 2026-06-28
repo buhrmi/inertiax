@@ -11,6 +11,8 @@
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
     renderLayout?: boolean
+    /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults to `{ replace: true, updateBrowserUrl: false, preserveScroll: true }` for non-top frames and `{ replace: false, updateBrowserUrl: true, preserveScroll: false }` for the top frame. */
+    visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
     onClickLink?: (event: MouseEvent, href: string) => void
     children?: import('svelte').Snippet
@@ -39,6 +41,7 @@
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
     renderLayout?: InertiaFrameProps['renderLayout']
+    visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
     children?: InertiaFrameProps['children']
   }
@@ -52,6 +55,7 @@
     resolveComponent = undefined,
     defaultLayout,
     renderLayout = undefined,
+    visitOptions,
     onClickLink,
     children,
     ...restProps
@@ -91,6 +95,12 @@
 
   const frameRouter = router ?? createRouter(frameId)
 
+  // Frame-level visit options: non-top frames default to { replace: true, updateBrowserUrl: false, preserveScroll: true }
+  const defaultFrameVisitOptions = frameId !== DEFAULT_FRAME_ID
+    ? { replace: true, updateBrowserUrl: false, preserveScroll: true }
+    : { replace: false, updateBrowserUrl: true, preserveScroll: false }
+  const frameVisitOptions = $derived({ ...defaultFrameVisitOptions, ...visitOptions })
+
   const emptyPage: Page = {
     component: '',
     props: { errors: {} },
@@ -123,6 +133,7 @@
     router: frameRouter,
     resolveComponent: frameResolveComponent,
     page: toStore(() => page ?? emptyPage),
+    visitOptions: frameVisitOptions,
   })
 
   if (frameId === DEFAULT_FRAME_ID && page) {
@@ -388,7 +399,7 @@
     }
 
     event.preventDefault()
-    frameRouter.visit(href)
+    frameRouter.visit(href, { ...frameVisitOptions })
   }
 </script>
 

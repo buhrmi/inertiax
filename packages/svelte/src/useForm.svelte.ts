@@ -25,7 +25,7 @@ import type {
 import { UseFormUtils } from 'inertiax-core'
 import { cloneDeep } from 'es-toolkit'
 import type { NamedInputEvent, PrecognitionPath, ValidationConfig, Validator } from 'laravel-precognition'
-import { useFrameRouter } from './frameContext.svelte'
+import { useFrameContext, useFrameRouter } from './frameContext.svelte'
 import useFormState, { type FormStateWithPrecognition, type InternalPrecognitionState } from './useFormState.svelte'
 
 // Reserved keys validation - logs console.error at runtime when form data keys conflict with form properties
@@ -143,6 +143,7 @@ export default function useForm<TForm extends FormDataType<TForm>>(
   ...args: UseFormArguments<TForm>
 ): InertiaFormStore<TForm> | InertiaPrecognitiveFormStore<TForm> {
   const frameRouter = useFrameRouter()
+  const frameVisitOptions = useFrameContext()?.visitOptions ?? {}
   const { rememberKey, data, precognitionEndpoint } = UseFormUtils.parseUseFormArguments<TForm>(...args)
 
   // Resolve data for validation (useFormState handles the actual function data logic)
@@ -181,7 +182,9 @@ export default function useForm<TForm extends FormDataType<TForm>>(
     const transformedData = getTransform()(form.data()) as RequestPayload
 
     const _options: Omit<VisitOptions, 'method'> = {
+      ...frameVisitOptions,
       ...options,
+      headers: { ...(frameVisitOptions.headers || {}), ...(options.headers || {}) },
       onCancelToken: (token: CancelToken) => {
         cancelToken = token
 
