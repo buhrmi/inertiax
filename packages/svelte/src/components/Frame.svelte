@@ -410,10 +410,7 @@
 {/if}
 
 <!--
-  Invisible anchor used solely to find the nearest DOM parent so we can attach a
-  delegated click handler that intercepts plain <a> clicks inside this Frame.
-  We use "display:contents" so it adds no layout box.
+  Invisible anchor used to find the nearest DOM parent for delegated click
+  handling and as a scroll-region anchor. display:contents so no layout box.
 -->
-{#if !isServer}
-  <span style="display:contents" data-inertia-frame={frameId} {@attach attachClickHandler}></span>
-{/if}
+<span style="display:contents" data-inertia-frame={frameId} {@attach attachClickHandler}></span>

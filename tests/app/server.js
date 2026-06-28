@@ -1870,6 +1870,19 @@ app.get('/svelte/frame-scroll-preserve/pane', (req, res) =>
   setTimeout(() => inertia.render(req, res, { component: 'Svelte/FrameSrcOnlyPane', props: {} }), 500),
 )
 
+app.get('/svelte/frame-scroll-region', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameScrollRegion', props: {} }),
+)
+
+app.get('/svelte/frame-scroll-region/pane', (req, res) => {
+  const step = parseInt(req.query.step || '0', 10)
+
+  return inertia.render(req, res, {
+    component: 'Svelte/FrameScrollRegionPane',
+    props: { step },
+  })
+})
+
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

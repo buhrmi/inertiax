@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.19]
+
+### Fixed
+- `Frame`'s invisible anchor `<span>` now renders during SSR, avoiding a
+  hydration DOM mismatch. The `data-inertia-frame` attribute is present in
+  both server and client output; the click action only runs client-side.
+
+---
+
 ## [11.0.18]
 
 ### Fixed
