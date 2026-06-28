@@ -204,6 +204,8 @@
 
           if (historyPage && historyPage.component) {
             initRouter(historyPage)
+            // Restore scroll after the frame's content has rendered.
+            setTimeout(() => frameRouter.restoreScroll(), 0)
 
             return
           }

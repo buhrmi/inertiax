@@ -6,6 +6,23 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.24]
+
+### Fixed
+- `restoreScroll()` on Frame mount now deferred via `setTimeout(0)` so it
+  runs after frame content has rendered, fixing scroll-region restore when
+  a Frame remounts from history state.
+- Frame scroll-region position now correctly restored when the Frame
+  unmounts (navigate away), then remounts (browser back) from the history
+  stack.
+
+### Added
+- `restoreScroll()` public method on `Router` — restores scroll positions
+  from `history.state.scrollRegions`. Called automatically by Frame after
+  `decryptHistory()`.
+
+---
+
 ## [11.0.23]
 
 ### Added

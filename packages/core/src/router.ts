@@ -284,6 +284,15 @@ export class Router {
     return history.restore(key, this.frameId) as T | undefined
   }
 
+  /**
+   * Restore scroll positions from history state for this frame.
+   * Call after programmatically restoring a frame from history (e.g.
+   * when mounting a Frame that loads page data from the history stack).
+   */
+  public restoreScroll(): void {
+    Scroll.restore(history.getScrollRegions(), this.frameId)
+  }
+
   public on<TEventName extends GlobalEventNames>(
     type: TEventName,
     callback: (event: GlobalEvent<TEventName>) => GlobalEventResult<TEventName>,

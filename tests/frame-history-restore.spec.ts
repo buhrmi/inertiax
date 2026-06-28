@@ -35,3 +35,67 @@ test('Frame with skipHistoryRestore always makes an HTTP request on mount', asyn
   // Should have made a new HTTP request (skipHistoryRestore prevents history restore)
   expect(paneRequests.length).toBeGreaterThanOrEqual(1)
 })
+
+test('scroll-region is restored when Frame unmounts and remounts from history state', async ({ page }) => {
+  // Load the page — Frame mounts with step 0
+  await page.goto('/svelte/frame-scroll-history')
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
+  await page.waitForTimeout(300)
+
+  const scrollRegion = page.getByTestId('scroll-region')
+
+  // User scrolls within the frame's scroll-region
+  await scrollRegion.evaluate((el) => el.scrollTo(0, 400))
+  await page.waitForTimeout(200)
+
+  // Navigate within the frame to step 1 (pushes history, saves scroll=400 for step 0)
+  await page.getByTestId('scroll-history-next-link').click()
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('1')
+  await page.waitForTimeout(300)
+
+  // Navigate away entirely — Frame unmounts, new document loads
+  await page.goto('/')
+  await expect(page.locator('#app')).toContainText('Test App Entrypoint')
+
+  // Go back twice: once to step 1 (popstate, Frame remounts with decryptHistory),
+  // again to step 0 (popstate within mounted Frame, scroll restored via onPopstate)
+  await page.goBack()
+  await page.waitForTimeout(300)
+
+  const stepAfterOneBack = await page.getByTestId('scroll-history-step').textContent()
+
+  if (stepAfterOneBack === '1') {
+    await page.goBack()
+    await page.waitForTimeout(300)
+  }
+
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
+
+  // Scroll should be restored — Frame remounted with decryptHistory and called restoreScroll
+  const restoredTop = await scrollRegion.evaluate((el) => el.scrollTop)
+  expect(restoredTop).toBeGreaterThan(0)
+})
+
+test('scroll-region is restored within same Frame on popstate', async ({ page }) => {
+  // Simpler case: Frame stays mounted, popstate within same document
+  await page.goto('/svelte/frame-scroll-history')
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
+  await page.waitForTimeout(300)
+
+  const scrollRegion = page.getByTestId('scroll-region')
+
+  await scrollRegion.evaluate((el) => el.scrollTo(0, 400))
+  await page.waitForTimeout(200)
+
+  await page.getByTestId('scroll-history-next-link').click()
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('1')
+  await page.waitForTimeout(300)
+
+  // Go back to step 0 — Frame stays mounted, popstate restores scroll
+  await page.goBack()
+  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
+  await page.waitForTimeout(300)
+
+  const restoredTop = await scrollRegion.evaluate((el) => el.scrollTop)
+  expect(restoredTop).toBeGreaterThan(0)
+})
