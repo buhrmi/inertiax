@@ -6,6 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.25]
+
+### Fixed
+- `saveScrollPositions` no longer overwrites saved scroll positions with
+  zero when a scroll-region's content collapses (e.g. when a Frame
+  unmounts and the scroll-region shrinks). Regions without scrollable
+  content (`scrollHeight ≤ clientHeight`) are skipped.
+- Frame scroll-region now correctly restores its position when a Frame
+  remounts after being hidden — `decryptHistory()` + `restoreScroll()`
+  work in tandem on the toggle path, not just browser back/forward.
+
+---
+
 ## [11.0.24]
 
 ### Fixed

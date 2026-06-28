@@ -36,42 +36,35 @@ test('Frame with skipHistoryRestore always makes an HTTP request on mount', asyn
   expect(paneRequests.length).toBeGreaterThanOrEqual(1)
 })
 
-test('scroll-region is restored when Frame unmounts and remounts from history state', async ({ page }) => {
-  // Load the page — Frame mounts with step 0
-  await page.goto('/svelte/frame-scroll-history')
-  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
+test('scroll-region is restored when Frame remounts after being hidden', async ({ page }) => {
+  // This test isolates Frame-mount scroll restore from popstate.
+  // The Frame is toggled via Svelte {#if} — hidden (unmounted), then shown (remounted).
+  // On remount, decryptHistory() + restoreScroll() should restore the scroll position.
+  await page.goto('/svelte/frame-mount-scroll-restore')
+  await expect(page.getByTestId('visible-status')).toHaveText('visible')
+  await expect(page.getByTestId('scroll-mount-step')).toHaveText('0')
   await page.waitForTimeout(300)
 
   const scrollRegion = page.getByTestId('scroll-region')
 
-  // User scrolls within the frame's scroll-region
+  // Scroll the frame's scroll-region to a known position
   await scrollRegion.evaluate((el) => el.scrollTo(0, 400))
   await page.waitForTimeout(200)
 
-  // Navigate within the frame to step 1 (pushes history, saves scroll=400 for step 0)
-  await page.getByTestId('scroll-history-next-link').click()
-  await expect(page.getByTestId('scroll-history-step')).toHaveText('1')
-  await page.waitForTimeout(300)
+  // Verify scroll was applied
+  const scrolledTop = await scrollRegion.evaluate((el) => el.scrollTop)
+  expect(scrolledTop).toBeGreaterThan(0)
 
-  // Navigate away entirely — Frame unmounts, new document loads
-  await page.goto('/')
-  await expect(page.locator('#app')).toContainText('Test App Entrypoint')
+  // Hide the Frame — it unmounts from the DOM
+  await page.getByTestId('toggle-hide').click()
+  await expect(page.getByTestId('visible-status')).toHaveText('hidden')
+  await page.waitForTimeout(200)
 
-  // Go back twice: once to step 1 (popstate, Frame remounts with decryptHistory),
-  // again to step 0 (popstate within mounted Frame, scroll restored via onPopstate)
-  await page.goBack()
-  await page.waitForTimeout(300)
+  // Show the Frame — it remounts fresh. decryptHistory + restoreScroll should restore scroll
+  await page.getByTestId('toggle-show').click()
+  await expect(page.getByTestId('visible-status')).toHaveText('visible')
+  await page.waitForTimeout(500)
 
-  const stepAfterOneBack = await page.getByTestId('scroll-history-step').textContent()
-
-  if (stepAfterOneBack === '1') {
-    await page.goBack()
-    await page.waitForTimeout(300)
-  }
-
-  await expect(page.getByTestId('scroll-history-step')).toHaveText('0')
-
-  // Scroll should be restored — Frame remounted with decryptHistory and called restoreScroll
   const restoredTop = await scrollRegion.evaluate((el) => el.scrollTop)
   expect(restoredTop).toBeGreaterThan(0)
 })

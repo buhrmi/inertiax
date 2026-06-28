@@ -44,9 +44,12 @@ test('scroll-region restores position on back navigation after frame visit', asy
 
   await page.goBack()
   await expect(page.getByTestId('pane-step')).toHaveText('1')
+  // RAF-based scroll restore needs a tick to fire.
+  await page.waitForTimeout(200)
   await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(600)
 
   await page.goBack()
   await expect(page.getByTestId('pane-step')).toHaveText('0')
+  await page.waitForTimeout(200)
   await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(300)
 })
