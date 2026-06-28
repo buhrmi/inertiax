@@ -6,6 +6,17 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.18]
+
+### Fixed
+- `Scroll.reset()` and `Scroll.restore()` no longer skip scroll-region handling
+  for non-top frames. Previously they were complete no-ops for any `frameId !== "_top"`,
+  so `[scroll-region]` elements wrapping a `<Frame>` never reset on navigation.
+  Now the closest ancestor `[scroll-region]` is scoped and reset, while outer
+  scroll regions and document scroll remain untouched.
+
+---
+
 ## [11.0.17]
 
 ### Changed

@@ -22,6 +22,34 @@ export class Scroll {
     return document.querySelectorAll('[scroll-region]')
   }
 
+  /**
+   * Returns the closest ancestor [scroll-region] of the frame's DOM anchor,
+   * or all regions if the frame is the top frame.
+   */
+  protected static regionsForFrame(frameId: string): Element[] {
+    if (frameId === DEFAULT_FRAME_ID) {
+      return Array.from(this.regions())
+    }
+
+    const anchor = document.querySelector(`[data-inertia-frame="${frameId}"]`)
+
+    if (!anchor?.parentElement) {
+      return []
+    }
+
+    let el: Element | null = anchor.parentElement
+
+    while (el) {
+      if (el.hasAttribute('scroll-region')) {
+        return [el]
+      }
+
+      el = el.parentElement
+    }
+
+    return []
+  }
+
   public static scrollToTop(): void {
     if (isFirefox && getComputedStyle(document.documentElement).scrollBehavior === 'smooth') {
       // Firefox has a bug with smooth scrolling to (0, 0) when navigating to pages that are shorter than the previous page.
@@ -32,19 +60,19 @@ export class Scroll {
   }
 
   public static reset(frameId = DEFAULT_FRAME_ID): void {
+    const isTopFrame = frameId === DEFAULT_FRAME_ID
+
     // Non-top frames should never touch the document scroll position.
-    if (frameId !== DEFAULT_FRAME_ID) {
-      return
+    if (isTopFrame) {
+      const anchorHash = isServer ? null : window.location.hash
+
+      if (!anchorHash) {
+        // Reset the document scroll position if there is no hash.
+        this.scrollToTop()
+      }
     }
 
-    const anchorHash = isServer ? null : window.location.hash
-
-    if (!anchorHash) {
-      // Reset the document scroll position if there is no hash.
-      this.scrollToTop()
-    }
-
-    this.regions().forEach((region) => {
+    this.regionsForFrame(frameId).forEach((region) => {
       if (typeof region.scrollTo === 'function') {
         region.scrollTo(0, 0)
       } else {
@@ -54,7 +82,10 @@ export class Scroll {
     })
 
     this.save(frameId)
-    this.scrollToAnchor(frameId)
+
+    if (isTopFrame) {
+      this.scrollToAnchor(frameId)
+    }
   }
 
   public static scrollToAnchor(frameId = DEFAULT_FRAME_ID): void {
@@ -80,15 +111,25 @@ export class Scroll {
       return
     }
 
-    // Non-top frames should not touch the document scroll or global
-    // scroll-region elements.
-    if (frameId !== DEFAULT_FRAME_ID) {
-      return
-    }
+    const isTopFrame = frameId === DEFAULT_FRAME_ID
 
     window.requestAnimationFrame(() => {
-      this.restoreDocument(frameId)
-      this.restoreScrollRegions(scrollRegions)
+      if (isTopFrame) {
+        this.restoreDocument(frameId)
+        this.restoreScrollRegions(scrollRegions)
+      } else {
+        // For non-top frames, scroll ancestor scroll-regions to top.
+        // Precise scroll-position restoration across frames requires mapping
+        // saved positions to scoped elements, which isn't supported yet.
+        this.regionsForFrame(frameId).forEach((region) => {
+          if (typeof region.scrollTo === 'function') {
+            region.scrollTo(0, 0)
+          } else {
+            region.scrollTop = 0
+            region.scrollLeft = 0
+          }
+        })
+      }
     })
   }
 

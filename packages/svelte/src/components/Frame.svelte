@@ -415,5 +415,5 @@
   We use "display:contents" so it adds no layout box.
 -->
 {#if !isServer}
-  <span style="display:contents" {@attach attachClickHandler}></span>
+  <span style="display:contents" data-inertia-frame={frameId} {@attach attachClickHandler}></span>
 {/if}
