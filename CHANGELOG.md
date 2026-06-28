@@ -6,6 +6,22 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.22] 🎉
+
+### Fixed
+- Scroll-region restore on back/forward navigation within non-top frames
+  now works correctly. The dual-router popstate race (top frame's handler
+  overwriting scroll state) is prevented by an `isEqual` guard that skips
+  `setQuietly` when the frame's data hasn't changed.
+- Removed aggressive `page.set` save that was overwriting the correct
+  `onScroll`-saved scroll positions with a zeroed capture.
+
+### Changed
+- `Scroll.restore` now uses double `requestAnimationFrame` to give frame
+  content time to render before restoring scroll positions.
+
+---
+
 ## [11.0.21]
 
 ### Changed

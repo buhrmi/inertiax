@@ -173,6 +173,12 @@ export class Router {
 
         this.cancelAll({ prefetch: false })
 
+        // If this frame's page hasn't changed, another frame pushed this
+        // history entry.  Skip setQuietly/restore to avoid clobbering scroll.
+        if (!currentPage.isCleared(this.frameId) && isEqual(currentPage.getWithoutFlashData(this.frameId), data)) {
+          return
+        }
+
         currentPage
           .setQuietly(data, { preserveState: this.frameId === DEFAULT_FRAME_ID }, this.frameId)
           .then(() => {
@@ -413,10 +419,6 @@ export class Router {
 
     if (options.optimistic) {
       this.applyOptimisticUpdate(options.optimistic, events)
-    }
-
-    if (!currentPage.isCleared(this.frameId) && !visit.preserveUrl) {
-      Scroll.save()
     }
 
     const requestParams: PendingVisit & VisitCallbacks = {

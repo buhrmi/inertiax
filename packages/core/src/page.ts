@@ -101,7 +101,7 @@ class CurrentFramePage {
       const location = !isServer ? window.location : new URL(page.url)
       const currentFrameUrl = hrefToUrl(this.page?.url ?? page.url)
       const comparisonTarget = updateBrowserUrl ? location : currentFrameUrl
-      const scrollRegions = !isServer && preserveScroll ? Scroll.getScrollRegions() : []
+      const scrollRegions = !isServer ? Scroll.getScrollRegions() : []
       replace = replace || isSameUrlWithoutHash(hrefToUrl(page.url), comparisonTarget)
 
       const pageForHistory = { ...page, flash: {} }
