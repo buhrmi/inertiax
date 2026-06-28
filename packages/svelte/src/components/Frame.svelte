@@ -11,7 +11,7 @@
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
     renderLayout?: boolean
-    /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults to `{ replace: true, updateBrowserUrl: false, preserveScroll: true }` for non-top frames and `{ replace: false, updateBrowserUrl: true, preserveScroll: false }` for the top frame. */
+    /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Non-top frames default to `{ replace: true, updateBrowserUrl: false }`, top frame defaults to `{ replace: false, updateBrowserUrl: true }`. */
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
     onClickLink?: (event: MouseEvent, href: string) => void
@@ -95,10 +95,10 @@
 
   const frameRouter = router ?? createRouter(frameId)
 
-  // Frame-level visit options: non-top frames default to { replace: true, updateBrowserUrl: false, preserveScroll: true }
+  // Frame-level visit options: non-top frames default to { replace: true, updateBrowserUrl: false }
   const defaultFrameVisitOptions = frameId !== DEFAULT_FRAME_ID
-    ? { replace: true, updateBrowserUrl: false, preserveScroll: true }
-    : { replace: false, updateBrowserUrl: true, preserveScroll: false }
+    ? { replace: true, updateBrowserUrl: false }
+    : { replace: false, updateBrowserUrl: true }
   const frameVisitOptions = $derived({ ...defaultFrameVisitOptions, ...visitOptions })
 
   const emptyPage: Page = {

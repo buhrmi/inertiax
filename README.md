@@ -67,7 +67,7 @@ That's it. Now you're ready to use all the new features.
 | `defaultLayout` | `(name: string, page: Page) => unknown` | Fallback layout resolver used when the page does not provide its own layout. |
 | `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
-| `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false, preserveScroll: true }` (non-top) / `{ replace: false, updateBrowserUrl: true, preserveScroll: false }` (top). |
+| `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 
 All other props (restProps) are forwarded to the rendered page component.
@@ -108,9 +108,8 @@ Non-top frames use different defaults than the top frame to work well as embedde
 |---|---|---|
 | `replace` | `false` (push history) | `true` (replace history) |
 | `updateBrowserUrl` | `true` | `false` |
-| `preserveScroll` | `false` | `true` |
 
-Override any of these by passing them explicitly in the frame's `visitOptions` prop, or per-link/per-form in your visit calls.
+Override either by passing them explicitly in the frame's `visitOptions` prop, or per-link/per-form in your visit calls.
 
 ### Visiting a different frame
 

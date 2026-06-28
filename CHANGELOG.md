@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.17]
+
+### Changed
+- Removed `preserveScroll` from frame-level `visitOptions` defaults.
+  Parent document scroll is already protected by the `Scroll` class
+  (`frameId !== DEFAULT_FRAME_ID` guard). Frames now scroll to top on
+  navigation like the top frame does.
+
+---
+
 ## [11.0.16]
 
 ### Added
@@ -15,8 +25,8 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 - `visitOptions` stored in frame context so `use:inertia` and `useForm` also
   inherit frame-level visit options as defaults.
 - Frame-level visit defaults centralized in one place:
-  - **Top frame** (`_top`): `{ replace: false, updateBrowserUrl: true, preserveScroll: false }`
-  - **Non-top frames**: `{ replace: true, updateBrowserUrl: false, preserveScroll: true }`
+  - **Top frame** (`_top`): `{ replace: false, updateBrowserUrl: true }`
+  - **Non-top frames**: `{ replace: true, updateBrowserUrl: false }`
 
 ### Fixed
 - `use:inertia` action now correctly applies frame-level `visitOptions` defaults;
