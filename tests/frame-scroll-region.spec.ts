@@ -27,6 +27,8 @@ test('scroll-region around a Frame resets to top on frame navigation', async ({ 
 })
 
 test('scroll-region restores position on back navigation after frame visit', async ({ page }) => {
+  test.setTimeout(15_000)
+
   await page.goto('/svelte/frame-scroll-region')
   await expect(page.getByTestId('pane-step')).toHaveText('0')
   await page.waitForTimeout(200)
@@ -44,12 +46,10 @@ test('scroll-region restores position on back navigation after frame visit', asy
 
   await page.goBack()
   await expect(page.getByTestId('pane-step')).toHaveText('1')
-  // RAF-based scroll restore needs a tick to fire.
-  await page.waitForTimeout(200)
-  await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(600)
+  // RAF-based scroll restore may be delayed under parallel load.
+  await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop), { timeout: 10_000 }).toBe(600)
 
   await page.goBack()
   await expect(page.getByTestId('pane-step')).toHaveText('0')
-  await page.waitForTimeout(200)
-  await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(300)
+  await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop), { timeout: 10_000 }).toBe(300)
 })

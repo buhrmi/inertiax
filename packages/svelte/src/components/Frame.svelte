@@ -117,6 +117,9 @@
   }
 
   let booted = $state(false)
+  // When true, the next component mount triggers a scroll-restore (used by the
+  // history-decrypt path so scroll is restored after content has rendered).
+  let pendingRestoreScroll = $state(false)
 
   // svelte-ignore state_referenced_locally
   let component = $state<ResolvedComponent | null>(initialComponent ?? null)
@@ -148,6 +151,15 @@
   $effect.pre(() => {
     if (frameId === DEFAULT_FRAME_ID && page) {
       setPage(page)
+    }
+  })
+
+  // Restore scroll position after the frame's component has been swapped
+  // and rendered (used by the history-decrypt path in onMount).
+  $effect(() => {
+    if (pendingRestoreScroll && component) {
+      pendingRestoreScroll = false
+      frameRouter.restoreScroll()
     }
   })
 
@@ -204,8 +216,7 @@
 
           if (historyPage && historyPage.component) {
             initRouter(historyPage)
-            // Restore scroll after the frame's content has rendered.
-            setTimeout(() => frameRouter.restoreScroll(), 0)
+            pendingRestoreScroll = true
 
             return
           }

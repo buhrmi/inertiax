@@ -167,24 +167,13 @@ class History {
   }
 
   public saveScrollPositions(scrollRegions: ScrollRegion[]): void {
-    // Skip regions that have no scrollable content — their scroll position
-    // is meaningless (e.g. when a Frame unmounts and the scroll-region collapses).
-    const meaningful = scrollRegions.filter((_, i) => {
-      const el = document.querySelectorAll('[scroll-region]')[i]
-      return el ? el.scrollHeight > el.clientHeight : false
-    })
-
-    if (meaningful.length === 0) {
-      return
-    }
-
-    if (isEqual(this.getScrollRegions(), meaningful)) {
+    if (isEqual(this.getScrollRegions(), scrollRegions)) {
       return
     }
 
     const nextState = {
       ...window.history.state,
-      scrollRegions: meaningful,
+      scrollRegions,
     }
 
     try {

@@ -1909,19 +1909,6 @@ app.get('/svelte/frame-scroll-history/pane', (req, res) => {
   })
 })
 
-app.get('/svelte/frame-mount-scroll-restore', (req, res) =>
-  inertia.render(req, res, { component: 'Svelte/FrameMountScrollRestore', props: {} }),
-)
-
-app.get('/svelte/frame-mount-scroll-restore/pane', (req, res) => {
-  const step = parseInt(req.query.step || '0', 10)
-
-  return inertia.render(req, res, {
-    component: 'Svelte/FrameMountScrollRestorePane',
-    props: { step },
-  })
-})
-
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

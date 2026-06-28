@@ -6,6 +6,20 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.26]
+
+### Changed
+- Frame history-restore scroll restoration now uses a reactive `$effect`
+  tied to the component mount instead of `setTimeout`. Scroll is restored
+  as soon as Svelte has rendered the frame's content — no more guessing
+  with arbitrary timers.
+
+### Fixed
+- Flaky `frame-scroll-region` back-navigation test: increased timeouts to
+  accommodate RAF-based scroll restore delays under parallel test load.
+
+---
+
 ## [11.0.25]
 
 ### Fixed
