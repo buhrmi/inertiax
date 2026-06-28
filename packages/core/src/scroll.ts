@@ -144,7 +144,7 @@ export class Scroll {
       return
     }
 
-    const scrollPosition = history.getDocumentScrollPosition(frameId)
+    const scrollPosition = history.getDocumentScrollPosition()
     window.scrollTo(scrollPosition.left, scrollPosition.top)
   }
 
@@ -156,10 +156,10 @@ export class Scroll {
     }
   }
 
-  public static onWindowScroll(frameId = '_top'): void {
+  public static onWindowScroll(): void {
     history.saveDocumentScrollPosition({
       top: window.scrollY,
       left: window.scrollX,
-    }, frameId)
+    })
   }
 }

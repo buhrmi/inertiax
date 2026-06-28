@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.21]
+
+### Changed
+- Removed unused `frameId` parameters from `saveDocumentScrollPosition`,
+  `getDocumentScrollPosition`, and `Scroll.onWindowScroll` — all read/write
+  from root-level `history.state` now.
+
+---
+
 ## [11.0.20]
 
 ### Changed

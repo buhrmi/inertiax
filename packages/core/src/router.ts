@@ -416,7 +416,7 @@ export class Router {
     }
 
     if (!currentPage.isCleared(this.frameId) && !visit.preserveUrl) {
-      Scroll.save(this.frameId)
+      Scroll.save()
     }
 
     const requestParams: PendingVisit & VisitCallbacks = {

@@ -186,7 +186,7 @@ class History {
     }
   }
 
-  public saveDocumentScrollPosition(scrollRegion: ScrollRegion, _frameId = DEFAULT_FRAME_ID): void {
+  public saveDocumentScrollPosition(scrollRegion: ScrollRegion): void {
     if (isEqual(this.getDocumentScrollPosition(), scrollRegion)) {
       return
     }
@@ -203,7 +203,7 @@ class History {
     return this.getWindowState().scrollRegions || []
   }
 
-  public getDocumentScrollPosition(_frameId = DEFAULT_FRAME_ID): ScrollRegion {
+  public getDocumentScrollPosition(): ScrollRegion {
     return this.getWindowState().documentScrollPosition || { top: 0, left: 0 }
   }
 
