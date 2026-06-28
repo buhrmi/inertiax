@@ -22,3 +22,7 @@ Each frame manages its own router, history, and component tree.
 | `visitOptions` | `VisitOptions` | `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top) | Default visit options applied to all navigations within the frame. Link/form-level options take precedence. |
 | `onClickLink` | `(event, href) => void` | — | Called when a plain `<a>` inside the frame is clicked. Call `event.preventDefault()` to prevent navigation. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
+
+### Scroll regions
+
+When a frame navigates, the closest ancestor `[scroll-region]` element is scrolled to top. On back/forward, its position is restored. Outer scroll regions and document scroll are left alone.

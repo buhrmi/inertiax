@@ -13,12 +13,12 @@ const isChromeIOS = !isServer && /CriOS/.test(window.navigator.userAgent)
 
 type FrameHistoryState = {
   page: Page | ArrayBuffer
-  scrollRegions?: ScrollRegion[]
-  documentScrollPosition?: ScrollRegion
 }
 
 type InertiaHistoryState = {
   frames: Record<string, FrameHistoryState>
+  scrollRegions?: ScrollRegion[]
+  documentScrollPosition?: ScrollRegion
 }
 
 class History {
@@ -166,62 +166,45 @@ class History {
     return pageData instanceof ArrayBuffer ? decryptHistory(pageData) : Promise.resolve(pageData)
   }
 
-  public saveScrollPositions(scrollRegions: ScrollRegion[], frameId = DEFAULT_FRAME_ID): void {
-    queue.add(() => {
-      return Promise.resolve().then(() => {
-        const frameState = this.getFrameState(frameId)
+  public saveScrollPositions(scrollRegions: ScrollRegion[]): void {
+    if (isEqual(this.getScrollRegions(), scrollRegions)) {
+      return
+    }
 
-        if (!frameState?.page) {
-          return
-        }
+    const nextState = {
+      ...window.history.state,
+      scrollRegions,
+    }
 
-        if (isEqual(this.getScrollRegions(frameId), scrollRegions)) {
-          return
-        }
-
-        return this.doReplaceState(
-          {
-            page: frameState.page,
-            scrollRegions,
-          },
-          undefined,
-          frameId,
-        )
-      })
-    })
+    try {
+      window.history.replaceState(nextState, '')
+    } catch (e) {
+      // Quota errors are handled silently; other errors should not block navigation.
+      if (!(e instanceof Error && e.name === 'QuotaExceededError')) {
+        console.error('[Inertia] Failed to save scroll positions:', e)
+      }
+    }
   }
 
-  public saveDocumentScrollPosition(scrollRegion: ScrollRegion, frameId = DEFAULT_FRAME_ID): void {
-    queue.add(() => {
-      return Promise.resolve().then(() => {
-        const frameState = this.getFrameState(frameId)
+  public saveDocumentScrollPosition(scrollRegion: ScrollRegion, _frameId = DEFAULT_FRAME_ID): void {
+    if (isEqual(this.getDocumentScrollPosition(), scrollRegion)) {
+      return
+    }
 
-        if (!frameState?.page) {
-          return
-        }
+    const nextState = {
+      ...window.history.state,
+      documentScrollPosition: scrollRegion,
+    }
 
-        if (isEqual(this.getDocumentScrollPosition(frameId), scrollRegion)) {
-          return
-        }
-
-        return this.doReplaceState(
-          {
-            page: frameState.page,
-            documentScrollPosition: scrollRegion,
-          },
-          undefined,
-          frameId,
-        )
-      })
-    })
+    window.history.replaceState(nextState, '')
   }
 
-  public getScrollRegions(frameId = DEFAULT_FRAME_ID): ScrollRegion[] {
-    return this.getFrameState(frameId)?.scrollRegions || []
+  public getScrollRegions(): ScrollRegion[] {
+    return this.getWindowState().scrollRegions || []
   }
 
-  public getDocumentScrollPosition(frameId = DEFAULT_FRAME_ID): ScrollRegion {
-    return this.getFrameState(frameId)?.documentScrollPosition || { top: 0, left: 0 }
+  public getDocumentScrollPosition(_frameId = DEFAULT_FRAME_ID): ScrollRegion {
+    return this.getWindowState().documentScrollPosition || { top: 0, left: 0 }
   }
 
   public replaceState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID, browserUrl?: string): void {
@@ -288,15 +271,12 @@ class History {
   protected doReplaceState(
     data: {
       page: Page | ArrayBuffer
-      scrollRegions?: ScrollRegion[]
-      documentScrollPosition?: ScrollRegion
     },
     url?: string,
     frameId = DEFAULT_FRAME_ID,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
       const existing = this.getWindowState()
-      const previous = existing.frames[frameId] ?? {}
 
       const nextState = {
         ...window.history.state,
@@ -304,8 +284,6 @@ class History {
           ...existing.frames,
           [frameId]: {
             page: data.page,
-            scrollRegions: data.scrollRegions ?? previous.scrollRegions ?? [],
-            documentScrollPosition: data.documentScrollPosition ?? previous.documentScrollPosition ?? { top: 0, left: 0 },
           },
         },
       }
@@ -317,15 +295,12 @@ class History {
   protected doPushState(
     data: {
       page: Page | ArrayBuffer
-      scrollRegions?: ScrollRegion[]
-      documentScrollPosition?: ScrollRegion
     },
     url: string,
     frameId = DEFAULT_FRAME_ID,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
       const existing = this.getWindowState()
-      const previous = existing.frames[frameId] ?? {}
 
       const nextState = {
         ...window.history.state,
@@ -333,8 +308,6 @@ class History {
           ...existing.frames,
           [frameId]: {
             page: data.page,
-            scrollRegions: data.scrollRegions ?? previous.scrollRegions ?? [],
-            documentScrollPosition: data.documentScrollPosition ?? previous.documentScrollPosition ?? { top: 0, left: 0 },
           },
         },
       }

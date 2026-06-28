@@ -29,7 +29,7 @@ export class InitialVisit {
       return false
     }
 
-    const scrollRegions = history.getScrollRegions(frameId)
+    const scrollRegions = history.getScrollRegions()
 
     history
       .decrypt(null, frameId)
@@ -69,7 +69,7 @@ export class InitialVisit {
       .then(() => {
         const visitId = uid()
         const rememberedState = history.getState<Page['rememberedState']>(history.rememberedState, {}, frameId)
-        const scrollRegions = history.getScrollRegions(frameId)
+        const scrollRegions = history.getScrollRegions()
         currentPage.remember(rememberedState, frameId)
 
         currentPage
@@ -102,7 +102,7 @@ export class InitialVisit {
 
     currentPage.set(currentPage.get(frameId), { preserveScroll: true, preserveState: true, visitId }, frameId).then(() => {
       if (navigationType.isReload()) {
-        Scroll.restore(history.getScrollRegions(frameId), frameId)
+        Scroll.restore(history.getScrollRegions(), frameId)
       } else {
         Scroll.scrollToAnchor(frameId)
       }

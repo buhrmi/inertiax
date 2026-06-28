@@ -34,6 +34,6 @@
     scroll-region
     style="height: 400px; overflow-y: auto; border: 2px solid red;"
   >
-    <Frame id="scroll-frame" initialComponent={paneComponent} initialPage={initialPage} {resolveComponent} />
+    <Frame id="scroll-frame" initialComponent={paneComponent} initialPage={initialPage} {resolveComponent} visitOptions={{ replace: false }} />
   </div>
 </div>

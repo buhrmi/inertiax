@@ -7,8 +7,8 @@ const isFirefox = !isServer && /Firefox/i.test(window.navigator.userAgent)
 const DEFAULT_FRAME_ID = '_top'
 
 export class Scroll {
-  public static save(frameId = '_top'): void {
-    history.saveScrollPositions(this.getScrollRegions(), frameId)
+  public static save(): void {
+    history.saveScrollPositions(this.getScrollRegions())
   }
 
   public static getScrollRegions(): ScrollRegion[] {
@@ -81,8 +81,6 @@ export class Scroll {
       }
     })
 
-    this.save(frameId)
-
     if (isTopFrame) {
       this.scrollToAnchor(frameId)
     }
@@ -111,25 +109,12 @@ export class Scroll {
       return
     }
 
-    const isTopFrame = frameId === DEFAULT_FRAME_ID
-
     window.requestAnimationFrame(() => {
-      if (isTopFrame) {
+      if (frameId === DEFAULT_FRAME_ID) {
         this.restoreDocument(frameId)
-        this.restoreScrollRegions(scrollRegions)
-      } else {
-        // For non-top frames, scroll ancestor scroll-regions to top.
-        // Precise scroll-position restoration across frames requires mapping
-        // saved positions to scoped elements, which isn't supported yet.
-        this.regionsForFrame(frameId).forEach((region) => {
-          if (typeof region.scrollTo === 'function') {
-            region.scrollTo(0, 0)
-          } else {
-            region.scrollTop = 0
-            region.scrollLeft = 0
-          }
-        })
       }
+
+      this.restoreScrollRegions(scrollRegions)
     })
   }
 

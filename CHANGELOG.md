@@ -6,6 +6,26 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.20]
+
+### Changed
+- Moved `scrollRegions` and `documentScrollPosition` from per-frame
+  (`history.state.frames[id]`) to root level (`history.state`). Scroll
+  positions are global DOM state, not frame-specific.
+- `saveScrollPositions` and `saveDocumentScrollPosition` now write
+  synchronously to `window.history.state` (no async queue).
+
+### Fixed
+- `Scroll.reset()` now works for non-top frames — resets the closest
+  ancestor `[scroll-region]` of the navigating frame. Document scroll
+  and anchor scrolling remain guarded to the top frame only.
+- `Scroll.restore()` no longer skips non-top frames; scroll-region
+  positions are restored for all frames.
+- `Frame`'s invisible anchor `<span>` renders during SSR, avoiding a
+  hydration DOM mismatch. Click action still runs client-side only.
+
+---
+
 ## [11.0.19]
 
 ### Fixed

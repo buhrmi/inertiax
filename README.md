@@ -111,6 +111,18 @@ Non-top frames use different defaults than the top frame to work well as embedde
 
 Override either by passing them explicitly in the frame's `visitOptions` prop, or per-link/per-form in your visit calls.
 
+### Scroll regions
+
+When a frame navigates, the closest ancestor element with the `scroll-region` attribute is automatically scrolled to the top. This makes it easy to wrap a frame in a scrollable container:
+
+```svelte
+<div scroll-region class="overflow-y-auto h-96">
+  <Frame src="/long-content" />
+</div>
+```
+
+On back/forward navigation, the scroll position is restored. Outer `scroll-region` ancestors and the document scroll position are not affected.
+
 ### Visiting a different frame
 
 Pass `frameId` in visit options to target another frame. Useful when one frame controls another — for example, a table in the main content area opening a side panel.

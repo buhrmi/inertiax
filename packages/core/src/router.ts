@@ -176,7 +176,7 @@ export class Router {
         currentPage
           .setQuietly(data, { preserveState: this.frameId === DEFAULT_FRAME_ID }, this.frameId)
           .then(() => {
-          Scroll.restore(history.getScrollRegions(this.frameId), this.frameId)
+          Scroll.restore(history.getScrollRegions(), this.frameId)
           fireNavigateEvent(currentPage.get(this.frameId))
 
           const pendingDeferred: Record<string, string[]> = {}
@@ -416,7 +416,6 @@ export class Router {
     }
 
     if (!currentPage.isCleared(this.frameId) && !visit.preserveUrl) {
-      // Save scroll regions for the current page
       Scroll.save(this.frameId)
     }
 
