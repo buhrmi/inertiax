@@ -43,4 +43,25 @@ test.describe('usePage', () => {
     await expect(page.getByTestId('child-component')).toContainText('UsePage/Page2')
     await expect(page.getByTestId('same-ref')).toContainText('yes')
   })
+
+  test('page.url is reactive for both top frame and child Frame navigation', async ({ page }) => {
+    await page.goto('/use-page/frame-page')
+
+    // Initial state
+    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page')
+    await expect(page.getByTestId('top-component')).toContainText('UsePage/FramePage')
+    await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane')
+    await expect(page.getByTestId('frame-component')).toContainText('UsePage/FramePane')
+
+    // Navigate top frame — top url updates, frame url stays
+    await page.getByTestId('top-nav').click()
+    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page?nav=1')
+    await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane')
+
+    // Navigate within the child Frame — frame url updates, top url stays
+    await page.getByTestId('frame-nav').click()
+    await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane?step=1')
+    // Top frame url should be unchanged
+    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page?nav=1')
+  })
 })

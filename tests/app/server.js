@@ -3561,6 +3561,22 @@ app.get('/use-page/page2', (req, res) =>
   }),
 )
 
+app.get('/use-page/frame-page', (req, res) =>
+  inertia.render(req, res, {
+    component: 'UsePage/FramePage',
+    props: {},
+  }),
+)
+
+app.get('/use-page/frame-pane', (req, res) => {
+  const step = parseInt(req.query.step || '0', 10)
+
+  return inertia.render(req, res, {
+    component: 'UsePage/FramePane',
+    props: { step },
+  })
+})
+
 // Nested props routes (dot-notation prop types)
 
 app.get('/nested-props/when-visible', (req, res) => {
