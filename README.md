@@ -1,3 +1,5 @@
+![X](https://github.com/buhrmi/inertiax-ui/blob/main/playground/public/logo.png?raw=true)
+
 # Inertia X
 
 Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds multi-frame support and a global click handler to the Svelte adapter.
