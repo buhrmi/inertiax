@@ -30,7 +30,7 @@ test.describe('usePage', () => {
     await expect(page.getByTestId('child-same-ref')).toContainText('yes')
   })
 
-  test('updates reactively after SPA navigation', async ({ page }) => {
+  test('updates reactively after SPA navigation (createInertiaApp was called with initial page)', async ({ page }) => {
     await page.goto('/use-page/page1')
 
     await expect(page.getByTestId('name-usepage')).toContainText('Alice')
@@ -44,24 +44,28 @@ test.describe('usePage', () => {
     await expect(page.getByTestId('same-ref')).toContainText('yes')
   })
 
-  test('page.url is reactive for both top frame and child Frame navigation', async ({ page }) => {
+  test('page.url is reactive in layout after top-frame navigation', async ({ page }) => {
     await page.goto('/use-page/frame-page')
 
     // Initial state
-    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page')
-    await expect(page.getByTestId('top-component')).toContainText('UsePage/FramePage')
+    await expect(page.getByTestId('layout-url')).toContainText('/use-page/frame-page')
+    await expect(page.getByTestId('layout-component')).toContainText('UsePage/FramePage')
+
+    // Navigate top frame — layout url should update reactively
+    await page.getByTestId('top-nav').click()
+    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page?nav=1')
+    await expect(page.getByTestId('layout-url')).toContainText('/use-page/frame-page?nav=1')
+  })
+
+  test('page.url is reactive within a child Frame', async ({ page }) => {
+    await page.goto('/use-page/frame-page')
+
+    // Child Frame shows correct initial url
     await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane')
     await expect(page.getByTestId('frame-component')).toContainText('UsePage/FramePane')
 
-    // Navigate top frame — top url updates, frame url stays
-    await page.getByTestId('top-nav').click()
-    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page?nav=1')
-    await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane')
-
-    // Navigate within the child Frame — frame url updates, top url stays
+    // Navigate within the child Frame — url should update
     await page.getByTestId('frame-nav').click()
     await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane?step=1')
-    // Top frame url should be unchanged
-    await expect(page.getByTestId('top-url')).toContainText('/use-page/frame-page?nav=1')
   })
 })

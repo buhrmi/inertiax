@@ -1,5 +1,10 @@
+<script module lang="ts">
+  import Layout from './FramePageLayout.svelte'
+  export const layout = Layout
+</script>
+
 <script lang="ts">
-  import { Frame, usePage } from 'inertiax-svelte'
+  import { Frame, inertia, usePage } from 'inertiax-svelte'
 
   const page = usePage()
 </script>

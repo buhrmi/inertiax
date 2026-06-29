@@ -6,6 +6,21 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.28]
+
+### Fixed
+- `usePage()` in the top frame (or outside any frame context) now returns the
+  module-level `$state` proxy directly instead of `get(context.page)`. This fixes
+  `page.url` not updating reactively in layouts and components after navigation.
+  Child frames continue to use `get(context.page)` for frame-scoped data.
+
+### Added
+- Test: `usePage().url` reactivity in page layouts.
+- Test: `usePage().url` reactivity within child Frames.
+- Test: Frame restores state and scroll position on browser reload.
+
+---
+
 ## [11.0.26]
 
 ### Changed
