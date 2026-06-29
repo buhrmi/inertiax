@@ -19,18 +19,18 @@ export function setPage(newPage: SveltePage) {
   Object.assign(page, newPage)
 }
 
-export function usePage() {
+export function usePage<TPageProps extends PageProps = PageProps>(): SveltePage<TPageProps> {
     const context = useFrameContext();
     // Default (top) frame or no frame context: return globally-synced $state
     // page. The top-level Frame.svelte already syncs its page to this global
     // $state via $effect.pre → setPage(), so it's always up to date.
     if (!context || context.id === DEFAULT_FRAME_ID) {
-        return page;
+        return page as SveltePage<TPageProps>;
     }
     // Nested frame: return current value from the frame-scoped store.
     // Note: this returns a snapshot — reactive updates within nested frames
     // require subscribing to the store via $page or $effect.
-    return get(context.page);
+    return get(context.page) as SveltePage<TPageProps>;
 }
 
 export default page
