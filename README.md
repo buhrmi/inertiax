@@ -11,6 +11,7 @@ Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds multi-fram
 - **`<Frame>` component** — multiple independent Inertia page regions on the same document. Each frame has its own router, history, and page state. Links and forms inside one frame only update that frame. Use cases: modals, sidebars, slide-out panels, multi-pane layouts.
 - **Global click handler** — plain `<a>` clicks inside a frame are automatically intercepted and turned into frame-scoped Inertia visits. No need to wrap every link in a `<Link>` component.
 - **`visitOptions` prop** — set default visit behavior per frame (replace vs push, scroll preservation, URL updates).
+- **History-aware mount** — by default, a Frame restores its previous page and scroll position from the browser history stack on mount. This means frame state survives browser reloads and remounts with the same `src`. Opt out with `skipHistoryRestore`.
 
 You might also want to check out [Inertia X UI](https://github.com/buhrmi/inertiax-ui), a companion UI library featuring Svelte components built on Inertia X.
 
