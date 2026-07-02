@@ -6,6 +6,25 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.30]
+
+### Fixed
+- Non-top frame `pushState`/`replaceState` no longer falls back to `page.url`
+  when `browserUrl` is omitted. The bug caused non-top frames with
+  `updateBrowserUrl: false` to still update the browser URL to the frame's
+  internal URL. Now uses `window.location.href` as the fallback for non-top
+  frames, keeping the current page URL intact.
+
+### Added
+- Test: `updateBrowserUrl: false` prevents browser URL changes in non-top
+  frames (link click, form submit) while retaining per-frame history.
+- Test: `updateBrowserUrl: true` on non-top frames updates browser URL as
+  expected.
+- Core unit tests for `history.pushState`/`replaceState` URL fallback for
+  top vs non-top frames.
+
+---
+
 ## [11.0.29]
 
 ### Fixed

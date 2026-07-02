@@ -126,3 +126,97 @@ test.describe('visitOptions on Frame — defaults frame replace means no history
     await expect(page.getByTestId('defaults-step')).toHaveText('3')
   })
 })
+
+test.describe('visitOptions on Frame — updateBrowserUrl: false', () => {
+  test('non-top frame navigation does not update browser URL even with replace: false', async ({ page }) => {
+    await page.goto('/svelte/visit-options')
+
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Navigate in the explicit-push frame (replace: false, updateBrowserUrl: false)
+    await page.getByTestId('explicit-push-next-link').click()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('1')
+
+    // Browser URL must NOT change to the frame's internal URL
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Per-frame history was still pushed — goBack reverts the frame
+    await page.goBack()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+  })
+
+  test('non-top frame form submit does not update browser URL even with replace: false', async ({ page }) => {
+    await page.goto('/svelte/visit-options')
+
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Submit form in the explicit-push frame (replace: false, updateBrowserUrl: false)
+    await page.getByTestId('explicit-push-submit').click()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('1')
+
+    // Browser URL must NOT change
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Per-frame history was still pushed — goBack reverts the frame
+    await page.goBack()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+  })
+})
+
+test.describe('visitOptions on Frame — updateBrowserUrl: true', () => {
+  test('non-top frame navigation updates browser URL when updateBrowserUrl: true', async ({ page }) => {
+    await page.goto('/svelte/visit-options')
+
+    await expect(page.getByTestId('browser-url-step')).toHaveText('0')
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Navigate in the browser-url frame (replace: true, updateBrowserUrl: true)
+    await page.getByTestId('browser-url-next-link').click()
+    await expect(page.getByTestId('browser-url-step')).toHaveText('1')
+
+    // Browser URL must change to the frame's URL
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\?step=1$/)
+
+    // replace: true means no history entry — goBack skips this navigation.
+    // But we also need to verify the explicit-push frame (updateBrowserUrl: false)
+    // doesn't interfere. Let's push explicit-push and pop it.
+    // URL should remain at the browser-url frame's URL throughout.
+    await page.getByTestId('explicit-push-next-link').click()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('1')
+    // URL unchanged — explicit-push has updateBrowserUrl: false
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\?step=1$/)
+
+    await page.goBack()
+    // explicit-push reverts, browser-url stays because it was replaced
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+    await expect(page.getByTestId('browser-url-step')).toHaveText('1')
+    // URL unchanged — explicit-push never managed the browser URL
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\?step=1$/)
+  })
+
+  test('non-top frame form submit updates browser URL when updateBrowserUrl: true', async ({ page }) => {
+    await page.goto('/svelte/visit-options')
+
+    await expect(page.getByTestId('browser-url-step')).toHaveText('0')
+    await expect(page).toHaveURL(/\/svelte\/visit-options$/)
+
+    // Submit form in the browser-url frame (replace: true, updateBrowserUrl: true)
+    await page.getByTestId('browser-url-submit').click()
+    await expect(page.getByTestId('browser-url-step')).toHaveText('1')
+
+    // Browser URL must change to the frame's form target URL
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\/submit$/)
+
+    // Push explicit-push and pop it — browser URL stays at browser-url frame's URL
+    await page.getByTestId('explicit-push-next-link').click()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('1')
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\/submit$/)
+
+    await page.goBack()
+    await expect(page.getByTestId('explicit-push-step')).toHaveText('0')
+    await expect(page.getByTestId('browser-url-step')).toHaveText('1')
+    await expect(page).toHaveURL(/\/svelte\/visit-options\/browser-url\/submit$/)
+  })
+})

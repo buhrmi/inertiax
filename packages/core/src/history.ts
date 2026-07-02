@@ -103,7 +103,8 @@ class History {
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const doPush = () => this.doPushState({ page: data }, browserUrl ?? page.url, frameId).then(() => cb?.())
+        const fallbackUrl = frameId === DEFAULT_FRAME_ID ? page.url : window.location.href
+        const doPush = () => this.doPushState({ page: data }, browserUrl ?? fallbackUrl, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -229,7 +230,8 @@ class History {
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const doReplace = () => this.doReplaceState({ page: data }, browserUrl ?? page.url, frameId).then(() => cb?.())
+        const fallbackUrl = frameId === DEFAULT_FRAME_ID ? page.url : window.location.href
+        const doReplace = () => this.doReplaceState({ page: data }, browserUrl ?? fallbackUrl, frameId).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
