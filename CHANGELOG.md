@@ -6,6 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.29]
+
+### Fixed
+- Non-top frame version/location conflicts (`409` + `X-Inertia-Location`) no
+  longer navigate the browser to the frame URL. Inertia X now reloads the
+  current top-level page instead, preserving correct document context.
+
+### Added
+- Test: nested-frame version conflict triggers a top-level page reload and keeps
+  the browser URL on the current page.
+
+---
+
 ## [11.0.28]
 
 ### Fixed

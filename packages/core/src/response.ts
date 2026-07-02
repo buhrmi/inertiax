@@ -220,6 +220,14 @@ export class Response {
         return
       }
 
+      // A non-top frame cannot safely redirect the browser to the frame URL.
+      // On version conflicts (or location visits) from nested frames, reload
+      // the current page so the app can recover at the document level.
+      if (this.requestParams.all().frameId !== '_top') {
+        window.location.reload()
+        return
+      }
+
       if (isSameUrlWithoutHash(window.location, url)) {
         window.location.reload()
       } else {

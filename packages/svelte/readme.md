@@ -27,3 +27,7 @@ Each frame manages its own router, history, and component tree.
 ### Scroll regions
 
 When a frame navigates, the closest ancestor `[scroll-region]` element is scrolled to top. On back/forward, its position is restored. Outer scroll regions and document scroll are left alone.
+
+If a nested frame triggers an Inertia location/version conflict response (`409`
+with `X-Inertia-Location`), Inertia X reloads the current top-level page
+instead of navigating the browser to the frame URL.
