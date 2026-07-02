@@ -36,7 +36,16 @@ class CurrentFramePage {
     resolveComponent,
     onFlash,
   }: RouterInitParams<ComponentType>) {
-    this.page = { ...initialPage, flash: initialPage.flash ?? {}, rescuedProps: initialPage.rescuedProps ?? [] }
+    const prevRemembered = this.page?.rememberedState ?? {}
+    this.page = {
+      ...initialPage,
+      flash: initialPage.flash ?? {},
+      rescuedProps: initialPage.rescuedProps ?? [],
+      rememberedState: {
+        ...prevRemembered,
+        ...(initialPage.rememberedState ?? {}),
+      },
+    }
     this.swapComponent = swapComponent
     this.resolveComponent = resolveComponent
     this.onFlashCallback = onFlash
@@ -95,7 +104,7 @@ class CurrentFramePage {
         return
       }
 
-      page.rememberedState ??= {}
+      page.rememberedState = { ...(this.page?.rememberedState ?? {}), ...(page.rememberedState ?? {}) }
 
       const isServer = typeof window === 'undefined'
       const location = !isServer ? window.location : new URL(page.url)

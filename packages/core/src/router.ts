@@ -348,12 +348,9 @@ export class Router {
     this.removePageshowHandler?.()
     this.removePopstateHandler = undefined
     this.removePageshowHandler = undefined
-    // Only clean up per-frame stores for non-top frames (top-level page state
-    // must persist for the lifetime of the app).
-    if (this.frameId !== '_top') {
-      currentPage.deleteFrame(this.frameId)
-      history.deleteFrame(this.frameId)
-    }
+    // Only clean up per-frame event handlers for non-top frames.
+    // We intentionally keep the page state (including rememberedState)
+    // so that useRemember data survives frame unmount/remount cycles.
   }
 
   public poll(interval: number, requestOptions: ReloadOptions | (() => ReloadOptions) = {}, options: PollOptions = {}) {

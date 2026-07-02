@@ -1909,6 +1909,14 @@ app.get('/svelte/frame-scroll-history/pane', (req, res) => {
   })
 })
 
+app.get('/svelte/frame-remember', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameRemember', props: {} }),
+)
+
+app.get('/svelte/frame-remember/pane', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameRememberPane', props: {} }),
+)
+
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

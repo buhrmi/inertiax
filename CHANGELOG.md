@@ -6,6 +6,20 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.31]
+
+### Fixed
+- `useRemember` state in frames no longer lost on unmount/remount. Two issues:
+  `CurrentFramePage.init()` and `set()` now merge previous `rememberedState`
+  into new pages; `router.destroy()` no longer deletes frame page state,
+  preserving it across frame remounts.
+
+### Added
+- Test: `useRemember` state survives frame unmount and remount with
+  `skipHistoryRestore` (fresh HTTP fetch).
+
+---
+
 ## [11.0.30]
 
 ### Fixed
