@@ -44,7 +44,7 @@ test('useRemember state survives back then forward navigation', async ({ page })
   await expect(page.getByTestId('remember-count')).toHaveText('2')
 })
 
-test('useRemember state survives back navigation with skipHistoryRestore', async ({ page }) => {
+test('useRemember state survives back navigation with forceRequest', async ({ page }) => {
   await page.goto('/svelte/frame-remember-skip')
 
   await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
@@ -55,7 +55,7 @@ test('useRemember state survives back navigation with skipHistoryRestore', async
   await expect(page.getByTestId('remember-count')).toHaveText('2')
 
   // Navigate away, then go back — frame does fresh HTTP fetch due to
-  // skipHistoryRestore, but rememberedState should still survive.
+  // forceRequest, but rememberedState should still survive.
   await page.getByTestId('navigate-away').click()
   await page.waitForURL('/dump/get')
 
@@ -64,7 +64,7 @@ test('useRemember state survives back navigation with skipHistoryRestore', async
   await expect(page.getByTestId('remember-count')).toHaveText('2')
 })
 
-test('useRemember state survives back/forward with skipHistoryRestore', async ({ page }) => {
+test('useRemember state survives back/forward with forceRequest', async ({ page }) => {
   await page.goto('/dump/get')
   await page.goto('/svelte/frame-remember-skip')
 

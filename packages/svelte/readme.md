@@ -21,7 +21,7 @@ Each frame manages its own router, history, and component tree.
 | `renderLayout` | `boolean` | `true` for top frame | Whether to wrap content in layouts. |
 | `visitOptions` | `VisitOptions` | `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top) | Default visit options applied to all navigations within the frame. Link/form-level options take precedence. |
 | `onClickLink` | `(event, href) => void` | — | Called when a plain `<a>` inside the frame is clicked. Call `event.preventDefault()` to prevent navigation. |
-| `skipHistoryRestore` | `boolean` | `false` | When `true`, always makes an HTTP request on mount instead of restoring page data from the browser's history stack. By default, a Frame restores its previous state (and scroll position) on browser reload or when remounting with the same `src`. |
+| `forceRequest` | `boolean` | `false` | When `true`, always fetches fresh page data on mount instead of restoring from the history stack. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
 
 ### Scroll regions

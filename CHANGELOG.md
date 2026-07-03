@@ -6,17 +6,17 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
-## [11.0.32]
+## [11.0.33]
 
 ### Changed
+- **Breaking**: `skipHistoryRestore` prop renamed to `forceRequest` on `Frame`.
+  Defaults to `false` (use history restore). Set to `true` to always fetch fresh
+  data on mount.
 - `useRemember` keys no longer include the redundant `frameId` prefix.
-  Remembered state is already scoped per-frame at
-  `frames[frameId].page.rememberedState`, so the extra nesting was unnecessary.
-  Keys are now just the user-provided value (or `"default"`).
 
 ### Added
 - Test: `useRemember` state survives back and back/forward browser navigation
-  both with and without `skipHistoryRestore` on the Frame.
+  both with and without `forceRequest` on the Frame.
 
 ---
 
@@ -30,7 +30,7 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ### Added
 - Test: `useRemember` state survives frame unmount and remount with
-  `skipHistoryRestore` (fresh HTTP fetch).
+  `forceRequest` (fresh HTTP fetch).
 
 ---
 

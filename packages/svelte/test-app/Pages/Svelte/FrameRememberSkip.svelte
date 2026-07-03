@@ -13,9 +13,9 @@
 </script>
 
 <div data-testid="frame-remember-skip-page">
-  <h1>Frame Remember (skipHistoryRestore)</h1>
+  <h1>Frame Remember (forceRequest)</h1>
 
   <Link data-testid="navigate-away" href="/dump/get">Navigate away</Link>
 
-  <Frame id="remember-skip" src="/svelte/frame-remember/pane-skip" {resolveComponent} skipHistoryRestore />
+  <Frame id="remember-skip" src="/svelte/frame-remember/pane-skip" {resolveComponent} forceRequest />
 </div>

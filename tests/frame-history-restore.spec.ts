@@ -4,7 +4,7 @@ test.beforeEach(async ({ page }) => {
   test.skip(process.env.PACKAGE !== 'svelte', 'Svelte-only test')
 })
 
-test('Frame with skipHistoryRestore always makes an HTTP request on mount', async ({ page }) => {
+test('Frame with forceRequest always makes an HTTP request on mount', async ({ page }) => {
   const paneRequests: string[] = []
   page.on('request', (r) => {
     if (r.url().includes('/frame-history-restore/pane')) {
@@ -15,7 +15,7 @@ test('Frame with skipHistoryRestore always makes an HTTP request on mount', asyn
   // First visit
   await page.goto('/svelte/frame-history-restore')
 
-  // Click link in the skipHistoryRestore frame
+  // Click link in the forceRequest frame
   const skipFrame = page.getByTestId('skip-section')
   await expect(skipFrame.getByTestId('history-step')).toHaveText('0')
   await skipFrame.getByTestId('history-next-link').click()

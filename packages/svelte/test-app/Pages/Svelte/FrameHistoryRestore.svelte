@@ -13,11 +13,11 @@
   </section>
 
   <section>
-    <h2>With skipHistoryRestore</h2>
+    <h2>With forceRequest</h2>
     <div data-testid="skip-section">
       <Frame id="history-skip"
              src="/svelte/frame-history-restore/pane"
-             skipHistoryRestore={true} />
+             forceRequest />
     </div>
   </section>
 </div>

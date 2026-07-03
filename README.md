@@ -13,7 +13,7 @@ Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds multi-fram
 - **`<Frame>` component** — multiple independent Inertia page regions on the same document. Each frame has its own router, history, and page state. Links and forms inside one frame only update that frame. Use cases: modals, sidebars, slide-out panels, multi-pane layouts.
 - **Global click handler** — plain `<a>` clicks inside a frame are automatically intercepted and turned into frame-scoped Inertia visits. No need to wrap every link in a `<Link>` component.
 - **`visitOptions` prop** — set default visit behavior per frame (replace vs push, scroll preservation, URL updates).
-- **History-aware mount** — by default, a Frame restores its previous page and scroll position from the browser history stack on mount. This means frame state survives browser reloads and remounts with the same `src`. Opt out with `skipHistoryRestore`.
+- **History-aware mount** — by default, a Frame restores its previous page and scroll position from the browser history stack on mount. This means frame state survives browser reloads and remounts with the same `src`. Opt out with `forceRequest`.
 - **Safe conflict recovery** — if a nested frame receives an Inertia location/version conflict response (`409` + `X-Inertia-Location`), Inertia X reloads the current top-level page instead of navigating the browser to the frame URL.
 
 You might also want to check out [Inertia X UI](https://github.com/buhrmi/inertiax-ui), a companion UI library featuring Svelte components built on Inertia X.
@@ -71,7 +71,7 @@ That's it. Now you're ready to use all the new features.
 | `defaultLayout` | `(name: string, page: Page) => unknown` | Fallback layout resolver used when the page does not provide its own layout. |
 | `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
-| `skipHistoryRestore` | `boolean` | When `true`, always makes an HTTP request on mount instead of restoring page data from the history stack. Defaults to `false`. |
+| `forceRequest` | `boolean` | When `true`, always fetches fresh data on mount instead of restoring from the history stack. Defaults to `false`. |
 | `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 

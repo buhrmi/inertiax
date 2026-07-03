@@ -11,8 +11,8 @@
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
     renderLayout?: boolean
-    /** When `true`, always makes an HTTP request on mount even if page data exists in the history stack. Defaults to `false`. */
-    skipHistoryRestore?: boolean
+    /** When `true`, always fetches fresh page data on mount instead of restoring from the history stack. Defaults to `false`. */
+    forceRequest?: boolean
     /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Non-top frames default to `{ replace: true, updateBrowserUrl: false }`, top frame defaults to `{ replace: false, updateBrowserUrl: true }`. */
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
@@ -43,7 +43,7 @@
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
     renderLayout?: InertiaFrameProps['renderLayout']
-    skipHistoryRestore?: InertiaFrameProps['skipHistoryRestore']
+    forceRequest?: InertiaFrameProps['forceRequest']
     visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
     children?: InertiaFrameProps['children']
@@ -58,7 +58,7 @@
     resolveComponent = undefined,
     defaultLayout,
     renderLayout = undefined,
-    skipHistoryRestore = false,
+    forceRequest = false,
     visitOptions,
     onClickLink,
     children,
@@ -210,7 +210,7 @@
     const load = async () => {
       // Try to restore from history state first — avoids an unnecessary
       // request when the frame's page data is already in the history stack.
-      if (!skipHistoryRestore) {
+      if (!forceRequest) {
         try {
           const historyPage = await frameRouter.decryptHistory()
 
