@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.34]
+
+### Fixed
+- SSR: `render()` call in `createInertiaApp` now uses `await`. Svelte 5 returns
+  a `Promise` when the component tree contains top-level `await`, which caused
+  "Encountered asynchronous work while rendering synchronously" errors.
+
+---
+
 ## [11.0.33]
 
 ### Changed
