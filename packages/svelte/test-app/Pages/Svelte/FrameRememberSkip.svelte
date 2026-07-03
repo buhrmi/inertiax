@@ -12,10 +12,10 @@
   }
 </script>
 
-<div data-testid="frame-remember-page">
-  <h1>Frame Remember</h1>
+<div data-testid="frame-remember-skip-page">
+  <h1>Frame Remember (skipHistoryRestore)</h1>
 
   <Link data-testid="navigate-away" href="/dump/get">Navigate away</Link>
 
-  <Frame id="remember-frame" src="/svelte/frame-remember/pane" {resolveComponent} />
+  <Frame id="remember-skip" src="/svelte/frame-remember/pane-skip" {resolveComponent} skipHistoryRestore />
 </div>

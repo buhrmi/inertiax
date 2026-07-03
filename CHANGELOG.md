@@ -6,6 +6,20 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.32]
+
+### Changed
+- `useRemember` keys no longer include the redundant `frameId` prefix.
+  Remembered state is already scoped per-frame at
+  `frames[frameId].page.rememberedState`, so the extra nesting was unnecessary.
+  Keys are now just the user-provided value (or `"default"`).
+
+### Added
+- Test: `useRemember` state survives back and back/forward browser navigation
+  both with and without `skipHistoryRestore` on the Frame.
+
+---
+
 ## [11.0.31]
 
 ### Fixed
