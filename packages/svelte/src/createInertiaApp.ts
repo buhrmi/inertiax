@@ -59,7 +59,7 @@ type InertiaAppOptionsAuto<SharedProps extends PageProps> = Omit<
 type SvelteServerRender = (
   component: typeof App,
   options: { props: InertiaAppProps<PageProps>; context?: Map<any, any> },
-) => SvelteRenderResult
+) => SvelteRenderResult | Promise<SvelteRenderResult>
 
 type RenderFunction<SharedProps extends PageProps> = (
   page: Page<SharedProps>,
@@ -136,7 +136,7 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
           withApp(context, { ssr: true, page })
         }
 
-        svelteApp = render(App, { props, context })
+        svelteApp = await render(App, { props, context })
       }
 
       const body = buildSSRBody(id, page, svelteApp.body)
