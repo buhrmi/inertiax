@@ -6,6 +6,20 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.35]
+
+### Fixed
+- Client: `swapComponent` in `App.svelte` now calls `setPage()` before swapping
+  components, ensuring the global page store is up-to-date when the new
+  component's script runs. This fixes compatibility with Svelte 5's
+  `experimental.async: true` compiler option.
+
+### Added
+- Test: SSR rendering and hydration of Svelte components with top-level `await`
+  (requires `experimental.async: true`).
+
+---
+
 ## [11.0.34]
 
 ### Fixed
