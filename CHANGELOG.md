@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.36]
+
+### Fixed
+- `swapComponent` in `Frame.svelte` no longer overwrites the global page store
+  for non-top frames. Child frame mounts were calling `setPage()` with their own
+  page data, causing `usePage()` in layouts to return the wrong URL.
+
+---
+
 ## [11.0.35]
 
 ### Fixed
