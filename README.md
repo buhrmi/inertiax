@@ -6,7 +6,7 @@ Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds multi-fram
 
 ## What is Inertia.js?
 
-[Inertia.js](https://inertiajs.com/) lets you build single-page apps using classic server-side routing and controllers — no API needed. You write server-rendered pages like you always have, and Inertia handles the client-side navigation, component swapping, and history management. Think of it as the glue between your server-side framework (Laravel, Rails, etc.) and your Svelte components.
+[Inertia.js](https://inertiajs.com/) lets you build single-page apps using classic server-side routing and controllers — no API needed. You write your backend routing and controllers like you always have, and Inertia handles the navigation, component swapping, and history management. Think of it as the glue between your server-side framework (Laravel, Rails, etc.) and your Svelte components.
 
 ## What does Inertia X add?
 
