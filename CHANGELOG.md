@@ -6,6 +6,18 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.38]
+
+### Fixed
+- `Frame.svelte` scroll-region restoration when restoring from history during
+  client-side navigation. `InitialVisit.handleDefault()` was using
+  `preserveScroll: true` for all frames, which captured zero scroll positions
+  (the frame just mounted) and overwrote the history-based scroll restoration
+  from Frame's `$effect`. Non-top frames now use `preserveScroll: false` since
+  they have no prior scroll position to preserve.
+
+---
+
 ## [11.0.37]
 
 ### Added

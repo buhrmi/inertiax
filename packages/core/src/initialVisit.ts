@@ -100,7 +100,13 @@ export class InitialVisit {
 
     const visitId = uid()
 
-    currentPage.set(currentPage.get(frameId), { preserveScroll: true, preserveState: true, visitId }, frameId).then(() => {
+    // Only preserve scroll for the top frame — sub-frames that just mounted
+    // have no scroll position to preserve (all ancestor scroll-regions are at
+    // 0,0).  Preserving (0,0) would overwrite any history-based scroll
+    // restoration performed by Frame.svelte's $effect during the swap.
+    const preserveScroll = frameId === '_top'
+
+    currentPage.set(currentPage.get(frameId), { preserveScroll, preserveState: true, visitId }, frameId).then(() => {
       if (navigationType.isReload()) {
         Scroll.restore(history.getScrollRegions(), frameId)
       } else {
