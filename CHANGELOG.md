@@ -6,6 +6,22 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.37]
+
+### Added
+- Merged upstream Inertia.js 3.x (up to 3.6.1):
+  - `fireLocationEvent` — cancelable `location` event before external redirects
+  - Version change detection for background/async requests
+  - `serverHead` support in SSR
+  - `async` option on `FormComponentOptions`
+  - Poll `flag` support
+  - `useHttp` — standalone HTTP helper with form-like API
+  - Deferred forced reloads to cancelable `location` event
+  - `X-Requested-With` header in built-in HTTP client
+  - Raw request body support
+
+---
+
 ## [11.0.36]
 
 ### Fixed
