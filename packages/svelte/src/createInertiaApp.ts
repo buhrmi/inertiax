@@ -1,8 +1,10 @@
 import {
   buildSSRBody,
+  createHeadManager,
   exposeInterceptors,
   getInitialPageFromDOM,
   http as httpModule,
+  resolveServerHead,
   router,
   setupProgress,
   type CreateInertiaAppOptions,
@@ -83,6 +85,7 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
     nonce,
     http,
     layout,
+    serverHead,
     withApp,
     dev = !!import.meta.env?.DEV,
   }:
@@ -143,12 +146,21 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
 
       return {
         body,
-        head: [svelteApp.head],
+        head: [...resolveServerHead(page, serverHead), svelteApp.head],
       }
     }
   }
 
   const initialPage = page || getInitialPageFromDOM<Page<SharedProps>>(id)!
+  const serverHeadManager =
+    !isServer && serverHead
+      ? createHeadManager(
+          false,
+          (title) => title,
+          () => {},
+          resolveServerHead(initialPage, serverHead),
+        )
+      : null
 
   const [initialComponent] = await Promise.all([
     resolveComponent(initialPage.component, initialPage) as Promise<ResolvedComponent>,
@@ -170,7 +182,7 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
 
       return {
         body,
-        head: [svelteApp.head],
+        head: [...resolveServerHead(initialPage, serverHead), svelteApp.head],
       }
     }
 
@@ -194,6 +206,15 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
     } else {
       mount(App, { target, props, context })
     }
+  }
+
+  if (serverHeadManager) {
+    const syncServerHead = (event: { detail: { page: Page } }) => {
+      serverHeadManager.updateServerHead(resolveServerHead(event.detail.page, serverHead))
+    }
+
+    router.on('navigate', syncServerHead)
+    router.on('clientVisit', syncServerHead)
   }
 
   if (progress) {

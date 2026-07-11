@@ -33,12 +33,27 @@ function parseHeaders(xhr: XMLHttpRequest): HttpResponseHeaders {
   return headers
 }
 
+function isFormDataRequestBody(value: unknown): value is FormData {
+  return typeof FormData !== 'undefined' && value instanceof FormData
+}
+
+function isRawRequestBody(value: unknown): value is XMLHttpRequestBodyInit {
+  return (
+    typeof value === 'string' ||
+    isFormDataRequestBody(value) ||
+    (typeof Blob !== 'undefined' && value instanceof Blob) ||
+    (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) ||
+    (typeof ArrayBuffer !== 'undefined' && ArrayBuffer.isView(value)) ||
+    (typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams)
+  )
+}
+
 function setHeaders(xhr: XMLHttpRequest, config: HttpRequestConfig): void {
   if (!config.headers) {
     return
   }
 
-  const isFormData = config.data instanceof FormData
+  const isFormData = isFormDataRequestBody(config.data)
 
   Object.entries(config.headers).forEach(([key, value]) => {
     if (key.toLowerCase() !== 'content-type' || !isFormData) {
@@ -103,10 +118,18 @@ export class XhrHttpClient implements HttpClient {
         xhr.setRequestHeader(this.xsrfHeaderName, xsrfToken)
       }
 
+      const hasRequestedWithHeader = Object.keys(config.headers ?? {}).some(
+        (key) => key.toLowerCase() === 'x-requested-with',
+      )
+
+      if (!hasRequestedWithHeader) {
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest')
+      }
+
       let body: Document | XMLHttpRequestBodyInit | null = null
 
       if (config.data !== null && config.data !== undefined) {
-        if (config.data instanceof FormData) {
+        if (isRawRequestBody(config.data)) {
           body = config.data
         } else if (typeof config.data === 'object') {
           body = JSON.stringify(config.data)

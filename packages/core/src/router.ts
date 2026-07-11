@@ -258,6 +258,7 @@ export class Router {
   protected doReload<T extends RequestPayload = RequestPayload>(
     options: ReloadOptions<T> & {
       deferredProps?: boolean
+      poll?: boolean
     } = {},
   ): void {
     if (typeof window === 'undefined') {
@@ -359,7 +360,8 @@ export class Router {
       ({ onStart, onFinish }) => {
         const resolved = typeof requestOptions === 'function' ? requestOptions() : requestOptions
 
-        this.reload({
+        this.doReload({
+          poll: true,
           preserveErrors: true,
           ...resolved,
           onCancelToken: (token) => {

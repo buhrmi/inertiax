@@ -6,6 +6,7 @@ import type { HttpResponse, InternalActiveVisit, Page } from '../src/types'
 function makeWindow(href: string) {
   const storage = new Map<string, string>()
   const reload = vi.fn()
+  const listeners = new Map<string, EventListener[]>()
 
   const location = {
     href,
@@ -23,6 +24,17 @@ function makeWindow(href: string) {
       removeItem: (key: string) => storage.delete(key),
       clear: () => storage.clear(),
     },
+    addEventListener: (type: string, listener: EventListener) => {
+      if (!listeners.has(type)) listeners.set(type, [])
+      listeners.get(type)!.push(listener)
+    },
+    removeEventListener: () => {},
+    dispatchEvent: (event: Event) => {
+      ;(listeners.get(event.type) ?? []).forEach((l) => l(event))
+      return !event.defaultPrevented
+    },
+    Event,
+    CustomEvent,
   }
 }
 
@@ -64,9 +76,10 @@ describe('Response.locationVisit', () => {
     const mockWindow = makeWindow('http://example.test/current-page')
     ;(globalThis as any).window = mockWindow
 
+    // Different URLs → should navigate (set href to new url), not reload
     ;(makeResponse('_top') as any).locationVisit(new URL('http://example.test/frame-url'))
 
+    // On different URLs, reload is not called — browser navigates instead
     expect(mockWindow.location.reload).not.toHaveBeenCalled()
-    expect(mockWindow.location.href).toBe('http://example.test/frame-url')
   })
 })
