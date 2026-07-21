@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.39]
+
+### Added
+- `Frame.svelte` global click handler now supports `data-method` and
+  `data-replace` attributes on plain `<a>` elements. `data-method` sets
+  the HTTP method (`get`, `post`, `put`, `patch`, `delete`) and
+  `data-replace` replaces the current history entry instead of pushing.
+
+---
+
 ## [11.0.38]
 
 ### Fixed

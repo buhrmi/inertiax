@@ -24,6 +24,26 @@ Each frame manages its own router, history, and component tree.
 | `forceRequest` | `boolean` | `false` | When `true`, always fetches fresh page data on mount instead of restoring from the history stack. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
 
+### Global click handler
+
+Plain `<a>` elements inside a `Frame` are intercepted automatically.
+You can control the visit behaviour with data attributes — no `<Link>`
+component required.
+
+| Attribute | Description |
+|-----------|-------------|
+| `data-method` | HTTP method for the request (`get`, `post`, `put`, `patch`, `delete`). |
+| `data-replace` | Replace the current history entry instead of pushing. Omit or set to `"true"`. Use `"false"` to explicitly opt out. |
+| `data-inertia-ignore` | Skip Inertia interception entirely — the link behaves as a normal browser navigation. |
+
+**Example**
+
+```html
+<a href="/logout" data-method="post">Logout</a>
+<a href="/settings" data-replace>Settings</a>
+<a href="/external" data-inertia-ignore>External site</a>
+```
+
 ### Scroll regions
 
 When a frame navigates, the closest ancestor `[scroll-region]` element is scrolled to top. On back/forward, its position is restored. Outer scroll regions and document scroll are left alone.
