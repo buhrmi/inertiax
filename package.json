@@ -21,12 +21,12 @@
     "format": "oxfmt"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
+    "@playwright/test": "^1.61.1",
     "oxfmt": "^0.51.0",
-    "oxlint": "^1.69.0"
+    "oxlint": "^1.74.0"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.61.1"
+    "@rollup/rollup-linux-x64-gnu": "^4.62.2"
   },
   "engines": {
     "pnpm": ">=11.1.1"

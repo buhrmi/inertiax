@@ -182,47 +182,25 @@ A common use case: a form in a modal submits to an action that updates the main 
 
 ## Global click handler
 
-Inertia X automatically intercepts plain `<a>` clicks inside a frame and performs a frame-scoped Inertia visit — no `<Link>` component needed.
+Plain `<a>` clicks inside a frame are intercepted automatically — no `<Link>` component needed.
 
-### What gets intercepted
+**Intercepted:** same-origin links, left-clicks without modifier keys.
 
-- Same-origin links inside the frame
-- Left-clicks without modifier keys (Ctrl/Cmd/Alt/Shift)
-- Clicks that don't have their default prevented
+**Ignored:** missing/fragment links, `mailto:`/`tel:`, `target`, `download`, `data-inertia-ignore`, cross-origin links.
 
-### What is ignored
+```html
+<!-- Native browser navigation -->
+<a href="/non-inertia" data-inertia-ignore>External</a>
 
-- Links without `href`
-- Fragment links (`#...`)
-- `mailto:` / `tel:` links
-- Links with `target`
-- Links with `download`
-- Links with `data-inertia-ignore`
-- Cross-origin links
+<!-- POST request -->
+<a href="/logout" data-method="post">Logout</a>
 
-### Opt out per-link
-
-Add `data-inertia-ignore` for native browser navigation:
-
-```svelte
-<a href="/non-inertia" data-inertia-ignore>Open outside Inertia</a>
+<!-- Replace history instead of push -->
+<a href="/settings" data-replace>Settings</a>
 ```
 
-### Customize with `onClickLink`
-
-Use `onClickLink` to inspect or override the default handling. Call `event.preventDefault()` to stop the frame navigation.
+Use `onClickLink` to intercept before navigation. Call `event.preventDefault()` to stop it.
 
 ```svelte
-<script lang="ts">
-  import { Frame } from 'inertiax-svelte'
-
-  function onClickLink(event: MouseEvent, href: string) {
-    if (href.startsWith('/admin')) {
-      event.preventDefault()
-      // custom logic
-    }
-  }
-</script>
-
-<Frame id="sidebar" src="/users/42/edit" {onClickLink} />
+<Frame onClickLink={(e, href) => { if (href.startsWith('/admin')) e.preventDefault() }} />
 ```
