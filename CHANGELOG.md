@@ -6,7 +6,7 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
-## [11.0.40]
+## [11.0.41]
 
 ### Breaking
 - Renamed all public `frameId` references to `frame`: `Visit.frame`, `createRouter(frame)`, `Router.frame`, `useFrame()`, `DEFAULT_FRAME`, `FormComponentOptions.frame`. The `X-Inertia-Frame` header is unchanged.
