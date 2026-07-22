@@ -11,15 +11,15 @@
 
   const router = useFrameRouter()
 
-  // Submit to the cross-frame endpoint, explicitly targeting the OTHER frame via frameId.
+  // Submit to the cross-frame endpoint, explicitly targeting the OTHER frame.
   // The server should honour the X-Inertia-Frame response header and redirect the
   // response back to the originating (this) frame instead.
   function submitToOtherFrame() {
     const otherFrame = frame === 'left' ? 'right' : 'left'
-    router.post(`/svelte/inertia-frame-header/${frame}/submit`, {}, { frameId: otherFrame })
+    router.post(`/svelte/inertia-frame-header/${frame}/submit`, {}, { frame: otherFrame })
   }
 
-  // Submit to the cross-frame endpoint without any frameId override — the server
+  // Submit to the cross-frame endpoint without any frame override — the server
   // echoes X-Inertia-Frame with the originating frame ID from the request header.
   function submitNormally() {
     router.post(`/svelte/inertia-frame-header/${frame}/submit-echo`, {})
@@ -38,7 +38,7 @@
   {/if}
 
   <!--
-    Submits with frameId overridden to the OTHER frame, but server echoes
+    Submits with frame overridden to the OTHER frame, but server echoes
     X-Inertia-Frame back to the originating frame.
   -->
   <button data-testid={frame + '-submit-cross'} onclick={submitToOtherFrame}>
