@@ -38,13 +38,13 @@ function makeWindow(href: string) {
   }
 }
 
-function makeParams(frameId: string) {
-  return RequestParams.create({ frameId, preserveScroll: false } as InternalActiveVisit)
+function makeParams(frame: string) {
+  return RequestParams.create({ frame, preserveScroll: false } as InternalActiveVisit)
 }
 
-function makeResponse(frameId: string) {
+function makeResponse(frame: string) {
   return new Response(
-    makeParams(frameId),
+    makeParams(frame),
     { status: 409, data: '', headers: { 'x-inertia-location': 'http://example.test/frame-url' } } as HttpResponse,
     {} as Page,
   )
