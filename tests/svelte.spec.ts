@@ -234,3 +234,29 @@ test('mounting a frame after reload does not reset the top scroll position', asy
   await expect(page.getByTestId('frame-src-only-pane')).toHaveCount(1)
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(beforeMountScrollY)
 })
+
+test('frames send correct X-Inertia-Frame and X-Inertia-Referer headers', async ({ page }) => {
+  let frameAHeader: string | null = null
+  let frameAReferer: string | null = null
+
+  page.on('request', (request) => {
+    if (request.url().includes('/svelte/frame-header-test/a/click')) {
+      frameAHeader = request.headers()['x-inertia-frame'] ?? null
+      frameAReferer = request.headers()['x-inertia-referer'] ?? null
+    }
+  })
+
+  await page.goto('/svelte/frame-header-host')
+  await page.waitForSelector('[data-testid="frame-header-page"]')
+  await page.waitForSelector('[data-testid="frame-header-link"]')
+
+  const responsePromise = page.waitForResponse((r) =>
+    r.url().includes('/svelte/frame-header-test/a/click'),
+  )
+  await Promise.all([responsePromise, page.getByTestId('frame-header-link').first().click()])
+
+  // X-Inertia-Frame: the src-based frame ID
+  expect(frameAHeader).toBe('/svelte/frame-header-test/a')
+  // X-Inertia-Referer: the frame's own URL, not the host page URL
+  expect(frameAReferer).toBe('/svelte/frame-header-test/a')
+})

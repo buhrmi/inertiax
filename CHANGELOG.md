@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.42]
+
+### Fixed
+- `X-Inertia-Referer` now uses the originating frame's URL instead of the
+  target frame's URL. A form with `frame: "_top"` in a nested frame
+  previously sent the host page URL; it now correctly sends the frame's URL.
+
+---
+
 ## [11.0.41]
 
 ### Breaking

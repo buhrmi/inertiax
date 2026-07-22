@@ -176,20 +176,23 @@ export class Request {
     // Always send the originating frame so the server can route the response back to it
     headers['X-Inertia-Frame'] = this.router?.frame ?? this.requestParams.all().frame
 
-    const frame = this.requestParams.all().frame
-    const page = currentPage.get(frame)
+    // X-Inertia-Referer should reflect the originating frame's URL, not the
+    // target frame (which may differ when a visit sets `frame: "_top"`).
+    const sourceFrame = this.router?.frame ?? this.requestParams.all().frame
+    const sourcePage = currentPage.get(sourceFrame)
 
-    if (page.url) {
-      headers['X-Inertia-Referer'] = page.url
+    if (sourcePage.url) {
+      headers['X-Inertia-Referer'] = sourcePage.url
     }
 
-    if (page.version) {
-      headers['X-Inertia-Version'] = page.version
+    const targetPage = currentPage.get(this.requestParams.all().frame)
+    if (targetPage.version) {
+      headers['X-Inertia-Version'] = targetPage.version
     }
 
-    const onceProps = Object.entries(page.onceProps || {})
+    const onceProps = Object.entries(targetPage.onceProps || {})
       .filter(([, onceProp]) => {
-        if (get(page.props, onceProp.prop) === undefined) {
+        if (get(targetPage.props, onceProp.prop) === undefined) {
           // The prop could deferred and not be loaded yet
           return false
         }

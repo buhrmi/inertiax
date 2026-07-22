@@ -1976,6 +1976,23 @@ app.post('/svelte/multi-frame/:frame/submit', (req, res) => {
   })
 })
 
+// ─── X-Inertia-Frame / X-Inertia-Referer header test routes ────────────────────
+
+app.get('/svelte/frame-header-host', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameHeaderHost', props: {} }),
+)
+
+app.get('/svelte/frame-header-test/:id', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameHeaderPane', props: { id: req.params.id } }),
+)
+
+app.get('/svelte/frame-header-test/:id/click', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/FrameHeaderPane',
+    props: { id: req.params.id, clicked: true },
+  }),
+)
+
 // ─── visitOptions test routes ─────────────────────────────────────────────────
 //
 // GET  /svelte/visit-options              — top-level host page
