@@ -6,6 +6,18 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.40]
+
+### Fixed
+- `Frame.svelte` initial `src` request now handles 409 conflict responses
+  (`X-Inertia-Location` / `X-Inertia-Redirect`). Non-top frames reload the
+  page; the top frame navigates to the new location.
+
+### Changed
+- Updated dependencies across all packages.
+
+---
+
 ## [11.0.39]
 
 ### Added

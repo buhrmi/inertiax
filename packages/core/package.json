@@ -1,6 +1,6 @@
 {
   "name": "inertiax-core",
-  "version": "11.0.38",
+  "version": "11.0.40",
   "license": "MIT",
   "description": "A framework for creating server-driven single page apps.",
   "contributors": [
@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.31",
-    "es-toolkit": "^1.47.1",
+    "es-toolkit": "^1.49.0",
     "laravel-precognition": "^2.0.0"
   },
   "peerDependencies": {
@@ -73,12 +73,12 @@
     }
   },
   "devDependencies": {
-    "@types/node": "^24.13.2",
-    "axios": "^1.17.0",
+    "@types/node": "^24.13.3",
+    "axios": "^1.18.1",
     "es-check": "^9.6.4",
     "esbuild": "^0.28.1",
-    "esbuild-node-externals": "^1.22.0",
+    "esbuild-node-externals": "^1.23.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.10"
   }
 }

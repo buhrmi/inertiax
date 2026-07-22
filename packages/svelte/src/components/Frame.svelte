@@ -243,6 +243,24 @@
         },
       })
 
+      // Handle 409 conflict responses (version mismatch / external redirect)
+      if (response.status === 409) {
+        const location = response.headers?.['x-inertia-location']
+        const redirect = response.headers?.['x-inertia-redirect']
+
+        if (location || redirect) {
+          if (frameId !== DEFAULT_FRAME_ID) {
+            // Non-top frames can't redirect the browser — reload the page so
+            // the app recovers at the document level.
+            window.location.reload()
+          } else {
+            window.location.href = location || redirect
+          }
+
+          return
+        }
+      }
+
       let data: any = response.data
       if (typeof data === 'string') {
         try {
