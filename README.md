@@ -149,33 +149,9 @@ The most common use case: a form inside a modal that should update the main page
 </Form>
 ```
 
-You can target any frame by its id, not just `_top`:
+`frame: "_top"` handles the **success** case — the response lands in the top frame. But if validation fails and your controller calls `redirect_back`, you want the errors to render back inside the modal, not in `_top`. This next section explains how to do that.
 
-```svelte
-<script lang="ts">
-  import { router } from 'inertiax-svelte'
-
-  function openDetailsPanel(userId: number) {
-    router.get(`/users/${userId}/details`, {}, { frame: 'details' })
-  }
-</script>
-```
-
-Or reuse a router instance across multiple calls:
-
-```svelte
-<script lang="ts">
-  import { createRouter, Frame } from 'inertiax-svelte'
-
-  const detailsRouter = createRouter('details')
-</script>
-
-<button on:click={() => detailsRouter.visit('/users/42/details')}>Show user</button>
-
-<Frame id="details" router={detailsRouter} src="/users/42/details" />
-```
-
-### How frame targeting works
+### Handling validation errors in the right frame
 
 Every Inertia X request includes an `X-Inertia-Frame` header with the originating frame's id. The server can return an `X-Inertia-Frame` response header to override where the response lands — this is what makes the `frame: "_top"` example above work.
 
@@ -185,9 +161,11 @@ Every Inertia X request includes an `X-Inertia-Frame` header with the originatin
 | `X-Inertia-Frame` | Response | Override which frame receives the response |
 | `X-Inertia-Referer` | Request | Originating frame's URL, for `redirect_back` |
 
-#### Rails recipe
+When a form in a nested frame submits with `frame: "_top"` and validation fails, `redirect_back` needs to follow the frame's URL (`X-Inertia-Referer`) — not the host page's `Referer` — and route the response back to the originating frame. The Rails initializer below handles both.
 
-The `inertia_rails` gem doesn't support `inertia: { frame: "..." }` or frame-aware `redirect_back` out of the box. Add this initializer for both:
+#### Rails initializer
+
+Add this to get `inertia: { frame: "_top" }` in `redirect_to` and frame-aware `redirect_back`:
 
 ```ruby
 # config/initializers/inertia_rails_frame.rb
@@ -241,13 +219,21 @@ Rails.application.config.to_prepare do
 end
 ```
 
-**`inertia: { frame: "_top" }`:**
+With the initializer in place, a controller action like this just works:
 
 ```ruby
-redirect_to dashboard_root_path, inertia: { frame: "_top" }
+def create
+  @user = User.new(user_params)
+
+  if @user.save
+    redirect_to dashboard_root_path, inertia: { frame: "_top" }
+  else
+    redirect_back inertia: { errors: @user.errors }
+  end
+end
 ```
 
-**`redirect_back` in Inertia requests:** follows `X-Inertia-Referer` (the frame's URL) and routes the response back to the originating frame. No code changes needed beyond the initializer — just call `redirect_back` in your controllers.
+On success the response lands in `_top`. On failure `redirect_back` follows the modal's URL and routes the validation errors back to the modal.
 
 ## Global click handler
 
