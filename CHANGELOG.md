@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.43]
+
+### Changed
+- Renamed remaining internal `frameId` references to `frame` in router event
+  handlers, response processing, `Frame.svelte` (`createFrameName`), and
+  `useFormState`. No public API changes.
+
+---
+
 ## [11.0.42]
 
 ### Fixed

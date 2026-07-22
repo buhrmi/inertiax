@@ -106,10 +106,10 @@ export default function useFormState<TForm extends object>(
   options: UseFormStateOptions<TForm>,
 ): UseFormStateReturn<TForm> {
   const frameRouter = useFrameRouter()
-  const frameId = useFrame()
+  const frame = useFrame()
   const { data: dataOption, rememberKey, precognitionEndpoint: initialPrecognitionEndpoint } = options
 
-  const scopedRememberKey = rememberKey ? `${frameId}:${rememberKey}` : null
+  const scopedRememberKey = rememberKey ? `${frame}:${rememberKey}` : null
 
   const isDataFunction = typeof dataOption === 'function'
   const resolveData = () => (isDataFunction ? (dataOption as () => TForm)() : dataOption)

@@ -92,9 +92,9 @@ export class Response {
     // If the server specifies a target frame via the response header, honour it —
     // this lets the server redirect the response to the originating frame (e.g. for
     // validation errors) regardless of what frame was set in the visitOptions.
-    const responseFrameId = this.getHeader('x-inertia-frame')
-    if (responseFrameId) {
-      this.requestParams.merge({ frame: responseFrameId })
+    const responseFrame = this.getHeader('x-inertia-frame')
+    if (responseFrame) {
+      this.requestParams.merge({ frame: responseFrame })
     }
 
     await this.setPage()

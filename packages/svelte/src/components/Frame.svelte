@@ -69,7 +69,7 @@
   // svelte-ignore state_referenced_locally
   const frameResolveComponent = resolveComponent ?? parentFrameContext?.resolveComponent ?? useGlobalResolveComponent()
 
-  function createFrameId(): string {
+  function createFrameName(): string {
     if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
       return crypto.randomUUID()
     }
@@ -80,7 +80,7 @@
   // Use explicit id > src > random UUID.  Using src as the frame gives
   // frames a deterministic identity — remounts with the same src share
   // history state, so the history-restore optimisation works naturally.
-  const frame = id ?? src ?? createFrameId()
+  const frame = id ?? src ?? createFrameName()
   const shouldRenderLayout = renderLayout ?? frame === DEFAULT_FRAME
 
   function resolveFrameComponent(name: string, page?: Page) {

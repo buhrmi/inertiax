@@ -114,16 +114,16 @@ export class Router {
       }
     })
 
-    eventHandler.on('loadDeferredProps', (frameId: string, deferredProps: Page['deferredProps']) => {
-      if (frameId !== this.frame) {
+    eventHandler.on('loadDeferredProps', (frame: string, deferredProps: Page['deferredProps']) => {
+      if (frame !== this.frame) {
         return
       }
 
       this.loadDeferredProps(deferredProps)
     })
 
-    eventHandler.on('historyQuotaExceeded', (frameId: string, url: string) => {
-      if (frameId !== this.frame) {
+    eventHandler.on('historyQuotaExceeded', (frame: string, url: string) => {
+      if (frame !== this.frame) {
         return
       }
 

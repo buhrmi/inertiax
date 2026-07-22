@@ -7,7 +7,7 @@ import { expect, test } from '@playwright/test'
  * the ID of the frame that initiated the visit (the "originating frame").
  *
  * If the server responds with an `X-Inertia-Frame` response header the client
- * will apply the response to the named frame, overriding any `frameId` that was
+ * will apply the response to the named frame, overriding any `frame` that was
  * set in the visit options.
  *
  * This lets the server decide where a response lands — for example, redirecting
@@ -33,7 +33,7 @@ test.describe('X-Inertia-Frame request header', () => {
     expect(response.request().headers()['x-inertia-frame']).toBe('left')
   })
 
-  test('sends the originating frame ID even when a different frameId is set in visitOptions', async ({ page }) => {
+  test('sends the originating frame ID even when a different frame is set in visitOptions', async ({ page }) => {
     await page.goto('/svelte/inertia-frame-header')
     await page.waitForSelector('[data-testid="left-pane"]')
 
@@ -66,7 +66,7 @@ test.describe('X-Inertia-Frame response header', () => {
     await expect(page.getByTestId('right-message')).toHaveText('initial')
   })
 
-  test('overrides the visitOptions frameId when X-Inertia-Frame response header is present', async ({ page }) => {
+  test('overrides the visitOptions frame when X-Inertia-Frame response header is present', async ({ page }) => {
     await page.goto('/svelte/inertia-frame-header')
     await page.waitForSelector('[data-testid="left-pane"]')
     await page.waitForSelector('[data-testid="right-pane"]')
