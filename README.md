@@ -185,31 +185,69 @@ Every Inertia X request includes an `X-Inertia-Frame` header with the originatin
 | `X-Inertia-Frame` | Response | Override which frame receives the response |
 | `X-Inertia-Referer` | Request | Originating frame's URL, for `redirect_back` |
 
-#### `redirect_back` in Rails
+#### Rails recipe
 
-Override `redirect_back` in your base controller so it follows the frame's URL (`X-Inertia-Referer`) instead of the host page's `Referer`, and echoes the frame header in the response:
+The `inertia_rails` gem doesn't support `inertia: { frame: "..." }` or frame-aware `redirect_back` out of the box. Add this initializer for both:
 
 ```ruby
-# app/controllers/application_controller.rb
+# config/initializers/inertia_rails_frame.rb
+# frozen_string_literal: true
 
-private
-
-def redirect_back(**options)
-  # Use the frame's URL for Inertia requests.
-  if (inertia_referer = request.headers['X-Inertia-Referer'])
-    request.headers['Referer'] = inertia_referer
+module InertiaFrameExtension
+  def self.prepended(base)
+    base.singleton_class.prepend(Module.new do
+      def included(controller_class)
+        super
+        controller_class.before_action :set_inertia_frame_header
+      end
+    end)
   end
 
-  response = super(**options)
+  private
 
-  # Route the response back to the originating frame.
-  if (frame = request.headers['X-Inertia-Frame'])
-    response.headers['X-Inertia-Frame'] = frame
+  def capture_inertia_session_options(options)
+    super
+    return unless (inertia = options[:inertia])
+    session[:inertia_frame] = inertia[:frame] if inertia.key?(:frame)
   end
 
-  response
+  def set_inertia_frame_header
+    response["X-Inertia-Frame"] = session[:inertia_frame] if session[:inertia_frame]
+  end
+
+  def redirect_back(**options)
+    if (inertia_referer = request.headers["X-Inertia-Referer"])
+      frame = request.headers["X-Inertia-Frame"]
+      session[:inertia_frame] = frame
+      redirect_to inertia_referer, **options
+    else
+      super
+    end
+  end
+end
+
+module InertiaFrameMiddlewareExtension
+  def response
+    status, headers, body = super
+    request = ActionDispatch::Request.new(@env)
+    request.session.delete(:inertia_frame) unless keep_inertia_session_options?(status) || !request.session.loaded?
+    [status, headers, body]
+  end
+end
+
+Rails.application.config.to_prepare do
+  InertiaRails::Controller.prepend(InertiaFrameExtension)
+  InertiaRails::Middleware::InertiaRailsRequest.prepend(InertiaFrameMiddlewareExtension)
 end
 ```
+
+**`inertia: { frame: "_top" }`:**
+
+```ruby
+redirect_to dashboard_root_path, inertia: { frame: "_top" }
+```
+
+**`redirect_back` in Inertia requests:** follows `X-Inertia-Referer` (the frame's URL) and routes the response back to the originating frame. No code changes needed beyond the initializer — just call `redirect_back` in your controllers.
 
 ## Global click handler
 
