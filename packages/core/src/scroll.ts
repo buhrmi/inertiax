@@ -4,7 +4,7 @@ import { ScrollRegion } from './types'
 
 const isServer = typeof window === 'undefined'
 const isFirefox = !isServer && /Firefox/i.test(window.navigator.userAgent)
-const DEFAULT_FRAME_ID = '_top'
+const DEFAULT_FRAME = '_top'
 
 export class Scroll {
   public static save(): void {
@@ -26,12 +26,12 @@ export class Scroll {
    * Returns the closest ancestor [scroll-region] of the frame's DOM anchor,
    * or all regions if the frame is the top frame.
    */
-  protected static regionsForFrame(frameId: string): Element[] {
-    if (frameId === DEFAULT_FRAME_ID) {
+  protected static regionsForFrame(frame: string): Element[] {
+    if (frame === DEFAULT_FRAME) {
       return Array.from(this.regions())
     }
 
-    const anchor = document.querySelector(`[data-inertia-frame="${CSS.escape(frameId)}"]`)
+    const anchor = document.querySelector(`[data-inertia-frame="${CSS.escape(frame)}"]`)
 
     if (!anchor?.parentElement) {
       return []
@@ -59,8 +59,8 @@ export class Scroll {
     window.scrollTo(0, 0)
   }
 
-  public static reset(frameId = DEFAULT_FRAME_ID): void {
-    const isTopFrame = frameId === DEFAULT_FRAME_ID
+  public static reset(frame = DEFAULT_FRAME): void {
+    const isTopFrame = frame === DEFAULT_FRAME
 
     // Non-top frames should never touch the document scroll position.
     if (isTopFrame) {
@@ -72,7 +72,7 @@ export class Scroll {
       }
     }
 
-    this.regionsForFrame(frameId).forEach((region) => {
+    this.regionsForFrame(frame).forEach((region) => {
       if (typeof region.scrollTo === 'function') {
         region.scrollTo(0, 0)
       } else {
@@ -82,13 +82,13 @@ export class Scroll {
     })
 
     if (isTopFrame) {
-      this.scrollToAnchor(frameId)
+      this.scrollToAnchor(frame)
     }
   }
 
-  public static scrollToAnchor(frameId = DEFAULT_FRAME_ID): void {
+  public static scrollToAnchor(frame = DEFAULT_FRAME): void {
     // Non-top frames should not trigger document-level anchor scrolling.
-    if (frameId !== DEFAULT_FRAME_ID) {
+    if (frame !== DEFAULT_FRAME) {
       return
     }
 
@@ -104,14 +104,14 @@ export class Scroll {
     }
   }
 
-  public static restore(scrollRegions: ScrollRegion[], frameId = '_top'): void {
+  public static restore(scrollRegions: ScrollRegion[], frame = '_top'): void {
     if (isServer) {
       return
     }
 
     window.requestAnimationFrame(() => {
-      if (frameId === DEFAULT_FRAME_ID) {
-        this.restoreDocument(frameId)
+      if (frame === DEFAULT_FRAME) {
+        this.restoreDocument(frame)
       }
 
       this.restoreScrollRegions(scrollRegions)
@@ -139,8 +139,8 @@ export class Scroll {
     })
   }
 
-  public static restoreDocument(frameId = '_top'): void {
-    if (frameId !== DEFAULT_FRAME_ID) {
+  public static restoreDocument(frame = '_top'): void {
+    if (frame !== DEFAULT_FRAME) {
       return
     }
 

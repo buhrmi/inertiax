@@ -12,7 +12,7 @@
 
 <script lang="ts">
   import { router } from 'inertiax-core'
-  import { DEFAULT_FRAME_ID } from '../frameContext.svelte'
+  import { DEFAULT_FRAME } from '../frameContext.svelte'
   import Frame from './Frame.svelte'
 
   interface Props {
@@ -26,7 +26,7 @@
 </script>
 
 <Frame
-  id={DEFAULT_FRAME_ID}
+  id={DEFAULT_FRAME}
   {router}
   {initialComponent}
   {initialPage}

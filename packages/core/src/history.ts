@@ -6,7 +6,7 @@ import Queue from './queue'
 import { SessionStorage } from './sessionStorage'
 import { Page, ScrollRegion } from './types'
 
-const DEFAULT_FRAME_ID = '_top'
+const DEFAULT_FRAME = '_top'
 const isServer = typeof window === 'undefined'
 const queue = new Queue<Promise<void>>()
 const isChromeIOS = !isServer && /CriOS/.test(window.navigator.userAgent)
@@ -28,24 +28,24 @@ class History {
   protected current = new Map<string, Partial<Page>>()
   protected initialState = new Map<string, Partial<Page> | null>()
 
-  protected getCurrent(frameId: string): Partial<Page> {
-    return this.current.get(frameId) ?? {}
+  protected getCurrent(frame: string): Partial<Page> {
+    return this.current.get(frame) ?? {}
   }
 
-  protected setCurrentState(page: Partial<Page>, frameId: string): void {
-    this.current.set(frameId, page)
+  protected setCurrentState(page: Partial<Page>, frame: string): void {
+    this.current.set(frame, page)
   }
 
-  protected getInitial(frameId: string): Partial<Page> | null {
-    if (!this.initialState.has(frameId)) {
-      this.initialState.set(frameId, null)
+  protected getInitial(frame: string): Partial<Page> | null {
+    if (!this.initialState.has(frame)) {
+      this.initialState.set(frame, null)
     }
 
-    return this.initialState.get(frameId) ?? null
+    return this.initialState.get(frame) ?? null
   }
 
-  protected setInitial(page: Partial<Page> | null, frameId: string): void {
-    this.initialState.set(frameId, page)
+  protected setInitial(page: Partial<Page> | null, frame: string): void {
+    this.initialState.set(frame, page)
   }
 
   protected getWindowState(): InertiaHistoryState {
@@ -60,28 +60,28 @@ class History {
     return { frames: {} }
   }
 
-  protected getFrameState(frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
-    return this.getWindowState().frames[frameId] ?? null
+  protected getFrameState(frame = DEFAULT_FRAME): FrameHistoryState | null {
+    return this.getWindowState().frames[frame] ?? null
   }
 
-  public remember(data: unknown, key: string, frameId = DEFAULT_FRAME_ID): void {
+  public remember(data: unknown, key: string, frame = DEFAULT_FRAME): void {
     this.replaceState(
       {
-        ...currentPage.getWithoutFlashData(frameId),
+        ...currentPage.getWithoutFlashData(frame),
         rememberedState: {
-          ...(currentPage.get(frameId)?.rememberedState ?? {}),
+          ...(currentPage.get(frame)?.rememberedState ?? {}),
           [key]: data,
         },
       },
       null,
-      frameId,
+      frame,
     )
   }
 
-  public restore(key: string, frameId = DEFAULT_FRAME_ID): unknown {
+  public restore(key: string, frame = DEFAULT_FRAME): unknown {
     if (!isServer) {
-      const current = this.getCurrent(frameId)
-      const initial = this.getInitial(frameId)
+      const current = this.getCurrent(frame)
+      const initial = this.getInitial(frame)
 
       return current[this.rememberedState]?.[key] !== undefined
         ? current[this.rememberedState]?.[key]
@@ -89,7 +89,7 @@ class History {
     }
   }
 
-  public pushState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID, browserUrl?: string): void {
+  public pushState(page: Page, cb: (() => void) | null = null, frame = DEFAULT_FRAME, browserUrl?: string): void {
     if (isServer) {
       return
     }
@@ -99,12 +99,12 @@ class History {
       return
     }
 
-    this.setCurrentState(page, frameId)
+    this.setCurrentState(page, frame)
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const fallbackUrl = frameId === DEFAULT_FRAME_ID ? page.url : window.location.href
-        const doPush = () => this.doPushState({ page: data }, browserUrl ?? fallbackUrl, frameId).then(() => cb?.())
+        const fallbackUrl = frame === DEFAULT_FRAME ? page.url : window.location.href
+        const doPush = () => this.doPushState({ page: data }, browserUrl ?? fallbackUrl, frame).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -141,22 +141,22 @@ class History {
     return queue.process()
   }
 
-  public decrypt(page: Page | ArrayBuffer | null = null, frameId = DEFAULT_FRAME_ID): Promise<Page> {
+  public decrypt(page: Page | ArrayBuffer | null = null, frame = DEFAULT_FRAME): Promise<Page> {
     if (isServer) {
-      return Promise.resolve(page instanceof ArrayBuffer ? ({} as Page) : page ?? currentPage.get(frameId))
+      return Promise.resolve(page instanceof ArrayBuffer ? ({} as Page) : page ?? currentPage.get(frame))
     }
 
-    const pageData = page ?? this.getFrameState(frameId)?.page ?? null
+    const pageData = page ?? this.getFrameState(frame)?.page ?? null
 
     return this.decryptPageData(pageData).then((data) => {
       if (!data) {
         throw new Error('Unable to decrypt history')
       }
 
-      if (this.getInitial(frameId) === null) {
-        this.setInitial(data ?? undefined, frameId)
+      if (this.getInitial(frame) === null) {
+        this.setInitial(data ?? undefined, frame)
       } else {
-        this.setCurrentState(data ?? {}, frameId)
+        this.setCurrentState(data ?? {}, frame)
       }
 
       return data
@@ -208,14 +208,14 @@ class History {
     return this.getWindowState().documentScrollPosition || { top: 0, left: 0 }
   }
 
-  public replaceState(page: Page, cb: (() => void) | null = null, frameId = DEFAULT_FRAME_ID, browserUrl?: string): void {
-    if (isEqual(this.getCurrent(frameId), page)) {
+  public replaceState(page: Page, cb: (() => void) | null = null, frame = DEFAULT_FRAME, browserUrl?: string): void {
+    if (isEqual(this.getCurrent(frame), page)) {
       cb && cb()
       return
     }
 
     const { flash, ...pageWithoutFlash } = page
-    currentPage.merge(pageWithoutFlash, frameId)
+    currentPage.merge(pageWithoutFlash, frame)
 
     if (isServer) {
       return
@@ -226,12 +226,12 @@ class History {
       return
     }
 
-    this.setCurrentState(page, frameId)
+    this.setCurrentState(page, frame)
 
     queue.add(() => {
       return this.getPageData(page).then((data) => {
-        const fallbackUrl = frameId === DEFAULT_FRAME_ID ? page.url : window.location.href
-        const doReplace = () => this.doReplaceState({ page: data }, browserUrl ?? fallbackUrl, frameId).then(() => cb?.())
+        const fallbackUrl = frame === DEFAULT_FRAME ? page.url : window.location.href
+        const doReplace = () => this.doReplaceState({ page: data }, browserUrl ?? fallbackUrl, frame).then(() => cb?.())
 
         if (isChromeIOS) {
           return new Promise((resolve) => {
@@ -275,7 +275,7 @@ class History {
       page: Page | ArrayBuffer
     },
     url?: string,
-    frameId = DEFAULT_FRAME_ID,
+    frame = DEFAULT_FRAME,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
       const existing = this.getWindowState()
@@ -284,7 +284,7 @@ class History {
         ...window.history.state,
         frames: {
           ...existing.frames,
-          [frameId]: {
+          [frame]: {
             page: data.page,
           },
         },
@@ -299,7 +299,7 @@ class History {
       page: Page | ArrayBuffer
     },
     url: string,
-    frameId = DEFAULT_FRAME_ID,
+    frame = DEFAULT_FRAME,
   ): Promise<void> {
     return this.withThrottleProtection(() => {
       const existing = this.getWindowState()
@@ -308,7 +308,7 @@ class History {
         ...window.history.state,
         frames: {
           ...existing.frames,
-          [frameId]: {
+          [frame]: {
             page: data.page,
           },
         },
@@ -321,35 +321,35 @@ class History {
           throw error
         }
 
-        eventHandler.fireInternalEvent('historyQuotaExceeded', frameId, url)
+        eventHandler.fireInternalEvent('historyQuotaExceeded', frame, url)
       }
     })
   }
 
-  public getState<T>(key: keyof Page, defaultValue?: T, frameId = DEFAULT_FRAME_ID): any {
-    return this.getCurrent(frameId)?.[key] ?? defaultValue
+  public getState<T>(key: keyof Page, defaultValue?: T, frame = DEFAULT_FRAME): any {
+    return this.getCurrent(frame)?.[key] ?? defaultValue
   }
 
-  public deleteState(key: keyof Page, frameId = DEFAULT_FRAME_ID) {
-    const current = this.getCurrent(frameId)
+  public deleteState(key: keyof Page, frame = DEFAULT_FRAME) {
+    const current = this.getCurrent(frame)
 
     if (current[key] !== undefined) {
       delete current[key]
-      this.replaceState(current as Page, null, frameId)
+      this.replaceState(current as Page, null, frame)
     }
   }
 
-  public clearInitialState(key: keyof Page, frameId = DEFAULT_FRAME_ID) {
-    const initial = this.getInitial(frameId)
+  public clearInitialState(key: keyof Page, frame = DEFAULT_FRAME) {
+    const initial = this.getInitial(frame)
 
     if (initial && initial[key] !== undefined) {
       delete initial[key]
-      this.setInitial(initial, frameId)
+      this.setInitial(initial, frame)
     }
   }
 
-  public browserHasHistoryEntry(frameId = DEFAULT_FRAME_ID): boolean {
-    return !isServer && !!this.getFrameState(frameId)?.page
+  public browserHasHistoryEntry(frame = DEFAULT_FRAME): boolean {
+    return !isServer && !!this.getFrameState(frame)?.page
   }
 
   public clear() {
@@ -357,25 +357,25 @@ class History {
     SessionStorage.remove(historySessionStorageKeys.iv)
   }
 
-  public setCurrent(page: Page, frameId = DEFAULT_FRAME_ID): void {
-    this.setCurrentState(page, frameId)
+  public setCurrent(page: Page, frame = DEFAULT_FRAME): void {
+    this.setCurrentState(page, frame)
   }
 
-  public isValidState(state: any, frameId = DEFAULT_FRAME_ID): boolean {
-    return !!state?.frames?.[frameId]?.page
+  public isValidState(state: any, frame = DEFAULT_FRAME): boolean {
+    return !!state?.frames?.[frame]?.page
   }
 
-  public getAllState(frameId = DEFAULT_FRAME_ID): Page {
-    return this.getCurrent(frameId) as Page
+  public getAllState(frame = DEFAULT_FRAME): Page {
+    return this.getCurrent(frame) as Page
   }
 
-  public getStateForFrame(state: any, frameId = DEFAULT_FRAME_ID): FrameHistoryState | null {
-    return state?.frames?.[frameId] ?? null
+  public getStateForFrame(state: any, frame = DEFAULT_FRAME): FrameHistoryState | null {
+    return state?.frames?.[frame] ?? null
   }
 
-  public deleteFrame(frameId: string): void {
-    this.current.delete(frameId)
-    this.initialState.delete(frameId)
+  public deleteFrame(frame: string): void {
+    this.current.delete(frame)
+    this.initialState.delete(frame)
   }
 }
 

@@ -1,6 +1,6 @@
 import { type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
 import { get } from 'svelte/store'
-import { DEFAULT_FRAME_ID, useFrameContext } from './frameContext.svelte'
+import { DEFAULT_FRAME, useFrameContext } from './frameContext.svelte'
 
 type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {
   props: Page<TPageProps & SharedPageProps>['props'] & {
@@ -24,7 +24,7 @@ export function usePage<TPageProps extends PageProps = PageProps>(): SveltePage<
     // Default (top) frame or no frame context: return globally-synced $state
     // page. The top-level Frame.svelte already syncs its page to this global
     // $state via $effect.pre → setPage(), so it's always up to date.
-    if (!context || context.id === DEFAULT_FRAME_ID) {
+    if (!context || context.id === DEFAULT_FRAME) {
         return page as SveltePage<TPageProps>;
     }
     // Nested frame: return current value from the frame-scoped store.

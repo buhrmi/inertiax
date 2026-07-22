@@ -26,6 +26,6 @@ export { default as useHttp } from './useHttp.svelte'
 export { default as usePoll } from './usePoll'
 export { default as usePrefetch } from './usePrefetch.svelte'
 export { default as useRemember } from './useRemember.svelte'
-export { DEFAULT_FRAME_ID, setFrameContext, useFrameContext, useFrameId, useFrameRouter } from './frameContext.svelte'
+export { DEFAULT_FRAME, setFrameContext, useFrameContext, useFrame, useFrameRouter } from './frameContext.svelte'
 
 export const config = coreConfig.extend<SvelteInertiaAppConfig>({})

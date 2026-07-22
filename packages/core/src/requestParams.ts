@@ -133,7 +133,7 @@ export class RequestParams {
     }
 
     if (this.isPartial()) {
-      headers['X-Inertia-Partial-Component'] = currentPage.get(this.params.frameId).component
+      headers['X-Inertia-Partial-Component'] = currentPage.get(this.params.frame).component
     }
 
     const only = this.params.only.concat(this.params.reset)

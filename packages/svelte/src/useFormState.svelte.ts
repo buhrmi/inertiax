@@ -15,7 +15,7 @@ import { get, has, set } from 'es-toolkit/compat'
 import type { NamedInputEvent, ValidationConfig, Validator } from 'laravel-precognition'
 import { createValidator, resolveName, toSimpleValidationErrors } from 'laravel-precognition'
 import { config } from '.'
-import { useFrameId, useFrameRouter } from './frameContext.svelte'
+import { useFrame, useFrameRouter } from './frameContext.svelte'
 
 type TransformCallback<TForm> = (data: TForm) => object
 
@@ -106,7 +106,7 @@ export default function useFormState<TForm extends object>(
   options: UseFormStateOptions<TForm>,
 ): UseFormStateReturn<TForm> {
   const frameRouter = useFrameRouter()
-  const frameId = useFrameId()
+  const frameId = useFrame()
   const { data: dataOption, rememberKey, precognitionEndpoint: initialPrecognitionEndpoint } = options
 
   const scopedRememberKey = rememberKey ? `${frameId}:${rememberKey}` : null

@@ -174,10 +174,10 @@ export class Request {
     }
 
     // Always send the originating frame so the server can route the response back to it
-    headers['X-Inertia-Frame'] = this.router?.frameId ?? this.requestParams.all().frameId
+    headers['X-Inertia-Frame'] = this.router?.frame ?? this.requestParams.all().frame
 
-    const frameId = this.requestParams.all().frameId
-    const page = currentPage.get(frameId)
+    const frame = this.requestParams.all().frame
+    const page = currentPage.get(frame)
 
     if (page.url) {
       headers['X-Inertia-Referer'] = page.url

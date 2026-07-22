@@ -4,7 +4,7 @@ import type { Page } from 'inertiax-core'
 import type { Readable } from 'svelte/store'
 import type { ComponentResolver } from './types'
 
-export const DEFAULT_FRAME_ID = '_top'
+export const DEFAULT_FRAME = '_top'
 
 export type FrameContext = {
   id: string
@@ -41,6 +41,6 @@ export function useGlobalResolveComponent(): ComponentResolver | undefined {
   return globalResolveComponent
 }
 
-export function useFrameId(): string {
-  return useFrameContext()?.id ?? DEFAULT_FRAME_ID
+export function useFrame(): string {
+  return useFrameContext()?.id ?? DEFAULT_FRAME
 }

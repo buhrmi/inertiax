@@ -72,7 +72,7 @@ class PrefetchedRequests {
 
       const pageResponse = response.getPageResponse()
 
-      currentPage.mergeOncePropsIntoResponse(pageResponse, {}, params.frameId)
+      currentPage.mergeOncePropsIntoResponse(pageResponse, {}, params.frame)
 
       this.cached.push({
         params: { ...params },
@@ -282,16 +282,16 @@ class PrefetchedRequests {
     )
   }
 
-  public updateCachedOncePropsFromCurrentPage(frameId = '_top'): void {
+  public updateCachedOncePropsFromCurrentPage(frame = '_top'): void {
     this.cached.forEach((prefetched) => {
-      if (prefetched.params.frameId !== frameId) {
+      if (prefetched.params.frame !== frame) {
         return
       }
 
       prefetched.response.then((response) => {
         const pageResponse = response.getPageResponse()
 
-        currentPage.mergeOncePropsIntoResponse(pageResponse, { force: true }, frameId)
+        currentPage.mergeOncePropsIntoResponse(pageResponse, { force: true }, frame)
 
         for (const [group, deferredProps] of Object.entries(pageResponse.deferredProps ?? {})) {
           const remaining = deferredProps.filter((prop) => get(pageResponse.props, prop) === undefined)

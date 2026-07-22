@@ -129,56 +129,61 @@ When a frame navigates, the closest ancestor element with the `scroll-region` at
 
 On back/forward navigation, the scroll position is restored. Outer `scroll-region` ancestors and the document scroll position are not affected.
 
-### Visiting a different frame
+### Targeting another frame
 
-Pass `frameId` in visit options to target another frame. Useful when one frame controls another — for example, a table in the main content area opening a side panel.
+The most common use case: a form inside a modal that should update the main page on success. Pass `frame: "_top"` to tell Inertia X to apply the response to the top frame instead of the current one.
+
+```svelte
+<script>
+  import { Form } from 'inertiax-svelte'
+
+  const { close } = $props()
+</script>
+
+<Form action="/users" method="post" options={{ frame: "_top" }}>
+  {#snippet children({ errors })}
+    <Input name="user.email" label="Email" {errors} />
+    <Input name="user.password" label="Password" type="password" {errors} />
+    <button type="submit">Create account</button>
+  {/snippet}
+</Form>
+```
+
+You can target any frame by its id, not just `_top`:
 
 ```svelte
 <script lang="ts">
   import { router } from 'inertiax-svelte'
 
   function openDetailsPanel(userId: number) {
-    router.get(`/users/${userId}/details`, {}, { frameId: 'details' })
+    router.get(`/users/${userId}/details`, {}, { frame: 'details' })
   }
 </script>
-
-<button on:click={() => openDetailsPanel(42)}>Open details</button>
 ```
 
-Or create an explicit router instance and reuse it:
+Or reuse a router instance across multiple calls:
 
 ```svelte
 <script lang="ts">
   import { createRouter, Frame } from 'inertiax-svelte'
 
   const detailsRouter = createRouter('details')
-
-  function showUser(userId: number) {
-    detailsRouter.visit(`/users/${userId}/details`)
-  }
 </script>
 
-<button on:click={() => showUser(42)}>Show user</button>
+<button on:click={() => detailsRouter.visit('/users/42/details')}>Show user</button>
 
-<Frame id="details" router={detailsRouter} src="/users/42/details">
-  <p>Loading details...</p>
-</Frame>
+<Frame id="details" router={detailsRouter} src="/users/42/details" />
 ```
 
-## Redirections within frames
+### How frame targeting works
 
-Inertia X sends two request headers and accepts one response header to handle frame-aware redirects.
+Every Inertia X request includes an `X-Inertia-Frame` header with the originating frame's id. The server can return an `X-Inertia-Frame` response header to override where the response lands — this is what makes the `frame: "_top"` example above work.
 
-### Request headers
-
-- **`X-Inertia-Frame`** — the ID of the frame whose router initiated the request. Use server-side to know which frame triggered a visit.
-- **`X-Inertia-Referer`** — the `src` URL of the initiating frame. Use this instead of the standard referer for `redirect_back` within frames.
-
-### Response header: `X-Inertia-Frame`
-
-By default the response is applied to the frame set in `visitOptions.frameId`. Return an `X-Inertia-Frame` response header to route the response to a different frame instead.
-
-A common use case: a form in a modal submits to an action that updates the main page. If validation fails, return `X-Inertia-Frame` pointing back to the modal so errors appear there, not in the main content area.
+| Header | Direction | Purpose |
+|---|---|---|
+| `X-Inertia-Frame` | Request | Frame that initiated the visit |
+| `X-Inertia-Frame` | Response | Override which frame receives the response |
+| `X-Inertia-Referer` | Request | Originating frame's URL, for `redirect_back` |
 
 #### Setting the header from Rails
 

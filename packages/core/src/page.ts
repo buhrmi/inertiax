@@ -8,7 +8,7 @@ import { Scroll } from './scroll'
 import { Component, FlashData, Page, PageEvent, PageHandler, PageResolver, RouterInitParams, Visit } from './types'
 import { hrefToUrl, isSameUrlWithoutHash } from './url'
 
-const DEFAULT_FRAME_ID = '_top'
+const DEFAULT_FRAME = '_top'
 
 class CurrentFramePage {
   protected page!: Page
@@ -28,7 +28,7 @@ class CurrentFramePage {
   protected pendingOptimistics: { id: number; callback: (props: Page['props']) => Partial<Page['props']> | void }[] = []
   protected optimisticCounter = 0
 
-  constructor(protected readonly frameId: string) {}
+  constructor(protected readonly frame: string) {}
 
   public init<ComponentType = Component>({
     initialPage,
@@ -50,8 +50,8 @@ class CurrentFramePage {
     this.resolveComponent = resolveComponent
     this.onFlashCallback = onFlash
 
-    eventHandler.on('historyQuotaExceeded', (frameId?: string) => {
-      if (!frameId || frameId === this.frameId) {
+    eventHandler.on('historyQuotaExceeded', (frame?: string) => {
+      if (!frame || frame === this.frame) {
         this.historyQuotaExceeded = true
       }
     })
@@ -63,7 +63,7 @@ class CurrentFramePage {
     page: Page,
     {
       replace = false,
-      updateBrowserUrl = this.frameId === DEFAULT_FRAME_ID,
+      updateBrowserUrl = this.frame === DEFAULT_FRAME,
       preserveScroll = false,
       preserveState = false,
       viewTransition = false,
@@ -118,8 +118,8 @@ class CurrentFramePage {
 
       return new Promise<void>((resolve) =>
         replace
-          ? history.replaceState(pageForHistory, resolve, this.frameId, browserUrl)
-          : history.pushState(pageForHistory, resolve, this.frameId, browserUrl),
+          ? history.replaceState(pageForHistory, resolve, this.frame, browserUrl)
+          : history.pushState(pageForHistory, resolve, this.frame, browserUrl),
       ).then(() => {
         const isNewComponent = !this.isTheSame(page)
 
@@ -131,7 +131,7 @@ class CurrentFramePage {
         this.cleared = false
 
         if (this.hasOnceProps()) {
-          prefetchedRequests.updateCachedOncePropsFromCurrentPage(this.frameId)
+          prefetchedRequests.updateCachedOncePropsFromCurrentPage(this.frame)
         }
 
         if (isNewComponent) {
@@ -158,7 +158,7 @@ class CurrentFramePage {
           if (preserveScroll) {
             window.requestAnimationFrame(() => Scroll.restoreScrollRegions(scrollRegions))
           } else {
-            Scroll.reset(this.frameId)
+            Scroll.reset(this.frame)
           }
 
           if (
@@ -166,7 +166,7 @@ class CurrentFramePage {
             this.pendingDeferredProps.component === page.component &&
             this.pendingDeferredProps.url === page.url
           ) {
-            eventHandler.fireInternalEvent('loadDeferredProps', this.frameId, this.pendingDeferredProps.deferredProps)
+            eventHandler.fireInternalEvent('loadDeferredProps', this.frame, this.pendingDeferredProps.deferredProps)
           }
 
           this.pendingDeferredProps = null
@@ -187,7 +187,7 @@ class CurrentFramePage {
       preserveState?: boolean
     } = {},
   ) {
-    history.setCurrent(page, this.frameId)
+    history.setCurrent(page, this.frame)
 
     if (!this.cleared && isEqual(this.page, page)) {
       return Promise.resolve()
@@ -383,140 +383,140 @@ class CurrentFramePage {
 class PageStore {
   protected frames = new Map<string, CurrentFramePage>()
 
-  protected forFrame(frameId = DEFAULT_FRAME_ID): CurrentFramePage {
-    if (!this.frames.has(frameId)) {
-      this.frames.set(frameId, new CurrentFramePage(frameId))
+  protected forFrame(frame = DEFAULT_FRAME): CurrentFramePage {
+    if (!this.frames.has(frame)) {
+      this.frames.set(frame, new CurrentFramePage(frame))
     }
 
-    return this.frames.get(frameId)!
+    return this.frames.get(frame)!
   }
 
-  public init<ComponentType = Component>(params: RouterInitParams<ComponentType>, frameId = DEFAULT_FRAME_ID) {
-    return this.forFrame(frameId).init(params)
+  public init<ComponentType = Component>(params: RouterInitParams<ComponentType>, frame = DEFAULT_FRAME) {
+    return this.forFrame(frame).init(params)
   }
 
-  public set(page: Page, options?: Parameters<CurrentFramePage['set']>[1], frameId = DEFAULT_FRAME_ID): Promise<void> {
-    return this.forFrame(frameId).set(page, options)
+  public set(page: Page, options?: Parameters<CurrentFramePage['set']>[1], frame = DEFAULT_FRAME): Promise<void> {
+    return this.forFrame(frame).set(page, options)
   }
 
   public setQuietly(
     page: Page,
     options?: Parameters<CurrentFramePage['setQuietly']>[1],
-    frameId = DEFAULT_FRAME_ID,
+    frame = DEFAULT_FRAME,
   ): Promise<unknown> {
-    return this.forFrame(frameId).setQuietly(page, options)
+    return this.forFrame(frame).setQuietly(page, options)
   }
 
-  public clear(frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).clear()
+  public clear(frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).clear()
   }
 
-  public isCleared(frameId = DEFAULT_FRAME_ID): boolean {
-    return this.forFrame(frameId).isCleared()
+  public isCleared(frame = DEFAULT_FRAME): boolean {
+    return this.forFrame(frame).isCleared()
   }
 
-  public get(frameId = DEFAULT_FRAME_ID): Page {
-    return this.forFrame(frameId).get()
+  public get(frame = DEFAULT_FRAME): Page {
+    return this.forFrame(frame).get()
   }
 
-  public getWithoutFlashData(frameId = DEFAULT_FRAME_ID): Page {
-    return this.forFrame(frameId).getWithoutFlashData()
+  public getWithoutFlashData(frame = DEFAULT_FRAME): Page {
+    return this.forFrame(frame).getWithoutFlashData()
   }
 
-  public hasOnceProps(frameId = DEFAULT_FRAME_ID): boolean {
-    return this.forFrame(frameId).hasOnceProps()
+  public hasOnceProps(frame = DEFAULT_FRAME): boolean {
+    return this.forFrame(frame).hasOnceProps()
   }
 
-  public merge(data: Partial<Page>, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).merge(data)
+  public merge(data: Partial<Page>, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).merge(data)
   }
 
-  public setPropsQuietly(props: Page['props'], frameId = DEFAULT_FRAME_ID): Promise<unknown> {
-    return this.forFrame(frameId).setPropsQuietly(props)
+  public setPropsQuietly(props: Page['props'], frame = DEFAULT_FRAME): Promise<unknown> {
+    return this.forFrame(frame).setPropsQuietly(props)
   }
 
-  public setFlash(flash: FlashData, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).setFlash(flash)
+  public setFlash(flash: FlashData, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).setFlash(flash)
   }
 
-  public setUrlHash(hash: string, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).setUrlHash(hash)
+  public setUrlHash(hash: string, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).setUrlHash(hash)
   }
 
-  public remember(data: Page['rememberedState'], frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).remember(data)
+  public remember(data: Page['rememberedState'], frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).remember(data)
   }
 
-  public swap(args: Parameters<CurrentFramePage['swap']>[0], frameId = DEFAULT_FRAME_ID): Promise<unknown> {
-    return this.forFrame(frameId).swap(args)
+  public swap(args: Parameters<CurrentFramePage['swap']>[0], frame = DEFAULT_FRAME): Promise<unknown> {
+    return this.forFrame(frame).swap(args)
   }
 
-  public resolve(component: string, page?: Page, frameId = DEFAULT_FRAME_ID): Promise<Component> {
-    return this.forFrame(frameId).resolve(component, page)
+  public resolve(component: string, page?: Page, frame = DEFAULT_FRAME): Promise<Component> {
+    return this.forFrame(frame).resolve(component, page)
   }
 
-  public nextOptimisticId(frameId = DEFAULT_FRAME_ID): number {
-    return this.forFrame(frameId).nextOptimisticId()
+  public nextOptimisticId(frame = DEFAULT_FRAME): number {
+    return this.forFrame(frame).nextOptimisticId()
   }
 
-  public setBaseline(key: string, value: unknown, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).setBaseline(key, value)
+  public setBaseline(key: string, value: unknown, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).setBaseline(key, value)
   }
 
-  public updateBaseline(key: string, value: unknown, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).updateBaseline(key, value)
+  public updateBaseline(key: string, value: unknown, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).updateBaseline(key, value)
   }
 
-  public hasBaseline(key: string, frameId = DEFAULT_FRAME_ID): boolean {
-    return this.forFrame(frameId).hasBaseline(key)
+  public hasBaseline(key: string, frame = DEFAULT_FRAME): boolean {
+    return this.forFrame(frame).hasBaseline(key)
   }
 
   public registerOptimistic(
     id: number,
     callback: (props: Page['props']) => Partial<Page['props']> | void,
-    frameId = DEFAULT_FRAME_ID,
+    frame = DEFAULT_FRAME,
   ): void {
-    this.forFrame(frameId).registerOptimistic(id, callback)
+    this.forFrame(frame).registerOptimistic(id, callback)
   }
 
-  public unregisterOptimistic(id: number, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).unregisterOptimistic(id)
+  public unregisterOptimistic(id: number, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).unregisterOptimistic(id)
   }
 
-  public replayOptimistics(frameId = DEFAULT_FRAME_ID): Partial<Page['props']> {
-    return this.forFrame(frameId).replayOptimistics()
+  public replayOptimistics(frame = DEFAULT_FRAME): Partial<Page['props']> {
+    return this.forFrame(frame).replayOptimistics()
   }
 
-  public pendingOptimisticCount(frameId = DEFAULT_FRAME_ID): number {
-    return this.forFrame(frameId).pendingOptimisticCount()
+  public pendingOptimisticCount(frame = DEFAULT_FRAME): number {
+    return this.forFrame(frame).pendingOptimisticCount()
   }
 
-  public clearOptimisticState(frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).clearOptimisticState()
+  public clearOptimisticState(frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).clearOptimisticState()
   }
 
-  public isTheSame(page: Page, frameId = DEFAULT_FRAME_ID): boolean {
-    return this.forFrame(frameId).isTheSame(page)
+  public isTheSame(page: Page, frame = DEFAULT_FRAME): boolean {
+    return this.forFrame(frame).isTheSame(page)
   }
 
-  public on(event: PageEvent, callback: VoidFunction, frameId = DEFAULT_FRAME_ID): VoidFunction {
-    return this.forFrame(frameId).on(event, callback)
+  public on(event: PageEvent, callback: VoidFunction, frame = DEFAULT_FRAME): VoidFunction {
+    return this.forFrame(frame).on(event, callback)
   }
 
-  public fireEventsFor(event: PageEvent, frameId = DEFAULT_FRAME_ID): void {
-    this.forFrame(frameId).fireEventsFor(event)
+  public fireEventsFor(event: PageEvent, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).fireEventsFor(event)
   }
 
   public mergeOncePropsIntoResponse(
     response: Page,
     options: { force?: boolean } = {},
-    frameId = DEFAULT_FRAME_ID,
+    frame = DEFAULT_FRAME,
   ): void {
-    this.forFrame(frameId).mergeOncePropsIntoResponse(response, options)
+    this.forFrame(frame).mergeOncePropsIntoResponse(response, options)
   }
 
-  public deleteFrame(frameId: string): void {
-    this.frames.delete(frameId)
+  public deleteFrame(frame: string): void {
+    this.frames.delete(frame)
   }
 }
 

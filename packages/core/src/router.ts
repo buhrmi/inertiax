@@ -51,10 +51,10 @@ import {
 } from './url'
 
 const noop = () => {}
-const DEFAULT_FRAME_ID = '_top'
+const DEFAULT_FRAME = '_top'
 
 export class Router {
-  public readonly frameId: string
+  public readonly frame: string
 
   protected syncRequestStream = new RequestStream({
     maxConcurrent: 1,
@@ -72,8 +72,8 @@ export class Router {
   protected removePopstateHandler?: VoidFunction
   protected removePageshowHandler?: VoidFunction
 
-  constructor(frameId = '_top') {
-    this.frameId = frameId
+  constructor(frame = '_top') {
+    this.frame = frame
   }
 
   public init<ComponentType = Component>({
@@ -87,25 +87,25 @@ export class Router {
       resolveComponent,
       swapComponent,
       onFlash,
-    }, this.frameId)
+    }, this.frame)
 
-    InitialVisit.handle(this.frameId)
+    InitialVisit.handle(this.frame)
 
     eventHandler.init()
 
     this.removePopstateHandler?.()
     this.removePageshowHandler?.()
 
-    this.removePopstateHandler = eventHandler.registerPopstateHandler(this.frameId, (state) => {
+    this.removePopstateHandler = eventHandler.registerPopstateHandler(this.frame, (state) => {
       this.handleHistoryPopstate(state)
     })
 
-    this.removePageshowHandler = eventHandler.registerPageshowHandler(this.frameId, () => {
-      history.decrypt(null, this.frameId).catch(() => eventHandler.onMissingHistoryItem(this.frameId))
+    this.removePageshowHandler = eventHandler.registerPageshowHandler(this.frame, () => {
+      history.decrypt(null, this.frame).catch(() => eventHandler.onMissingHistoryItem(this.frame))
     })
 
-    eventHandler.on('missingHistoryItem', (frameId?: string) => {
-      if (frameId && frameId !== this.frameId) {
+    eventHandler.on('missingHistoryItem', (frame?: string) => {
+      if (frame && frame !== this.frame) {
         return
       }
 
@@ -115,7 +115,7 @@ export class Router {
     })
 
     eventHandler.on('loadDeferredProps', (frameId: string, deferredProps: Page['deferredProps']) => {
-      if (frameId !== this.frameId) {
+      if (frameId !== this.frame) {
         return
       }
 
@@ -123,7 +123,7 @@ export class Router {
     })
 
     eventHandler.on('historyQuotaExceeded', (frameId: string, url: string) => {
-      if (frameId !== this.frameId) {
+      if (frameId !== this.frame) {
         return
       }
 
@@ -137,7 +137,7 @@ export class Router {
     }
 
     if (state === null) {
-      const page = currentPage.get(this.frameId)
+      const page = currentPage.get(this.frame)
 
       if (!page?.url) {
         return
@@ -146,28 +146,28 @@ export class Router {
       const url = hrefToUrl(page.url)
       url.hash = window.location.hash
 
-      history.replaceState({ ...currentPage.getWithoutFlashData(this.frameId), url: url.href }, null, this.frameId)
-      Scroll.reset(this.frameId)
+      history.replaceState({ ...currentPage.getWithoutFlashData(this.frame), url: url.href }, null, this.frame)
+      Scroll.reset(this.frame)
 
       return
     }
 
-    if (!history.isValidState(state, this.frameId)) {
+    if (!history.isValidState(state, this.frame)) {
       // This popstate entry belongs to another frame.
       return
     }
 
-    const frameState = history.getStateForFrame(state, this.frameId)
+    const frameState = history.getStateForFrame(state, this.frame)
 
     if (!frameState?.page) {
       return
     }
 
     history
-      .decrypt(frameState.page, this.frameId)
+      .decrypt(frameState.page, this.frame)
       .then((data) => {
-        if (currentPage.get(this.frameId).version !== data.version) {
-          eventHandler.onMissingHistoryItem(this.frameId)
+        if (currentPage.get(this.frame).version !== data.version) {
+          eventHandler.onMissingHistoryItem(this.frame)
           return
         }
 
@@ -175,18 +175,18 @@ export class Router {
 
         // If this frame's page hasn't changed, another frame pushed this
         // history entry.  Skip setQuietly/restore to avoid clobbering scroll.
-        if (!currentPage.isCleared(this.frameId) && isEqual(currentPage.getWithoutFlashData(this.frameId), data)) {
+        if (!currentPage.isCleared(this.frame) && isEqual(currentPage.getWithoutFlashData(this.frame), data)) {
           return
         }
 
         currentPage
-          .setQuietly(data, { preserveState: this.frameId === DEFAULT_FRAME_ID }, this.frameId)
+          .setQuietly(data, { preserveState: this.frame === DEFAULT_FRAME }, this.frame)
           .then(() => {
-          Scroll.restore(history.getScrollRegions(), this.frameId)
-          fireNavigateEvent(currentPage.get(this.frameId))
+          Scroll.restore(history.getScrollRegions(), this.frame)
+          fireNavigateEvent(currentPage.get(this.frame))
 
           const pendingDeferred: Record<string, string[]> = {}
-          const pageProps = currentPage.get(this.frameId).props
+          const pageProps = currentPage.get(this.frame).props
 
           for (const [group, props] of Object.entries(data.initialDeferredProps ?? data.deferredProps ?? {})) {
             const missing = props.filter((prop) => get(pageProps, prop) === undefined)
@@ -197,12 +197,12 @@ export class Router {
           }
 
           if (Object.keys(pendingDeferred).length > 0) {
-            eventHandler.fireInternalEvent('loadDeferredProps', this.frameId, pendingDeferred)
+            eventHandler.fireInternalEvent('loadDeferredProps', this.frame, pendingDeferred)
           }
           })
       })
       .catch(() => {
-        eventHandler.onMissingHistoryItem(this.frameId)
+        eventHandler.onMissingHistoryItem(this.frame)
       })
   }
 
@@ -278,11 +278,11 @@ export class Router {
   }
 
   public remember(data: unknown, key = 'default'): void {
-    history.remember(data, key, this.frameId)
+    history.remember(data, key, this.frame)
   }
 
   public restore<T = unknown>(key = 'default'): T | undefined {
-    return history.restore(key, this.frameId) as T | undefined
+    return history.restore(key, this.frame) as T | undefined
   }
 
   /**
@@ -291,7 +291,7 @@ export class Router {
    * when mounting a Frame that loads page data from the history stack).
    */
   public restoreScroll(): void {
-    Scroll.restore(history.getScrollRegions(), this.frameId)
+    Scroll.restore(history.getScrollRegions(), this.frame)
   }
 
   public on<TEventName extends GlobalEventNames>(
@@ -405,7 +405,7 @@ export class Router {
       return
     }
 
-    const currentPageUrl = hrefToUrl(currentPage.get(this.frameId).url)
+    const currentPageUrl = hrefToUrl(currentPage.get(this.frame).url)
     const isPartialReload = visit.only.length > 0 || visit.except.length > 0 || visit.reset.length > 0
 
     // For partial reloads, only compare the base URL (origin + pathname) to allow
@@ -443,7 +443,7 @@ export class Router {
       } else {
         progress.reveal(true)
         const requestStream = visit.async ? this.asyncRequestStream : this.syncRequestStream
-        requestStream.send(Request.create(requestParams, currentPage.get(this.frameId), {
+        requestStream.send(Request.create(requestParams, currentPage.get(this.frame), {
           optimistic: !!options.optimistic,
           router: this,
         }))
@@ -544,7 +544,7 @@ export class Router {
     const ensureCurrentPageIsSet = (): Promise<void> => {
       return new Promise((resolve) => {
         const checkIfPageIsDefined = () => {
-          if (currentPage.get(this.frameId)) {
+          if (currentPage.get(this.frame)) {
             resolve()
           } else {
             setTimeout(checkIfPageIsDefined, 50)
@@ -559,7 +559,7 @@ export class Router {
       prefetchedRequests.add(
         requestParams,
         (params) => {
-          this.asyncRequestStream.send(Request.create(params, currentPage.get(this.frameId), { router: this }))
+          this.asyncRequestStream.send(Request.create(params, currentPage.get(this.frame), { router: this }))
         },
         {
           cacheFor: config.get('prefetch.cacheFor'),
@@ -575,11 +575,11 @@ export class Router {
   }
 
   public decryptHistory(): Promise<Page> {
-    return history.decrypt(null, this.frameId)
+    return history.decrypt(null, this.frame)
   }
 
   public resolveComponent(component: string, page?: Page): Promise<Component> {
-    return currentPage.resolve(component, page, this.frameId)
+    return currentPage.resolve(component, page, this.frame)
   }
 
   public replace<TProps = Page['props']>(params: ClientSideVisitOptions<TProps>): void {
@@ -651,7 +651,7 @@ export class Router {
     keyOrData: string | ((flash: FlashData) => TFlash) | TFlash,
     value?: unknown,
   ): void {
-    const current = currentPage.get(this.frameId).flash
+    const current = currentPage.get(this.frame).flash
     let flash: PageFlashData
 
     if (typeof keyOrData === 'function') {
@@ -664,7 +664,7 @@ export class Router {
       return
     }
 
-    currentPage.setFlash(flash, this.frameId)
+    currentPage.setFlash(flash, this.frame)
 
     if (Object.keys(flash).length) {
       fireFlashEvent(flash)
@@ -682,7 +682,7 @@ export class Router {
     params: ClientSideVisitOptions<TProps>,
     { replace = false }: { replace?: boolean } = {},
   ): Promise<void> {
-    const current = currentPage.get(this.frameId)
+    const current = currentPage.get(this.frame)
 
     const onceProps =
       typeof params.props === 'function'
@@ -718,26 +718,26 @@ export class Router {
     return currentPage
       .set(page, {
         replace,
-        updateBrowserUrl: params.updateBrowserUrl ?? this.frameId === DEFAULT_FRAME_ID,
+        updateBrowserUrl: params.updateBrowserUrl ?? this.frame === DEFAULT_FRAME,
         preserveScroll,
         preserveState,
         viewTransition,
         visitId,
-      }, this.frameId)
+      }, this.frame)
       .then(() => {
-        fireClientVisitEvent(currentPage.get(this.frameId), { replace, visitId })
+        fireClientVisitEvent(currentPage.get(this.frame), { replace, visitId })
 
-        const currentFlash = currentPage.get(this.frameId).flash
+        const currentFlash = currentPage.get(this.frame).flash
 
         if (Object.keys(currentFlash).length > 0) {
           fireFlashEvent(currentFlash)
           onFlash?.(currentFlash)
         }
 
-        const errors = currentPage.get(this.frameId).props.errors || {}
+        const errors = currentPage.get(this.frame).props.errors || {}
 
         if (Object.keys(errors).length === 0) {
-          onSuccess?.(currentPage.get(this.frameId))
+          onSuccess?.(currentPage.get(this.frame))
           return
         }
 
@@ -749,7 +749,7 @@ export class Router {
   }
 
   protected performInstantSwap(visit: PendingVisit): Promise<void> {
-    const current = currentPage.get(this.frameId)
+    const current = currentPage.get(this.frame)
 
     const sharedProps = Object.fromEntries(
       (current.sharedProps ?? []).filter((key) => key in current.props).map((key) => [key, current.props[key]]),
@@ -785,7 +785,7 @@ export class Router {
       preserveState: false,
       viewTransition: visit.viewTransition,
       visitId: visit.id,
-    }, this.frameId)
+    }, this.frame)
   }
 
   protected getPrefetchParams(href: string | URL | UrlMethodPair, options: VisitOptions): ActiveVisit {
@@ -819,11 +819,11 @@ export class Router {
       : {}
 
     const mergedOptions: Visit = {
-      frameId: this.frameId,
+      frame: this.frame,
       method: 'get',
       data: {},
       replace: false,
-      updateBrowserUrl: this.frameId === DEFAULT_FRAME_ID,
+      updateBrowserUrl: this.frame === DEFAULT_FRAME,
       preserveScroll: false,
       preserveState: false,
       only: [],
@@ -893,7 +893,7 @@ export class Router {
   }
 
   protected applyOptimisticUpdate(optimistic: OptimisticCallback, events: VisitCallbacks): void {
-    const currentProps = currentPage.get(this.frameId).props
+    const currentProps = currentPage.get(this.frame).props
     const optimisticProps = optimistic(cloneDeep(currentProps))
 
     if (!optimisticProps) {
@@ -912,15 +912,15 @@ export class Router {
       return
     }
 
-    const id = currentPage.nextOptimisticId(this.frameId)
-    const component = currentPage.get(this.frameId).component
+    const id = currentPage.nextOptimisticId(this.frame)
+    const component = currentPage.get(this.frame).component
 
     for (const key of changedKeys) {
-      currentPage.setBaseline(key, cloneDeep(currentProps[key]), this.frameId)
+      currentPage.setBaseline(key, cloneDeep(currentProps[key]), this.frame)
     }
 
-    currentPage.registerOptimistic(id, optimistic, this.frameId)
-    currentPage.setPropsQuietly({ ...currentProps, ...optimisticProps }, this.frameId)
+    currentPage.registerOptimistic(id, optimistic, this.frame)
+    currentPage.setPropsQuietly({ ...currentProps, ...optimisticProps }, this.frame)
 
     let shouldRestore = true
 
@@ -932,18 +932,18 @@ export class Router {
 
     const originalOnFinish = events.onFinish
     events.onFinish = (visit) => {
-      currentPage.unregisterOptimistic(id, this.frameId)
+      currentPage.unregisterOptimistic(id, this.frame)
 
-      if (shouldRestore && currentPage.get(this.frameId).component === component) {
-        const replayedProps = currentPage.replayOptimistics(this.frameId)
+      if (shouldRestore && currentPage.get(this.frame).component === component) {
+        const replayedProps = currentPage.replayOptimistics(this.frame)
 
         if (Object.keys(replayedProps).length > 0) {
-          currentPage.setPropsQuietly({ ...currentPage.get(this.frameId).props, ...replayedProps }, this.frameId)
+          currentPage.setPropsQuietly({ ...currentPage.get(this.frame).props, ...replayedProps }, this.frame)
         }
       }
 
-      if (currentPage.pendingOptimisticCount(this.frameId) === 0) {
-        currentPage.clearOptimisticState(this.frameId)
+      if (currentPage.pendingOptimisticCount(this.frame) === 0) {
+        currentPage.clearOptimisticState(this.frame)
       }
 
       return originalOnFinish(visit)

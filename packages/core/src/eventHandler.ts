@@ -55,28 +55,28 @@ class EventHandler {
     }
   }
 
-  public registerPopstateHandler(frameId: string, callback: (state: any) => void): VoidFunction {
-    this.popstateHandlers.set(frameId, callback)
+  public registerPopstateHandler(frame: string, callback: (state: any) => void): VoidFunction {
+    this.popstateHandlers.set(frame, callback)
 
     return () => {
-      this.popstateHandlers.delete(frameId)
+      this.popstateHandlers.delete(frame)
     }
   }
 
-  public registerPageshowHandler(frameId: string, callback: () => void): VoidFunction {
-    this.pageshowHandlers.set(frameId, callback)
+  public registerPageshowHandler(frame: string, callback: () => void): VoidFunction {
+    this.pageshowHandlers.set(frame, callback)
 
     return () => {
-      this.pageshowHandlers.delete(frameId)
+      this.pageshowHandlers.delete(frame)
     }
   }
 
-  public onMissingHistoryItem(frameId = '_top') {
+  public onMissingHistoryItem(frame = '_top') {
     // At this point, the user has probably cleared the state
     // Mark the current page as cleared so that we don't try to write anything to it.
-    currentPage.clear(frameId)
+    currentPage.clear(frame)
     // Fire an event so that that any listeners can handle this situation
-    this.fireInternalEvent('missingHistoryItem', frameId)
+    this.fireInternalEvent('missingHistoryItem', frame)
   }
 
   public fireInternalEvent(event: InternalEvent, ...args: any[]): void {

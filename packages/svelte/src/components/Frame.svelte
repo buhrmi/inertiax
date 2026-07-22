@@ -28,7 +28,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
-  import { DEFAULT_FRAME_ID, setFrameContext, useFrameContext, useGlobalResolveComponent } from '../frameContext.svelte'
+  import { DEFAULT_FRAME, setFrameContext, useFrameContext, useGlobalResolveComponent } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
   import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
@@ -77,15 +77,15 @@
     return `frame-${Math.random().toString(36).slice(2, 10)}`
   }
 
-  // Use explicit id > src > random UUID.  Using src as the frameId gives
+  // Use explicit id > src > random UUID.  Using src as the frame gives
   // frames a deterministic identity — remounts with the same src share
   // history state, so the history-restore optimisation works naturally.
-  const frameId = id ?? src ?? createFrameId()
-  const shouldRenderLayout = renderLayout ?? frameId === DEFAULT_FRAME_ID
+  const frame = id ?? src ?? createFrameId()
+  const shouldRenderLayout = renderLayout ?? frame === DEFAULT_FRAME
 
   function resolveFrameComponent(name: string, page?: Page) {
     if (!frameResolveComponent) {
-      throw new Error(`No resolveComponent available for frame "${frameId}"`)
+      throw new Error(`No resolveComponent available for frame "${frame}"`)
     }
 
     // Empty component names occur during initial frame setup when the router
@@ -98,10 +98,10 @@
     return frameResolveComponent(name, page)
   }
 
-  const frameRouter = router ?? createRouter(frameId)
+  const frameRouter = router ?? createRouter(frame)
 
   // Frame-level visit options: non-top frames default to { replace: true, updateBrowserUrl: false }
-  const defaultFrameVisitOptions = frameId !== DEFAULT_FRAME_ID
+  const defaultFrameVisitOptions = frame !== DEFAULT_FRAME
     ? { replace: true, updateBrowserUrl: false }
     : { replace: false, updateBrowserUrl: true }
   const frameVisitOptions = $derived({ ...defaultFrameVisitOptions, ...visitOptions })
@@ -137,19 +137,19 @@
 
 
   setFrameContext({
-    id: frameId,
+    id: frame,
     router: frameRouter,
     resolveComponent: frameResolveComponent,
     page: toStore(() => page ?? emptyPage),
     visitOptions: frameVisitOptions,
   })
 
-  if (frameId === DEFAULT_FRAME_ID && page) {
+  if (frame === DEFAULT_FRAME && page) {
     setPage(page)
   }
 
   $effect.pre(() => {
-    if (frameId === DEFAULT_FRAME_ID && page) {
+    if (frame === DEFAULT_FRAME && page) {
       setPage(page)
     }
   })
@@ -176,7 +176,7 @@
       swapComponent: async (args) => {
         // Sync the global page store for the top frame so usePage()
         // outside of any Frame context stays up to date.
-        if (frameId === DEFAULT_FRAME_ID) {
+        if (frame === DEFAULT_FRAME) {
           setPage(args.page)
         }
         component = args.component
@@ -249,7 +249,7 @@
         const redirect = response.headers?.['x-inertia-redirect']
 
         if (location || redirect) {
-          if (frameId !== DEFAULT_FRAME_ID) {
+          if (frame !== DEFAULT_FRAME) {
             // Non-top frames can't redirect the browser — reload the page so
             // the app recovers at the document level.
             window.location.reload()
@@ -482,4 +482,4 @@
   Invisible anchor used to find the nearest DOM parent for delegated click
   handling and as a scroll-region anchor. display:contents so no layout box.
 -->
-<span style="display:contents" data-inertia-frame={frameId} {@attach attachClickHandler}></span>
+<span style="display:contents" data-inertia-frame={frame} {@attach attachClickHandler}></span>
