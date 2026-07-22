@@ -180,6 +180,70 @@ By default the response is applied to the frame set in `visitOptions.frameId`. R
 
 A common use case: a form in a modal submits to an action that updates the main page. If validation fails, return `X-Inertia-Frame` pointing back to the modal so errors appear there, not in the main content area.
 
+#### Setting the header from Rails
+
+The `inertia_rails` gem doesn't expose a `:frame` option in `redirect_to` out of the box. Add this initializer to enable `inertia: { frame: "..." }` in your redirects:
+
+```ruby
+# config/initializers/inertia_rails_frame.rb
+# frozen_string_literal: true
+
+# Monkey-patch InertiaRails to support `inertia: { frame: "_top" }` option in redirect_to.
+#
+# Usage:
+#   redirect_to some_path, inertia: { frame: "_top" }
+
+module InertiaFrameExtension
+  def self.prepended(base)
+    # `base` is InertiaRails::Controller — an ActiveSupport::Concern module.
+    # `before_action` is only available on the controller class after the concern
+    # is included, so we wrap the concern's `included` callback to register ours.
+    base.singleton_class.prepend(Module.new do
+      def included(controller_class)
+        super
+        controller_class.before_action :set_inertia_frame_header
+      end
+    end)
+  end
+
+  private
+
+  def capture_inertia_session_options(options)
+    super
+    return unless (inertia = options[:inertia])
+    session[:inertia_frame] = inertia[:frame] if inertia.key?(:frame)
+  end
+
+  def set_inertia_frame_header
+    response["X-Inertia-Frame"] = session[:inertia_frame] if session[:inertia_frame]
+  end
+end
+
+module InertiaFrameMiddlewareExtension
+  def response
+    status, headers, body = super
+    request = ActionDispatch::Request.new(@env)
+    request.session.delete(:inertia_frame) unless keep_inertia_session_options?(status) || !request.session.loaded?
+    [status, headers, body]
+  end
+end
+
+Rails.application.config.to_prepare do
+  InertiaRails::Controller.prepend(InertiaFrameExtension)
+  InertiaRails::Middleware::InertiaRailsRequest.prepend(InertiaFrameMiddlewareExtension)
+end
+```
+
+Usage in a controller:
+
+```ruby
+# Redirect back to the top frame after sign-in
+redirect_to dashboard_root_path, notice: "Signed in successfully.",
+            inertia: { frame: "_top" }
+```
+
+The patch stores `:frame` alongside `:errors`, `:clear_history`, and `:preserve_fragment` in the existing `inertia` session infrastructure. The middleware cleanup ensures the value is cleared after one request, matching the semantics of the other inertia session keys.
+
 ## Global click handler
 
 Plain `<a>` clicks inside a frame are intercepted automatically — no `<Link>` component needed.
