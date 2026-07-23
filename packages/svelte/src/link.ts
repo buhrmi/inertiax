@@ -194,6 +194,7 @@ function link(
       except: params.except ?? frameVisitOptions.except ?? [],
       headers: { ...(frameVisitOptions.headers || {}), ...(params.headers || {}) },
       async: params.async ?? frameVisitOptions.async ?? false,
+      frame: params.frame ?? frameVisitOptions.frame ?? undefined,
       component: resolvedComponent,
       pageProps: pagePropsProp,
     }

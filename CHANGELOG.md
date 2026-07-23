@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.44]
+
+### Added
+- Global click handler now supports `data-frame` on `<a>` elements for targeting
+  a different frame (e.g. `data-frame="_top"`).
+- `use:inertia` Svelte action now forwards the `frame` option to the visit
+  request.
+
+---
+
 ## [11.0.43]
 
 ### Changed

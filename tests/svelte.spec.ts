@@ -260,3 +260,18 @@ test('frames send correct X-Inertia-Frame and X-Inertia-Referer headers', async 
   // X-Inertia-Referer: the frame's own URL, not the host page URL
   expect(frameAReferer).toBe('/svelte/frame-header-test/a')
 })
+
+test('Link with frame prop targets another frame', async ({ page }) => {
+  await page.goto('/svelte/multi-frame')
+
+  await expect(page.getByTestId('left-step')).toHaveText('0')
+  await expect(page.getByTestId('right-step')).toHaveText('0')
+
+  // Click left's cross-frame link targeting the right frame
+  await page.getByTestId('left-cross-link').click()
+
+  // Left frame unchanged — right frame updated
+  await expect(page.getByTestId('left-step')).toHaveText('0')
+  await expect(page.getByTestId('right-step')).toHaveText('99')
+  await expect(page).toHaveURL(/\/svelte\/multi-frame$/)
+})

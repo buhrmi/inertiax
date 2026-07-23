@@ -25,6 +25,7 @@
     component?: LinkComponentBaseProps['component']
     instant?: LinkComponentBaseProps['instant']
     pageProps?: LinkComponentBaseProps['pageProps']
+    frame?: string
     children?: import('svelte').Snippet
     [key: string]: any
   }
@@ -73,6 +74,7 @@
     component = undefined,
     instant = false,
     pageProps = null,
+    frame = undefined,
     children,
     ...rest
   }: Props & Callbacks = $props()
@@ -116,6 +118,7 @@
     viewTransition,
     component: resolvedComponent,
     pageProps,
+    frame,
     router: frameRouter,
   }}
   {...rest}

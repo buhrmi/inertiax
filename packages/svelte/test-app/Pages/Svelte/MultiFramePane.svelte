@@ -7,6 +7,7 @@
   }
 
   let { frame, step }: Props = $props()
+  const otherFrame = frame === 'left' ? 'right' : 'left'
 
   $effect(() => {
     console.log(`Frame ${frame} step ${step}`)
@@ -26,4 +27,8 @@
     <button data-testid={frame + '-submit'} type="submit">Submit ({frame})</button>
 
   </Form>
+
+  <Link data-testid={frame + '-cross-link'} href={`/svelte/multi-frame/${otherFrame}`} data={{ step: 99 }} frame={otherFrame}>
+    Cross to {otherFrame}
+  </Link>
 </div>
