@@ -133,7 +133,15 @@ On back/forward navigation, the scroll position is restored. Outer `scroll-regio
 
 Inertia X introduces a new `frame` visit option that tells the response which frame to update. This is useful when you want a navigation inside one frame to update a different one.
 
-The most common use case: a form inside a modal that should update the main page on success. Pass `frame: "_top"` to tell Inertia X to apply the response to the top frame instead of the current one.
+```svelte
+<a href="/users/4/details" use:inertia={{frame: "sidePanel"}}>
+  Show Details
+</a>
+```
+
+### Handling validation errors in the right frame
+
+Sometimes however, you might want to override in which frame the response should be rendered. For example, take this form:
 
 ```svelte
 <script>
@@ -151,9 +159,7 @@ The most common use case: a form inside a modal that should update the main page
 </Form>
 ```
 
-`frame: "_top"` handles the **success** case — the response lands in the top frame. But if validation fails and your controller calls `redirect_back`, you want the errors to render back inside the modal, not in `_top`. This next section explains how to do that.
-
-### Handling validation errors in the right frame
+`frame: "_top"` handles the **success** case — the response lands in the top frame. But if validation fails and your controller calls `redirect_back`, you want the errors to render back inside the modal, not in `_top`. To do that, you have to specify the modal's frame id in the response header.
 
 Every Inertia X request includes an `X-Inertia-Frame` header with the originating frame's id. The server can return an `X-Inertia-Frame` response header to override where the response lands — this is what makes the `frame: "_top"` example above work.
 
@@ -221,6 +227,9 @@ Plain `<a>` clicks inside a frame are intercepted automatically — no `<Link>` 
 
 <!-- Replace history instead of push -->
 <a href="/settings" data-replace>Settings</a>
+
+<!-- Target a different frame -->
+<a href="/users/42" data-frame="details">View user</a>
 ```
 
 Use `onClickLink` to intercept before navigation. Call `event.preventDefault()` to stop it.

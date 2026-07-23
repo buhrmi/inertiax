@@ -457,17 +457,19 @@
 
     event.preventDefault()
 
-    // Support data-method and data-replace on plain <a> elements
+    // Support data-method, data-replace, and data-frame on plain <a> elements
     const dataMethod = target.getAttribute('data-method')
     const method = dataMethod ? (dataMethod.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete') : undefined
     const replace = target.hasAttribute('data-replace')
       ? target.getAttribute('data-replace') !== 'false'
       : undefined
+    const dataFrame = target.getAttribute('data-frame')
 
     frameRouter.visit(href, {
       ...frameVisitOptions,
       ...(method ? { method } : {}),
       ...(replace !== undefined ? { replace } : {}),
+      ...(dataFrame ? { frame: dataFrame } : {}),
     })
   }
 </script>
