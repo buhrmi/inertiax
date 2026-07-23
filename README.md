@@ -131,6 +131,8 @@ On back/forward navigation, the scroll position is restored. Outer `scroll-regio
 
 ### Targeting another frame
 
+Inertia X introduces a new `frame` visit option that tells the response which frame to update. This is useful when you want a navigation inside one frame to update a different one.
+
 The most common use case: a form inside a modal that should update the main page on success. Pass `frame: "_top"` to tell Inertia X to apply the response to the top frame instead of the current one.
 
 ```svelte
