@@ -18,6 +18,7 @@ import { hydrate, mount } from 'svelte'
 import App, { type InertiaAppProps } from './components/App.svelte'
 import { setGlobalResolveComponent } from './frameContext.svelte'
 import { config } from './index'
+import { setPage, type SveltePage } from './page.svelte'
 import type { ComponentResolver, ResolvedComponent, SvelteInertiaAppConfig } from './types'
 
 type SvelteRenderResult = { body: string; head: string }
@@ -166,6 +167,10 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
     resolveComponent(initialPage.component, initialPage) as Promise<ResolvedComponent>,
     router.decryptHistory().catch(() => {}),
   ])
+
+  // Seed the global page store immediately so that `import { page }` has
+  // the correct props from the start, before the top Frame mounts.
+  setPage(initialPage as SveltePage)
 
   const props: InertiaAppProps<SharedProps> = { initialPage, initialComponent, resolveComponent, defaultLayout: layout }
 

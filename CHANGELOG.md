@@ -6,6 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.45]
+
+### Added
+- `Link` component now supports `frame` prop for targeting a different frame.
+
+### Fixed
+- `import { page } from "inertiax-svelte"` now has `page.props` populated
+  immediately instead of starting empty. The global page store is seeded
+  in `createInertiaApp` before the top Frame mounts.
+- `SveltePage` type is now exported from `page.svelte.ts`.
+
+---
+
 ## [11.0.44]
 
 ### Added
