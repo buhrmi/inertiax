@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.46]
+
+### Fixed
+- `import { page } from "inertiax-svelte"` now has `page.props` populated
+  immediately at module evaluation time. The global page store eagerly reads
+  from `<script data-page="app" type="application/json">` during module init
+  instead of waiting for `createInertiaApp`.
+
+---
+
 ## [11.0.44]
 
 ### Added

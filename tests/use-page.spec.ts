@@ -68,4 +68,16 @@ test.describe('usePage', () => {
     await page.getByTestId('frame-nav').click()
     await expect(page.getByTestId('frame-url')).toContainText('/use-page/frame-pane?step=1')
   })
+
+  test('import { page } has populated props at module level before mount', async ({ page }) => {
+    await page.goto('/svelte/page-store-import')
+
+    // At module level (script tag), page.props should already be populated
+    await expect(page.getByTestId('page-store-module-has-props')).toContainText('yes')
+    await expect(page.getByTestId('page-store-module-component')).toContainText('Svelte/PageStoreImport')
+
+    // In onMount, it should also still be populated
+    await expect(page.getByTestId('page-store-mount-has-props')).toContainText('yes')
+    await expect(page.getByTestId('page-store-mount-component')).toContainText('Svelte/PageStoreImport')
+  })
 })

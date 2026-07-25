@@ -1879,6 +1879,10 @@ app.get('/svelte/props-and-page-store', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/PropsAndPageStore', props: { foo: req.query.foo || 'default' } }),
 )
 
+app.get('/svelte/page-store-import', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/PageStoreImport', props: { greeting: 'hello' } }),
+)
+
 app.get('/svelte/multi-frame', (req, res) => inertia.render(req, res, { component: 'Svelte/MultiFrame', props: {} }))
 
 app.get('/svelte/frame-layout', (req, res) => inertia.render(req, res, { component: 'Svelte/FrameLayout', props: {} }))
