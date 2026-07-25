@@ -2,7 +2,7 @@ import { type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
 import { get } from 'svelte/store'
 import { DEFAULT_FRAME, useFrameContext } from './frameContext.svelte'
 
-export type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {
+type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps & SharedPageProps>, 'props'> & {
   props: Page<TPageProps & SharedPageProps>['props'] & {
     [key: string]: any
   }
