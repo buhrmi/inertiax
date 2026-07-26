@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.47]
+
+### Fixed
+- Nested `Frame` components now correctly handle 409 responses on initial load.
+  The HTTP client rejects promises on status ≥ 400, so 409 responses arrived as
+  `HttpResponseError` and never reached the status-code check. The frame now
+  catches the error and triggers a page reload for version-mismatch recovery.
+
+---
+
 ## [11.0.46]
 
 ### Fixed

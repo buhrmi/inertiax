@@ -24,7 +24,7 @@
 </script>
 
 <script lang="ts">
-  import { createRouter, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
+  import { createRouter, HttpResponseError, http, isPropsObject, isPropsObjectOrCallback, normalizeLayouts, shouldIntercept } from 'inertiax-core'
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
@@ -232,36 +232,42 @@
 
       const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
-      const response = await http.getClient().request({
-        method: 'get',
-        url: src,
-        headers: {
-          Accept: 'text/html, application/xhtml+xml',
-          'X-Requested-With': 'XMLHttpRequest',
-          'X-Inertia': true,
-          ...(version ? { 'X-Inertia-Version': version } : {}),
-        },
-      })
+      let data: any
+      try {
+        const response = await http.getClient().request({
+          method: 'get',
+          url: src,
+          headers: {
+            Accept: 'text/html, application/xhtml+xml',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-Inertia': true,
+            ...(version ? { 'X-Inertia-Version': version } : {}),
+          },
+        })
 
-      // Handle 409 conflict responses (version mismatch / external redirect)
-      if (response.status === 409) {
-        const location = response.headers?.['x-inertia-location']
-        const redirect = response.headers?.['x-inertia-redirect']
+        data = response.data
+      } catch (error: unknown) {
+        // The HTTP client rejects on status >= 400, so 409 responses arrive
+        // here as HttpResponseError rather than through the normal flow.
+        if (error instanceof HttpResponseError && error.response.status === 409) {
+          const location = error.response.headers?.['x-inertia-location']
+          const redirect = error.response.headers?.['x-inertia-redirect']
 
-        if (location || redirect) {
           if (frame !== DEFAULT_FRAME) {
             // Non-top frames can't redirect the browser — reload the page so
             // the app recovers at the document level.
             window.location.reload()
-          } else {
+          } else if (location || redirect) {
             window.location.href = location || redirect
+          } else {
+            window.location.reload()
           }
 
           return
         }
-      }
 
-      let data: any = response.data
+        throw error
+      }
       if (typeof data === 'string') {
         try {
           data = JSON.parse(data)
