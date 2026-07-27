@@ -1,4 +1,4 @@
-import { getInitialPageFromDOM, type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
+import { type Page, type PageProps, type SharedPageProps } from 'inertiax-core'
 import { get } from 'svelte/store'
 import { DEFAULT_FRAME, useFrameContext } from './frameContext.svelte'
 
@@ -8,14 +8,12 @@ type SveltePage<TPageProps extends PageProps = PageProps> = Omit<Page<TPageProps
   }
 }
 
-const page = $state<SveltePage>(
-  getInitialPageFromDOM<SveltePage>('app') ?? ({
-    component: '',
-    props: {},
-    url: '',
-    version: null,
-  } as SveltePage),
-)
+const page = $state<SveltePage>({
+  component: '',
+  props: {},
+  url: '',
+  version: null,
+} as SveltePage)
 
 // Re-seed after createInertiaApp runs, in case it used a custom `id`
 // or the page was hydrated from a different source.

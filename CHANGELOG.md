@@ -6,6 +6,25 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.49]
+
+### Changed
+- Reverted eager DOM initialisation of the global `page` store (from 11.0.46).
+  The page object now starts empty and is seeded by `createInertiaApp` via
+  `setPage()` before any component renders. This avoids stale `$state` proxy
+  issues after Vite HMR in SSR dev mode where `Object.assign` was silently
+  swallowed and `page.props` appeared frozen.
+
+## [11.0.48] (reverted)
+
+### Fixed
+- `createInertiaApp` called `setPage(initialPage)` before rendering to ensure
+  `page.props` was populated during SSR. This was reverted in 11.0.49 because
+  the root cause was the eager DOM init + `$state` proxy interaction with HMR,
+  not the timing of `setPage`.
+
+---
+
 ## [11.0.47]
 
 ### Fixed

@@ -18,6 +18,7 @@ import { hydrate, mount } from 'svelte'
 import App, { type InertiaAppProps } from './components/App.svelte'
 import { setGlobalResolveComponent } from './frameContext.svelte'
 import { config } from './index'
+import { setPage } from './page.svelte'
 import type { ComponentResolver, ResolvedComponent, SvelteInertiaAppConfig } from './types'
 
 type SvelteRenderResult = { body: string; head: string }
@@ -115,6 +116,8 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
   // This is used by the Vite plugin's SSR transform
   if (isServer && !page) {
     return async (page: Page<SharedProps>, render: SvelteServerRender) => {
+      setPage(page)
+
       const initialComponent = (await resolveComponent(page.component, page)) as ResolvedComponent
 
       const props: InertiaAppProps<SharedProps> = {
@@ -152,6 +155,8 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
   }
 
   const initialPage = page || getInitialPageFromDOM<Page<SharedProps>>(id)!
+  setPage(initialPage)
+
   const serverHeadManager =
     !isServer && serverHead
       ? createHeadManager(
