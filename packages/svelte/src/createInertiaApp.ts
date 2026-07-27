@@ -18,6 +18,7 @@ import { hydrate, mount } from 'svelte'
 import App, { type InertiaAppProps } from './components/App.svelte'
 import { setGlobalResolveComponent } from './frameContext.svelte'
 import { config } from './index'
+import { setPage } from './page.svelte'
 import type { ComponentResolver, ResolvedComponent, SvelteInertiaAppConfig } from './types'
 
 type SvelteRenderResult = { body: string; head: string }
@@ -115,6 +116,11 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
   // This is used by the Vite plugin's SSR transform
   if (isServer && !page) {
     return async (page: Page<SharedProps>, render: SvelteServerRender) => {
+      // Seed the global page store before rendering so that child
+      // components reading `import { page } from "inertiax-svelte"`
+      // always see the current page data during SSR.
+      setPage(page)
+
       const initialComponent = (await resolveComponent(page.component, page)) as ResolvedComponent
 
       const props: InertiaAppProps<SharedProps> = {
@@ -152,6 +158,11 @@ export default async function createInertiaApp<SharedProps extends PageProps = P
   }
 
   const initialPage = page || getInitialPageFromDOM<Page<SharedProps>>(id)!
+
+  // Seed the global page store so that `import { page } from "inertiax-svelte"`
+  // has props populated before any component reads it during render.
+  setPage(initialPage)
+
   const serverHeadManager =
     !isServer && serverHead
       ? createHeadManager(

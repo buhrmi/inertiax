@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.48]
+
+### Fixed
+- Global `page` store (`import { page } from "inertiax-svelte"`) is now seeded
+  in `createInertiaApp` before rendering, ensuring `page.props` is populated
+  during SSR. Previously it relied on `Frame.svelte` calling `setPage` during
+  render, which could race with child component reads.
+
+---
+
 ## [11.0.47]
 
 ### Fixed
