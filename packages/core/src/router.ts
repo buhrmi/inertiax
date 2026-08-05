@@ -171,13 +171,14 @@ export class Router {
           return
         }
 
-        this.cancelAll({ prefetch: false })
-
+        
         // If this frame's page hasn't changed, another frame pushed this
         // history entry.  Skip setQuietly/restore to avoid clobbering scroll.
         if (!currentPage.isCleared(this.frame) && isEqual(currentPage.getWithoutFlashData(this.frame), data)) {
           return
         }
+        
+        this.cancelAll({ prefetch: false })
 
         currentPage
           .setQuietly(data, { preserveState: this.frame === DEFAULT_FRAME }, this.frame)
