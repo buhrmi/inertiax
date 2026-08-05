@@ -241,6 +241,7 @@
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',
             'X-Inertia': true,
+            'X-Inertia-Frame': frame,
             ...(version ? { 'X-Inertia-Version': version } : {}),
           },
         })

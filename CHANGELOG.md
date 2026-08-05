@@ -6,6 +6,14 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.50]
+
+### Fixed
+- Nested `Frame` components now send `X-Inertia-Frame` header on initial load
+  requests, so the server can identify which frame the request originates from.
+
+---
+
 ## [11.0.49]
 
 ### Changed
