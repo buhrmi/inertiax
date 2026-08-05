@@ -6,6 +6,12 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.51]
+
+Version bump to sync packages
+
+---
+
 ## [11.0.50]
 
 ### Fixed
