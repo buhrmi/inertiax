@@ -234,24 +234,41 @@ Use `onClickLink` to intercept before navigation. Call `event.preventDefault()` 
 
 ## Events
 
-Inertia X dispatches DOM events that include the `frame` name in the detail so you know which frame triggered them:
+Every Inertia event carries the originating `frame` in its detail. Events with a `visit` object expose it via `detail.visit.frame`; all others have `detail.frame`.
 
-| Event | Detail |
+| Event | Frame source |
 |---|---|
-| `inertia:navigate` | `{ page, frame, cached?, visitId? }` |
-| `inertia:clientVisit` | `{ page, frame, replace, visitId }` |
-| `inertia:success` | `{ page, frame, visitId? }` |
-| `inertia:error` | `{ errors, frame, page?, visitId? }` |
-| `inertia:beforeUpdate` | `{ page, frame }` |
-| `inertia:flash` | `{ flash, frame }` |
+| `inertia:navigate` | `detail.frame` |
+| `inertia:clientVisit` | `detail.frame` |
+| `inertia:success` | `detail.frame` |
+| `inertia:error` | `detail.frame` |
+| `inertia:beforeUpdate` | `detail.frame` |
+| `inertia:flash` | `detail.frame` |
+| `inertia:progress` | `detail.frame` |
+| `inertia:httpException` | `detail.frame` |
+| `inertia:networkError` | `detail.frame` |
+| `inertia:location` | `detail.frame` |
+| `inertia:before` | `detail.visit.frame` |
+| `inertia:start` | `detail.visit.frame` |
+| `inertia:finish` | `detail.visit.frame` |
+| `inertia:prefetched` | `detail.visit.frame` |
+| `inertia:prefetching` | `detail.visit.frame` |
 
-The `frame` always reflects where the page change actually occurred — even when the server overrides the target via `X-Inertia-Frame` response header.
+The `frame` always reflects where the page change actually occurred - even when the server overrides the target via `X-Inertia-Frame`.
+
+### Frame-scoped listeners
+
+Use `router.on()` to listen to events for a specific frame;
 
 ```ts
-document.addEventListener('inertia:navigate', (event) => {
-  const { page, frame } = event.detail
-  if (frame === '_top') {
-    // navigation happened in the top frame
-  }
+import { useFrameRouter } from 'inertiax-svelte'
+
+const myRouter = useFrameRouter()
+
+myRouter.on('navigate', (event) => {
+  // Only fires for navigations in this frame
+  console.log(event.detail.page.url)
 })
 ```
+
+To listen globally (all frames), use `document.addEventListener` directly.

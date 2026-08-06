@@ -80,7 +80,7 @@ export class Response {
         return
       }
 
-      if (!fireHttpExceptionEvent(response)) {
+      if (!fireHttpExceptionEvent(response, this.requestParams.all().frame)) {
         return
       }
     }
@@ -175,7 +175,7 @@ export class Response {
       return
     }
 
-    if (fireHttpExceptionEvent(response)) {
+    if (fireHttpExceptionEvent(response, this.requestParams.all().frame)) {
       return dialog.show(response.data)
     }
   }
@@ -228,7 +228,7 @@ export class Response {
       const responseVersion = this.getHeader('x-inertia-version')
       const versionChange = !!responseVersion && responseVersion !== currentPage.get().version
 
-      if (!fireLocationEvent(url, versionChange)) {
+      if (!fireLocationEvent(url, versionChange, this.requestParams.all().frame)) {
         return
       }
 

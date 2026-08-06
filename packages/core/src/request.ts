@@ -107,7 +107,7 @@ export class Request {
           return
         }
 
-        if (fireNetworkErrorEvent(error)) {
+        if (fireNetworkErrorEvent(error, this.router?.frame ?? this.requestParams.all().frame)) {
           if (originallyPrefetch) {
             this.requestParams.onPrefetchError(error)
           }
@@ -160,7 +160,8 @@ export class Request {
 
   protected onProgress(progress: HttpProgressEvent): void {
     if (this.requestParams.data() instanceof FormData) {
-      fireProgressEvent(progress)
+      const frame = this.router?.frame ?? this.requestParams.all().frame
+      fireProgressEvent(progress, frame)
       this.requestParams.all().onProgress(progress)
     }
   }

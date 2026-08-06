@@ -6,6 +6,18 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.53]
+
+### Added
+- `frame` added to all remaining event details: `inertia:progress`,
+  `inertia:httpException`, `inertia:networkError`, and `inertia:location`.
+  Every Inertia event now carries the frame it originated from.
+- `router.on()` now automatically filters events to the router's own frame.
+  Callbacks only fire for events belonging to that frame — no manual
+  `event.detail.frame` checks needed.
+
+---
+
 ## [11.0.52]
 
 ### Added

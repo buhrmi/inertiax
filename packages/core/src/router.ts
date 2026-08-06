@@ -302,7 +302,18 @@ export class Router {
       return () => {}
     }
 
-    return eventHandler.onGlobalEvent(type, callback)
+    return eventHandler.onGlobalEvent(type, (event) => {
+      // Filter by frame when the event detail carries a frame (either directly
+      // or via a visit object). Events without frame info (cancel, progress)
+      // pass through unfiltered.
+      const detail = event.detail as Record<string, unknown>
+      const eventFrame = (detail.frame ?? (detail.visit as Record<string, unknown> | undefined)?.frame) as string | undefined
+      if (typeof eventFrame === 'string' && eventFrame !== this.frame) {
+        return
+      }
+
+      return callback(event)
+    })
   }
 
   public once<TEventName extends GlobalEventNames>(

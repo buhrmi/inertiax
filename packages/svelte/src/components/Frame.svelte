@@ -397,16 +397,9 @@
   }
 
   function attachClickHandler(node: HTMLElement) {
-    const parent = node.parentElement
-
-    if (!parent) {
-      return
-    }
-
-    parent.addEventListener('click', handleClick)
-
+    node.addEventListener('click', handleClick)
     return () => {
-      parent.removeEventListener('click', handleClick)
+      node.removeEventListener('click', handleClick)
     }
   }
 
@@ -481,14 +474,10 @@
   }
 </script>
 
-{#if renderProps}
-  <Render {...renderProps} />
-{:else}
-  {@render children?.()}
-{/if}
-
-<!--
-  Invisible anchor used to find the nearest DOM parent for delegated click
-  handling and as a scroll-region anchor. display:contents so no layout box.
--->
-<span style="display:contents" data-inertia-frame={frame} {@attach attachClickHandler}></span>
+<div id={frame} class="frame" style="display: contents" {@attach attachClickHandler}>
+  {#if renderProps}
+    <Render {...renderProps} />
+  {:else}
+    {@render children?.()}
+  {/if}
+</div>

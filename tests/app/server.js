@@ -1956,6 +1956,17 @@ app.get('/svelte/frame-remember/pane-skip', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRememberPane', props: {} }),
 )
 
+app.get('/svelte/frame-events', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameEvents', props: {} }),
+)
+
+app.get('/svelte/frame-events/:frame', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/FrameEventsPane',
+    props: { frame: req.params.frame, label: req.params.frame === 'left' ? 'Left Pane' : 'Right Pane' },
+  }),
+)
+
 app.get('/svelte/multi-frame/:frame', (req, res) => {
   const step = parseInt(req.query.step || '0', 10)
 

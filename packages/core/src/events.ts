@@ -15,16 +15,16 @@ export const fireErrorEvent = (errors: any, frame: string, { page, visitId }: an
   return fireEvent('error', { detail: { errors, frame, page, visitId } })
 }
 
-export const fireNetworkErrorEvent: GlobalEventTrigger<'networkError'> = (error) => {
-  return fireEvent('networkError', { cancelable: true, detail: { error } })
+export const fireNetworkErrorEvent = (error: any, frame: string) => {
+  return fireEvent('networkError', { cancelable: true, detail: { error, frame } })
 }
 
 export const fireFinishEvent: GlobalEventTrigger<'finish'> = (visit) => {
   return fireEvent('finish', { detail: { visit } })
 }
 
-export const fireHttpExceptionEvent: GlobalEventTrigger<'httpException'> = (response) => {
-  return fireEvent('httpException', { cancelable: true, detail: { response } })
+export const fireHttpExceptionEvent = (response: any, frame: string) => {
+  return fireEvent('httpException', { cancelable: true, detail: { response, frame } })
 }
 
 export const fireBeforeUpdateEvent = (page: any, frame: string) => {
@@ -39,8 +39,8 @@ export const fireClientVisitEvent = (page: any, frame: string, { replace, visitI
   return fireEvent('clientVisit', { detail: { page, frame, replace, visitId } })
 }
 
-export const fireProgressEvent: GlobalEventTrigger<'progress'> = (progress) => {
-  return fireEvent('progress', { detail: { progress } })
+export const fireProgressEvent = (progress: any, frame: string) => {
+  return fireEvent('progress', { detail: { progress, frame } })
 }
 
 export const fireStartEvent: GlobalEventTrigger<'start'> = (visit) => {
@@ -63,6 +63,6 @@ export const fireFlashEvent = (flash: any, frame: string) => {
   return fireEvent('flash', { detail: { flash, frame } })
 }
 
-export const fireLocationEvent: GlobalEventTrigger<'location'> = (url, versionChange) => {
-  return fireEvent('location', { cancelable: true, detail: { url, versionChange } })
+export const fireLocationEvent = (url: any, versionChange: any, frame: string) => {
+  return fireEvent('location', { cancelable: true, detail: { url, versionChange, frame } })
 }

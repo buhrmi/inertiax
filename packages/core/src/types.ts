@@ -363,6 +363,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     parameters: [Progress | undefined]
     details: {
       progress: Progress | undefined
+      frame: string
     }
     result: void
   }
@@ -375,7 +376,9 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
   }
   cancel: {
     parameters: []
-    details: {}
+    details: {
+      frame: string
+    }
     result: void
   }
   beforeUpdate: {
@@ -429,6 +432,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     parameters: [HttpExceptionResponse]
     details: {
       response: HttpExceptionResponse
+      frame: string
     }
     result: boolean | void
   }
@@ -436,6 +440,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     parameters: [Error]
     details: {
       error: Error
+      frame: string
     }
     result: boolean | void
   }
@@ -468,6 +473,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     details: {
       url: URL
       versionChange: boolean
+      frame: string
     }
     result: boolean | void
   }
