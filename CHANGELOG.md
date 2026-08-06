@@ -6,6 +6,17 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.52]
+
+### Added
+- `frame` added to event details for `inertia:navigate`, `inertia:clientVisit`,
+  `inertia:success`, `inertia:error`, `inertia:beforeUpdate`, and
+  `inertia:flash`. The frame always reflects the frame where the page change
+  actually occurred, even when the server overrides the target via the
+  `X-Inertia-Frame` response header.
+
+---
+
 ## [11.0.51]
 
 Version bump to sync packages

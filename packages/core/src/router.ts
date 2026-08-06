@@ -171,20 +171,19 @@ export class Router {
           return
         }
 
-        
+        this.cancelAll({ prefetch: false })
+
         // If this frame's page hasn't changed, another frame pushed this
         // history entry.  Skip setQuietly/restore to avoid clobbering scroll.
         if (!currentPage.isCleared(this.frame) && isEqual(currentPage.getWithoutFlashData(this.frame), data)) {
           return
         }
-        
-        this.cancelAll({ prefetch: false })
 
         currentPage
           .setQuietly(data, { preserveState: this.frame === DEFAULT_FRAME }, this.frame)
           .then(() => {
           Scroll.restore(history.getScrollRegions(), this.frame)
-          fireNavigateEvent(currentPage.get(this.frame))
+          fireNavigateEvent(currentPage.get(this.frame), this.frame)
 
           const pendingDeferred: Record<string, string[]> = {}
           const pageProps = currentPage.get(this.frame).props
@@ -668,7 +667,7 @@ export class Router {
     currentPage.setFlash(flash, this.frame)
 
     if (Object.keys(flash).length) {
-      fireFlashEvent(flash)
+      fireFlashEvent(flash, this.frame)
     }
   }
 
@@ -726,12 +725,12 @@ export class Router {
         visitId,
       }, this.frame)
       .then(() => {
-        fireClientVisitEvent(currentPage.get(this.frame), { replace, visitId })
+        fireClientVisitEvent(currentPage.get(this.frame), this.frame, { replace, visitId })
 
         const currentFlash = currentPage.get(this.frame).flash
 
         if (Object.keys(currentFlash).length > 0) {
-          fireFlashEvent(currentFlash)
+          fireFlashEvent(currentFlash, this.frame)
           onFlash?.(currentFlash)
         }
 

@@ -103,7 +103,7 @@ export class Response {
     const { flash } = currentPage.get(frame)
 
     if (Object.keys(flash).length > 0 && !this.requestParams.isDeferredPropsRequest()) {
-      fireFlashEvent(flash)
+      fireFlashEvent(flash, frame)
       this.requestParams.all().onFlash(flash)
     }
 
@@ -112,7 +112,7 @@ export class Response {
     if (Object.keys(errors).length > 0) {
       const scopedErrors = this.getScopedErrors(errors)
 
-      fireErrorEvent(scopedErrors, { page: currentPage.get(), visitId: this.requestParams.all().id })
+      fireErrorEvent(scopedErrors, frame, { page: currentPage.get(), visitId: this.requestParams.all().id })
 
       return this.requestParams.all().onError(scopedErrors)
     }
@@ -125,7 +125,7 @@ export class Response {
       this.router?.flush(currentPage.get(frame).url)
     }
 
-    fireSuccessEvent(currentPage.get(frame), { visitId: this.requestParams.all().id })
+    fireSuccessEvent(currentPage.get(frame), frame, { visitId: this.requestParams.all().id })
 
     await this.requestParams.all().onSuccess(currentPage.get(frame))
 
@@ -274,7 +274,7 @@ export class Response {
     pageResponse.url = history.preserveUrl ? currentPage.get(frame).url : this.pageUrl(pageResponse)
 
     this.requestParams.all().onBeforeUpdate(pageResponse)
-    fireBeforeUpdateEvent(pageResponse)
+    fireBeforeUpdateEvent(pageResponse, frame)
 
     return currentPage.set(pageResponse, {
       replace: this.requestParams.all().replace,

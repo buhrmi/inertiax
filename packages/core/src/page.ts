@@ -172,7 +172,7 @@ class CurrentFramePage {
           this.pendingDeferredProps = null
 
           if (!replace) {
-            fireNavigateEvent(page, { cached, visitId })
+            fireNavigateEvent(page, this.frame, { cached, visitId })
           }
         })
       })

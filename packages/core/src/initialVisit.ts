@@ -38,7 +38,7 @@ export class InitialVisit {
 
         currentPage.set(data, { preserveScroll: true, preserveState: true, visitId }, frame).then(() => {
           Scroll.restore(scrollRegions, frame)
-          fireNavigateEvent(currentPage.get(frame), { visitId })
+          fireNavigateEvent(currentPage.get(frame), frame, { visitId })
         })
       })
       .catch(() => {
@@ -120,10 +120,10 @@ export class InitialVisit {
   protected static fireInitialEvents(frame: string, visitId: string): void {
     const page = currentPage.get(frame)
 
-    fireNavigateEvent(page, { visitId })
+    fireNavigateEvent(page, frame, { visitId })
 
     if (Object.keys(page.flash).length > 0) {
-      queueMicrotask(() => fireFlashEvent(page.flash))
+      queueMicrotask(() => fireFlashEvent(page.flash, frame))
     }
   }
 }

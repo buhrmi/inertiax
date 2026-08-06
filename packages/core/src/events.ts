@@ -11,8 +11,8 @@ export const fireBeforeEvent: GlobalEventTrigger<'before'> = (visit) => {
   return fireEvent('before', { cancelable: true, detail: { visit } })
 }
 
-export const fireErrorEvent: GlobalEventTrigger<'error'> = (errors, { page, visitId } = {}) => {
-  return fireEvent('error', { detail: { errors, page, visitId } })
+export const fireErrorEvent: GlobalEventTrigger<'error'> = (errors, frame, { page, visitId } = {}) => {
+  return fireEvent('error', { detail: { errors, frame, page, visitId } })
 }
 
 export const fireNetworkErrorEvent: GlobalEventTrigger<'networkError'> = (error) => {
@@ -27,16 +27,16 @@ export const fireHttpExceptionEvent: GlobalEventTrigger<'httpException'> = (resp
   return fireEvent('httpException', { cancelable: true, detail: { response } })
 }
 
-export const fireBeforeUpdateEvent: GlobalEventTrigger<'beforeUpdate'> = (page) => {
-  return fireEvent('beforeUpdate', { detail: { page } })
+export const fireBeforeUpdateEvent: GlobalEventTrigger<'beforeUpdate'> = (page, frame) => {
+  return fireEvent('beforeUpdate', { detail: { page, frame } })
 }
 
-export const fireNavigateEvent: GlobalEventTrigger<'navigate'> = (page, { cached = false, visitId } = {}) => {
-  return fireEvent('navigate', { detail: { page, cached, visitId } })
+export const fireNavigateEvent: GlobalEventTrigger<'navigate'> = (page, frame, { cached = false, visitId } = {}) => {
+  return fireEvent('navigate', { detail: { page, frame, cached, visitId } })
 }
 
-export const fireClientVisitEvent: GlobalEventTrigger<'clientVisit'> = (page, { replace, visitId }) => {
-  return fireEvent('clientVisit', { detail: { page, replace, visitId } })
+export const fireClientVisitEvent: GlobalEventTrigger<'clientVisit'> = (page, frame, { replace, visitId }) => {
+  return fireEvent('clientVisit', { detail: { page, frame, replace, visitId } })
 }
 
 export const fireProgressEvent: GlobalEventTrigger<'progress'> = (progress) => {
@@ -47,8 +47,8 @@ export const fireStartEvent: GlobalEventTrigger<'start'> = (visit) => {
   return fireEvent('start', { detail: { visit } })
 }
 
-export const fireSuccessEvent: GlobalEventTrigger<'success'> = (page, { visitId } = {}) => {
-  return fireEvent('success', { detail: { page, visitId } })
+export const fireSuccessEvent: GlobalEventTrigger<'success'> = (page, frame, { visitId } = {}) => {
+  return fireEvent('success', { detail: { page, frame, visitId } })
 }
 
 export const firePrefetchedEvent: GlobalEventTrigger<'prefetched'> = (response, visit) => {
@@ -59,8 +59,8 @@ export const firePrefetchingEvent: GlobalEventTrigger<'prefetching'> = (visit) =
   return fireEvent('prefetching', { detail: { visit } })
 }
 
-export const fireFlashEvent: GlobalEventTrigger<'flash'> = (flash) => {
-  return fireEvent('flash', { detail: { flash } })
+export const fireFlashEvent: GlobalEventTrigger<'flash'> = (flash, frame) => {
+  return fireEvent('flash', { detail: { flash, frame } })
 }
 
 export const fireLocationEvent: GlobalEventTrigger<'location'> = (url, versionChange) => {
