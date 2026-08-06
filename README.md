@@ -237,3 +237,27 @@ Use `onClickLink` to intercept before navigation. Call `event.preventDefault()` 
 ```svelte
 <Frame onClickLink={(e, href) => { if (href.startsWith('/admin')) e.preventDefault() }} />
 ```
+
+## Events
+
+Inertia X dispatches DOM events that include the `frame` name in the detail so you know which frame triggered them:
+
+| Event | Detail |
+|---|---|
+| `inertia:navigate` | `{ page, frame, cached?, visitId? }` |
+| `inertia:clientVisit` | `{ page, frame, replace, visitId }` |
+| `inertia:success` | `{ page, frame, visitId? }` |
+| `inertia:error` | `{ errors, frame, page?, visitId? }` |
+| `inertia:beforeUpdate` | `{ page, frame }` |
+| `inertia:flash` | `{ flash, frame }` |
+
+The `frame` always reflects where the page change actually occurred — even when the server overrides the target via `X-Inertia-Frame` response header.
+
+```ts
+document.addEventListener('inertia:navigate', (event) => {
+  const { page, frame } = event.detail
+  if (frame === '_top') {
+    // navigation happened in the top frame
+  }
+})
+```

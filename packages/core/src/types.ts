@@ -379,7 +379,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   beforeUpdate: {
-    parameters: [Page<SharedPageProps>, string]
+    parameters: [Page<SharedPageProps>]
     details: {
       page: Page<SharedPageProps>
       frame: string
@@ -387,7 +387,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   navigate: {
-    parameters: [Page<SharedPageProps>, string, { cached?: boolean; visitId?: string }?]
+    parameters: [Page<SharedPageProps>, { cached?: boolean; visitId?: string }?]
     details: {
       page: Page<SharedPageProps>
       frame: string
@@ -397,7 +397,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   clientVisit: {
-    parameters: [Page<SharedPageProps>, string, { replace: boolean; visitId: string }]
+    parameters: [Page<SharedPageProps>, { replace: boolean; visitId: string }]
     details: {
       page: Page<SharedPageProps>
       frame: string
@@ -407,7 +407,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   success: {
-    parameters: [Page<SharedPageProps>, string, { visitId?: string }?]
+    parameters: [Page<SharedPageProps>, { visitId?: string }?]
     details: {
       page: Page<SharedPageProps>
       frame: string
@@ -416,7 +416,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   error: {
-    parameters: [Errors, string, { page?: Page<SharedPageProps>; visitId?: string }?]
+    parameters: [Errors, { page?: Page<SharedPageProps>; visitId?: string }?]
     details: {
       errors: Errors
       frame: string
@@ -456,7 +456,7 @@ export type GlobalEventsMap<T extends RequestPayload = RequestPayload> = {
     result: void
   }
   flash: {
-    parameters: [Page['flash'], string]
+    parameters: [Page['flash']]
     details: {
       flash: Page['flash']
       frame: string

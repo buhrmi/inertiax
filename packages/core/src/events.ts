@@ -11,7 +11,7 @@ export const fireBeforeEvent: GlobalEventTrigger<'before'> = (visit) => {
   return fireEvent('before', { cancelable: true, detail: { visit } })
 }
 
-export const fireErrorEvent: GlobalEventTrigger<'error'> = (errors, frame, { page, visitId } = {}) => {
+export const fireErrorEvent = (errors: any, frame: string, { page, visitId }: any = {}) => {
   return fireEvent('error', { detail: { errors, frame, page, visitId } })
 }
 
@@ -27,15 +27,15 @@ export const fireHttpExceptionEvent: GlobalEventTrigger<'httpException'> = (resp
   return fireEvent('httpException', { cancelable: true, detail: { response } })
 }
 
-export const fireBeforeUpdateEvent: GlobalEventTrigger<'beforeUpdate'> = (page, frame) => {
+export const fireBeforeUpdateEvent = (page: any, frame: string) => {
   return fireEvent('beforeUpdate', { detail: { page, frame } })
 }
 
-export const fireNavigateEvent: GlobalEventTrigger<'navigate'> = (page, frame, { cached = false, visitId } = {}) => {
+export const fireNavigateEvent = (page: any, frame: string, { cached = false, visitId }: any = {}) => {
   return fireEvent('navigate', { detail: { page, frame, cached, visitId } })
 }
 
-export const fireClientVisitEvent: GlobalEventTrigger<'clientVisit'> = (page, frame, { replace, visitId }) => {
+export const fireClientVisitEvent = (page: any, frame: string, { replace, visitId }: any) => {
   return fireEvent('clientVisit', { detail: { page, frame, replace, visitId } })
 }
 
@@ -47,7 +47,7 @@ export const fireStartEvent: GlobalEventTrigger<'start'> = (visit) => {
   return fireEvent('start', { detail: { visit } })
 }
 
-export const fireSuccessEvent: GlobalEventTrigger<'success'> = (page, frame, { visitId } = {}) => {
+export const fireSuccessEvent = (page: any, frame: string, { visitId }: any = {}) => {
   return fireEvent('success', { detail: { page, frame, visitId } })
 }
 
@@ -59,7 +59,7 @@ export const firePrefetchingEvent: GlobalEventTrigger<'prefetching'> = (visit) =
   return fireEvent('prefetching', { detail: { visit } })
 }
 
-export const fireFlashEvent: GlobalEventTrigger<'flash'> = (flash, frame) => {
+export const fireFlashEvent = (flash: any, frame: string) => {
   return fireEvent('flash', { detail: { flash, frame } })
 }
 
