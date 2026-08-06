@@ -2,22 +2,16 @@
 
 # Inertia X
 
-Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds new features to the Svelte adapter.
-
-## What is Inertia.js?
-
-[Inertia.js](https://inertiajs.com/) lets you build single-page apps using classic server-side routing and controllers — no API needed. You write your backend routing and controllers like you always have, and Inertia handles the navigation, component swapping, and history management. Think of it as the glue between your server-side framework (Laravel, Rails, etc.) and your Svelte components.
-
-## What does Inertia X add?
+Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds new features to the Svelte adapter:
 
 - **`<Frame>` component** — multiple independent Inertia page regions on the same document. Each frame has its own router, history, and page state. Links and forms inside one frame only update that frame. Useful for modals, sidebars, or mobile UIs that quickly switch between screens.
+  - **`visitOptions` prop** — set default visit behavior per frame (replace vs push, scroll preservation, URL updates).
+  - **History-aware mount** — Frames restore their previous page and scroll position from the browser history state on mount. This means frames survive browser reloads and remount without losing props.
 - **Global click handler** — plain `<a>` clicks inside a frame are automatically intercepted and turned into frame-scoped Inertia visits. No need to wrap every link in a `<Link>` component.
-- **`visitOptions` prop** — set default visit behavior per frame (replace vs push, scroll preservation, URL updates).
-- **History-aware mount** — Frames restore their previous page and scroll position from the browser history state on mount. This means frames survive browser reloads and remount without losing props.
 
-## Demo?
+## See it in action
 
-For a demo, you can play around with [Inertia X UI](https://github.com/buhrmi/inertiax-ui), a UI library built on Inertia X.
+You can see frames in action in the [Inertia X UI playground](https://github.com/buhrmi/inertiax-ui), a work-in-progress UI library built on Inertia X.
 
 ## Installation
 
