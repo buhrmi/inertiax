@@ -76,6 +76,7 @@ export class InitialVisit {
           .set(currentPage.get(frame), {
             preserveScroll: locationVisit.preserveScroll,
             preserveState: true,
+            initialRender: true,
             visitId,
           }, frame)
           .then(() => {
@@ -106,7 +107,7 @@ export class InitialVisit {
     // restoration performed by Frame.svelte's $effect during the swap.
     const preserveScroll = frame === '_top'
 
-    currentPage.set(currentPage.get(frame), { preserveScroll, preserveState: true, visitId }, frame).then(() => {
+    currentPage.set(currentPage.get(frame), { preserveScroll, preserveState: true, initialRender: true, visitId }, frame).then(() => {
       if (navigationType.isReload()) {
         Scroll.restore(history.getScrollRegions(), frame)
       } else {

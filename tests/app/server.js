@@ -413,6 +413,17 @@ app.get('/client-side-visit/props', (req, res) =>
   }),
 )
 
+app.get('/client-side-visit/replace-prop-rerender', (req, res) =>
+  inertia.render(req, res, {
+    component: 'ClientSideVisit/ReplacePropRerender',
+    props: {
+      user: { name: 'John Doe' },
+      other: { label: 'untouched' },
+      profile: { name: 'John Doe', avatar: { label: 'avatar.png' } },
+    },
+  }),
+)
+
 app.get('/client-side-visit/sequential', (req, res) =>
   inertia.render(req, res, {
     component: 'ClientSideVisit/Sequential',
@@ -1710,6 +1721,20 @@ app.get('/deferred-props/rapid-navigation{/:id}', (req, res) => {
       }),
     600,
   )
+})
+
+app.get('/async-visits/page-a', (req, res) => inertia.render(req, res, { component: 'AsyncVisits/PageA' }))
+
+app.get('/async-visits/page-b', (req, res) => {
+  setTimeout(() => inertia.render(req, res, { component: 'AsyncVisits/PageB' }), 600)
+})
+
+app.get('/async-visits/page-c', (req, res) => inertia.render(req, res, { component: 'AsyncVisits/PageC' }))
+
+app.get('/async-visits/reload-origin', (req, res) => {
+  const delay = req.headers['x-repro-delay'] ? 600 : 0
+
+  setTimeout(() => inertia.render(req, res, { component: 'AsyncVisits/ReloadOrigin' }), delay)
 })
 
 app.get('/deferred-props/partial-reloads', (req, res) => {
@@ -3139,6 +3164,29 @@ app.get('/deferred-props/back-button/b', (req, res) => {
         },
       }),
     400,
+  )
+})
+
+app.get('/deferred-props/tab-duplication', (req, res) => {
+  if (!req.headers['x-inertia-partial-data']) {
+    return inertia.render(req, res, {
+      component: 'DeferredProps/TabDuplication',
+      deferredProps: {
+        default: ['message'],
+      },
+      props: {},
+    })
+  }
+
+  setTimeout(
+    () =>
+      inertia.render(req, res, {
+        component: 'DeferredProps/TabDuplication',
+        props: {
+          message: req.headers['x-inertia-partial-data']?.includes('message') ? 'Message loaded!' : undefined,
+        },
+      }),
+    300,
   )
 })
 

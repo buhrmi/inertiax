@@ -1,12 +1,12 @@
 import { cloneDeep, isEqual } from 'es-toolkit'
-import { get, set } from 'es-toolkit/compat'
+import { get } from 'es-toolkit/compat'
 import { progress } from '.'
 import { config } from './config'
 import { eventHandler } from './eventHandler'
 import { fireBeforeEvent, fireClientVisitEvent, fireFlashEvent, fireNavigateEvent } from './events'
 import { history } from './history'
 import { InitialVisit } from './initialVisit'
-import { stripTopLevelUndefined } from './objectUtils'
+import { setPathPreservingIdentity, stripTopLevelUndefined } from './objectUtils'
 import { page as currentPage } from './page'
 import { polls } from './polls'
 import { prefetchedRequests } from './prefetched'
@@ -426,8 +426,15 @@ export class Router {
       : isSameUrlWithoutHash(visit.url, currentPageUrl)
 
     if (!isSamePage) {
-      // Only cancel non-prefetch requests (deferred props + partial reloads)
-      this.asyncRequestStream.cancelInFlight({ prefetch: false, optimistic: false })
+      // Cancel in-flight requests aimed at the page we're navigating away from
+      // (deferred props, partial reloads, plain reloads), but leave prefetches,
+      // optimistic requests, and background async visits to other pages untouched
+      this.asyncRequestStream.cancelInFlight(
+        (request) =>
+          !request.isPrefetch() &&
+          !request.isOptimistic() &&
+          isSameUrlWithoutQueryOrHash(request.getUrl(), currentPageUrl),
+      )
     }
 
     // Interrupt in-flight requests before taking the optimistic snapshot
@@ -608,7 +615,7 @@ export class Router {
       props(currentProps) {
         const newValue = typeof value === 'function' ? value(get(currentProps, name), currentProps) : value
 
-        return set(cloneDeep(currentProps), name, newValue)
+        return setPathPreservingIdentity(currentProps, name, newValue)
       },
       ...(options || {}),
     })

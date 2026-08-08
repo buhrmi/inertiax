@@ -68,6 +68,7 @@ class CurrentFramePage {
       preserveState = false,
       viewTransition = false,
       cached = false,
+      initialRender = false,
       visitId,
     }: {
       replace?: boolean
@@ -76,6 +77,7 @@ class CurrentFramePage {
       preserveState?: boolean
       viewTransition?: Visit['viewTransition']
       cached?: boolean
+      initialRender?: boolean
       visitId?: string
     } = {},
   ): Promise<void> {
@@ -154,6 +156,7 @@ class CurrentFramePage {
           page,
           preserveState,
           viewTransition,
+          initialRender,
         }).then(() => {
           if (preserveScroll) {
             window.requestAnimationFrame(() => Scroll.restoreScrollRegions(scrollRegions))
@@ -252,13 +255,15 @@ class CurrentFramePage {
     page,
     preserveState,
     viewTransition,
+    initialRender = false,
   }: {
     component: Component
     page: Page
     preserveState: boolean
     viewTransition: Visit['viewTransition']
+    initialRender?: boolean
   }): Promise<unknown> {
-    const doSwap = () => this.swapComponent({ component, page, preserveState })
+    const doSwap = () => this.swapComponent({ component, page, preserveState, initialRender })
 
     if (!viewTransition || !document?.startViewTransition || document.visibilityState === 'hidden') {
       return doSwap()
