@@ -1918,6 +1918,21 @@ app.get('/svelte/frame-src-only/pane', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameSrcOnlyPane', props: {} }),
 )
 
+const framePollCounts = {}
+
+app.get('/svelte/frame-poll', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FramePoll', props: {} }),
+)
+
+app.get('/svelte/frame-poll/pane', (req, res) => {
+  const polls = (framePollCounts['poll'] = (framePollCounts['poll'] || 0) + 1)
+
+  return inertia.render(req, res, {
+    component: 'Svelte/FramePollPane',
+    props: { polls },
+  })
+})
+
 app.get('/svelte/frame-scroll-preserve', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameScrollPreserve', props: {} }),
 )

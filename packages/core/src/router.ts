@@ -265,7 +265,11 @@ export class Router {
       return
     }
 
-    return this.visit(window.location.href, {
+    // Reload the current page URL for this frame. The page store tracks each
+    // frame's URL, so this works for both the top frame and nested frames.
+    const href = currentPage.get(this.frame)?.url || window.location.href
+
+    return this.visit(href, {
       ...options,
       preserveScroll: true,
       preserveState: true,

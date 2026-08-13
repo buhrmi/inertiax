@@ -6,6 +6,15 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.55]
+
+### Fixed
+- `usePoll` inside a nested `Frame` now polls the frame's own URL instead of
+  the top frame URL. Reloads (including polls) now target the originating
+  frame's page URL from the page store rather than `window.location.href`.
+
+---
+
 ## [11.0.53]
 
 ### Added
