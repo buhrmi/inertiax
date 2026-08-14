@@ -6,6 +6,18 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.56]
+
+### Added
+- Plain `<a>` elements inside a `Frame` now support `data-http-only`,
+  `data-preserve-scroll`, and `data-preserve-state` on the click handler.
+  `data-http-only` sends the request through Inertia's HTTP client (the same
+  client used by `useHttp`) instead of an Inertia router visit. The preserve
+  attributes map to the matching visit options (`preserveScroll` and
+  `preserveState`).
+
+---
+
 ## [11.0.55]
 
 ### Fixed

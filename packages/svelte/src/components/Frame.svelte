@@ -457,18 +457,43 @@
 
     event.preventDefault()
 
-    // Support data-method, data-replace, and data-frame on plain <a> elements
+    // Support data-method, data-replace, data-preserve-scroll, data-preserve-state,
+    // data-frame, and data-http-only on plain <a> elements
     const dataMethod = target.getAttribute('data-method')
     const method = dataMethod ? (dataMethod.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete') : undefined
     const replace = target.hasAttribute('data-replace')
       ? target.getAttribute('data-replace') !== 'false'
       : undefined
+    const preserveScroll = target.hasAttribute('data-preserve-scroll')
+      ? target.getAttribute('data-preserve-scroll') !== 'false'
+      : undefined
+    const preserveState = target.hasAttribute('data-preserve-state')
+      ? target.getAttribute('data-preserve-state') !== 'false'
+      : undefined
     const dataFrame = target.getAttribute('data-frame')
+
+    // data-http-only: make a plain JSON request via Inertia's HTTP client
+    if (target.hasAttribute('data-http-only')) {
+      void http
+        .getClient()
+        .request({
+          method: method ?? 'get',
+          url: href,
+          headers: {
+            Accept: 'application/json',
+          },
+        })
+        .catch(() => {})
+
+      return
+    }
 
     frameRouter.visit(href, {
       ...frameVisitOptions,
       ...(method ? { method } : {}),
       ...(replace !== undefined ? { replace } : {}),
+      ...(preserveScroll !== undefined ? { preserveScroll } : {}),
+      ...(preserveState !== undefined ? { preserveState } : {}),
       ...(dataFrame ? { frame: dataFrame } : {}),
     })
   }
