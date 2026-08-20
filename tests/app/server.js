@@ -2267,6 +2267,22 @@ app.post('/form-component/errors/bag', (req, res) =>
 app.post('/form-component/events/delay', upload.any(), async (req, res) =>
   setTimeout(() => inertia.render(req, res, { component: 'FormComponent/Events' }), 500),
 )
+app.get('/form-component/unmount-cancel/:cancelOnUnmount', (req, res) =>
+  inertia.render(req, res, {
+    component: 'FormComponent/UnmountCancel',
+    props: { cancelOnUnmount: req.params.cancelOnUnmount === 'yes' },
+  }),
+)
+app.post('/form-component/unmount-cancel/:cancelOnUnmount', upload.any(), async (req, res) =>
+  setTimeout(
+    () =>
+      inertia.render(req, res, {
+        component: 'FormComponent/UnmountCancel',
+        props: { cancelOnUnmount: req.params.cancelOnUnmount === 'yes' },
+      }),
+    500,
+  ),
+)
 app.get('/form-component/disable-while-processing/:disable', upload.any(), async (req, res) =>
   inertia.render(req, res, {
     component: 'FormComponent/DisableWhileProcessing',
@@ -3130,6 +3146,25 @@ app.get('/once-props/client-side-visit', (req, res) => {
     },
     onceProps: { foo: { prop: 'foo', expiresAt: null } },
   })
+})
+
+app.get('/once-props/instant/:page', (req, res) => {
+  const { isPartialRequest, shouldResolveProp, hasPropAlready } = getOncePropsData(req)
+  const page = req.params.page
+  const deferFoo = req.query.deferred === '1' && !isPartialRequest && !hasPropAlready
+  const delay = page === 'b' && !isPartialRequest ? 500 : 0
+
+  setTimeout(() => {
+    inertia.render(req, res, {
+      component: `OnceProps/InstantPage${page.toUpperCase()}`,
+      props: {
+        foo: !deferFoo && shouldResolveProp ? `foo-${page}-` + Date.now() : undefined,
+        bar: `bar-${page}`,
+      },
+      deferredProps: deferFoo ? { default: ['foo'] } : {},
+      onceProps: { foo: { prop: 'foo', expiresAt: null } },
+    })
+  }, delay)
 })
 
 app.get('/deferred-props/back-button/a', (req, res) => {

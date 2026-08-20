@@ -6,6 +6,17 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [Unreleased]
+
+### Added
+- Merged upstream Inertia.js v3.7.0 changes:
+  - `usePoll` now returns a reactive `polling` state.
+  - `<Form>` exposes `cancel` and supports `cancelOnUnmount`.
+  - `once` props are preserved during instant visits.
+  - SSR CSS link URLs now prefer `server.origin`.
+
+---
+
 ## [11.0.56]
 
 ### Added

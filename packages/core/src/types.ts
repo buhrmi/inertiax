@@ -827,6 +827,7 @@ export type FormComponentProps<TForm = Record<string, FormDataConvertible>> = Pa
   options?: FormComponentOptions
   onSubmitComplete?: (props: FormComponentOnSubmitCompleteArguments<TForm & object>) => void
   disableWhileProcessing?: boolean
+  cancelOnUnmount?: boolean
   resetOnSuccess?: boolean | NoInfer<FormDataKeys<TForm>>[]
   resetOnError?: boolean | NoInfer<FormDataKeys<TForm>>[]
   setDefaultsOnSuccess?: boolean
@@ -844,6 +845,7 @@ export type FormComponentMethods<TForm extends object = Record<string, any>> = {
   }
   reset: <K extends FormDataKeys<TForm>>(...fields: K[]) => void
   submit: () => void
+  cancel: () => void
   defaults: () => void
   getData: () => TForm
   getFormData: () => FormData

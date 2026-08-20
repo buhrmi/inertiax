@@ -43,6 +43,7 @@
     onError?: FormComponentProps['onError']
     onSubmitComplete?: FormComponentProps['onSubmitComplete']
     disableWhileProcessing?: boolean
+    cancelOnUnmount?: FormComponentProps['cancelOnUnmount']
     invalidateCacheTags?: FormComponentProps['invalidateCacheTags']
     resetOnError?: FormComponentProps['resetOnError']
     resetOnSuccess?: FormComponentProps['resetOnSuccess']
@@ -76,6 +77,7 @@
     onError = noop,
     onSubmitComplete = noop,
     disableWhileProcessing = false,
+    cancelOnUnmount = false,
     invalidateCacheTags = [],
     resetOnError = false,
     resetOnSuccess = false,
@@ -246,6 +248,10 @@
     isDirty = false
   }
 
+  export function cancel() {
+    form.cancel()
+  }
+
   export function validate(field?: string | NamedInputEvent | ValidationConfig, config?: ValidationConfig) {
     return form.validate(...UseFormUtils.mergeHeadersForValidation(field, config, headers!))
   }
@@ -281,6 +287,10 @@
 
     return () => {
       formEvents.forEach((e) => formElement?.removeEventListener(e, updateDirtyState))
+
+      if (cancelOnUnmount) {
+        form.cancel()
+      }
     }
   })
 
@@ -315,6 +325,7 @@
       setError,
       reset,
       submit,
+      cancel,
       defaults,
       getData,
       getFormData,
@@ -360,6 +371,7 @@
     setError,
     isDirty,
     submit,
+    cancel,
     defaults,
     reset,
     getData,

@@ -12,13 +12,17 @@ export default function usePoll(
 ) {
   const frameRouter = useFrameRouter()
 
+  const autoStart = options.autoStart ?? true
+
   const { stop, start, destroy } = frameRouter.poll(interval, requestOptions, {
     ...options,
     autoStart: false,
   })
 
+  let polling = $state(autoStart)
+
   onMount(() => {
-    if (options.autoStart ?? true) {
+    if (autoStart) {
       start()
     }
   })
@@ -27,5 +31,17 @@ export default function usePoll(
     destroy()
   })
 
-  return { stop, start }
+  return {
+    get polling() {
+      return polling
+    },
+    stop() {
+      stop()
+      polling = false
+    },
+    start() {
+      start()
+      polling = true
+    },
+  }
 }
