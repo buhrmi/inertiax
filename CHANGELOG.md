@@ -6,6 +6,14 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.58]
+
+### Removed
+- Removed the `data-http-only` option from the click handler on plain `<a>`
+  elements inside a `Frame`.
+
+---
+
 ## [11.0.57]
 
 ### Added
