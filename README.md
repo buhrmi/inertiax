@@ -2,11 +2,9 @@
 
 # Inertia X
 
-Inertia X is a fork of [Inertia.js](https://inertiajs.com/) that adds new features to the Svelte adapter:
+Inertia X is a (Svelte-only) fork of [Inertia.js](https://inertiajs.com/) that replaces the singleton router with an instantiable version. This enables the following features:
 
 - **`<Frame>` component** — multiple independent Inertia page regions on the same document. Each frame has its own router, history, and page state. Links and forms inside one frame only update that frame. Useful for modals, sidebars, or mobile UIs that quickly switch between screens.
-  - **`visitOptions` prop** — set default visit behavior per frame (replace vs push, scroll preservation, URL updates).
-  - **History-aware mount** — Frames restore their previous page and scroll position from the browser history state on mount. This means frames survive browser reloads and remount without losing props.
 - **Global click handler** — plain `<a>` clicks inside a frame are automatically intercepted and turned into frame-scoped Inertia visits. No need to wrap every link in a `<Link>` component.
 
 ## See it in action
