@@ -81,3 +81,27 @@ test('useRemember state survives back/forward with forceRequest', async ({ page 
   await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
   await expect(page.getByTestId('remember-count')).toHaveText('2')
 })
+
+test('useRemember state survives inline frame unmount/remount with a fresh fetch', async ({ page }) => {
+  await page.goto('/svelte/frame-remember/toggle')
+
+  // Mount the frame
+  await page.getByTestId('toggle-frame').click()
+  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
+  await expect(page.getByTestId('remember-count')).toHaveText('0')
+
+  // Increment counter — triggers useRemember to persist state
+  await page.getByTestId('remember-increment').click()
+  await page.getByTestId('remember-increment').click()
+  await expect(page.getByTestId('remember-count')).toHaveText('2')
+
+  // Unmount the frame
+  await page.getByTestId('toggle-frame').click()
+  await expect(page.getByTestId('frame-remember-pane')).not.toBeAttached()
+
+  // Remount the frame — forceRequest does a fresh HTTP fetch, but the
+  // remembered useRemember state should still survive.
+  await page.getByTestId('toggle-frame').click()
+  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
+  await expect(page.getByTestId('remember-count')).toHaveText('2')
+})

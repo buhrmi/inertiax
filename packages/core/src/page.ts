@@ -106,7 +106,7 @@ class CurrentFramePage {
         return
       }
 
-      page.rememberedState = { ...(this.page?.rememberedState ?? {}), ...(page.rememberedState ?? {}) }
+      page.rememberedState ??= {}
 
       const isServer = typeof window === 'undefined'
       const location = !isServer ? window.location : new URL(page.url)

@@ -6,6 +6,24 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.0.59]
+
+### Fixed
+- `useRemember` state is now forgotten on normal (non-history) in-app
+  navigations (link clicks, `router.visit`, etc.). Remembered state is only
+  restored on back/forward history navigation (or when `preserveState` is
+  explicitly set). Previously, the `set()` path merged the previous page's
+  `rememberedState` into every new page, leaking remembered data across
+  ordinary navigations.
+
+### Added
+- Test: `useRemember` state survives an inline frame unmount/remount with a
+  fresh HTTP fetch (`forceRequest`). This covers the frame's own page state
+  being preserved across mount/unmount cycles, distinct from back/forward
+  history restoration.
+
+---
+
 ## [11.0.58]
 
 ### Removed
