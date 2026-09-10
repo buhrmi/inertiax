@@ -58,17 +58,35 @@ That's it. Now you're ready to use all the new features.
 | `id` | `string` | `src` value, then auto-generated | Unique frame id. Deterministic when derived from `src` — frames with the same `src` share history state across remounts. |
 | `src` | `string` | URL to load when the frame mounts (useful for lazy-loading frame content). |
 | `router` | `Router` | Optional router instance to control this frame. If omitted, the frame creates its own router with the frame id. |
-| `initialComponent` | `ResolvedComponent` | Initial resolved component to render before or without loading from `src`. |
-| `initialPage` | `Page` | Initial Inertia page payload for the frame. |
+| `initialComponent` | `ResolvedComponent` | Pre-resolved component to render immediately. Optional: if omitted, the component is resolved from `initialPage` (including during SSR). |
+| `initialPage` | `Page` | Initial Inertia page payload for the frame. Renders during SSR even without `initialComponent`. |
 | `resolveComponent` | `ComponentResolver` | Component resolver for frame pages. Required unless inherited from a parent frame context. |
 | `defaultLayout` | `(name: string, page: Page) => unknown` | Fallback layout resolver used when the page does not provide its own layout. |
 | `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
+| `interceptLinks` | `boolean` | When `false`, plain `<a>` clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. Defaults to `true`. |
 | `forceRequest` | `boolean` | When `true`, always fetches fresh data on mount instead of restoring from the history stack. Defaults to `false`. |
 | `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 
 All other props (restProps) are forwarded to the rendered page component.
+
+### Server-side rendering `initialPage`
+
+A frame that receives only `initialPage` (no `initialComponent`) resolves its
+component from the page and renders it during SSR. That resolution is awaited,
+so `Frame` requires the Svelte compiler option `experimental.async`:
+
+```js
+// vite.config.js
+svelte({
+  compilerOptions: {
+    experimental: { async: true },
+  },
+})
+```
+
+Async component resolvers are supported — e.g. a non-eager `import.meta.glob`.
 
 ### Accessing the router
 

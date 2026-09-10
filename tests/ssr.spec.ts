@@ -89,6 +89,26 @@ test.describe('SSR', () => {
   })
 })
 
+test.describe('frame initial pages', () => {
+  test('renders a frame that only receives initialPage on the server', async ({ page }) => {
+    const response = await page.request.get('/ssr/frame-initial-page')
+    const html = await response.text()
+
+    expect(html).toContain('data-testid="frame-initial-pane"')
+    expect(html).toContain('Pane: Rendered from initialPage')
+  })
+
+  test('hydrates a frame that only receives initialPage without errors', async ({ page }) => {
+    consoleMessages.listen(page)
+
+    await page.goto('/ssr/frame-initial-page')
+
+    await expect(page.getByTestId('frame-initial-pane')).toHaveText('Pane: Rendered from initialPage')
+    await expect(page.getByTestId('frame-initial-pane')).toHaveCount(1)
+    expect(consoleMessages.errors).toHaveLength(0)
+  })
+})
+
 test.describe('Head title escaping', () => {
   test.beforeEach(() => {
     test.skip(process.env.PACKAGE === 'svelte', 'Svelte adapter has no Head component')

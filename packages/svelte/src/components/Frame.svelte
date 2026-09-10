@@ -17,6 +17,8 @@
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
     onClickLink?: (event: MouseEvent, href: string) => void
+    /** When `false`, plain <a> clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. Defaults to `true`. */
+    interceptLinks?: boolean
     children?: import('svelte').Snippet
   }
 
@@ -33,6 +35,7 @@
   import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
   import Render, { h, type RenderProps } from './Render.svelte'
+  import FrameInitial from './FrameInitial.svelte'
 
   interface Props {
     id?: string
@@ -46,6 +49,7 @@
     forceRequest?: InertiaFrameProps['forceRequest']
     visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
+    interceptLinks?: InertiaFrameProps['interceptLinks']
     children?: InertiaFrameProps['children']
   }
 
@@ -61,6 +65,7 @@
     forceRequest = false,
     visitOptions,
     onClickLink,
+    interceptLinks = true,
     children,
     ...restProps
   }: Props & Record<string, unknown> = $props()
@@ -134,7 +139,17 @@
     return resolveRenderProps(component, page, key)
   })
 
+  // When a frame is created with an `initialPage` but no `initialComponent`, its
+  // component still has to be resolved from that page. Doing it here would make
+  // `Frame` async (top-level `await`), which delays the first render of every
+  // frame on the client, so it's delegated to the `FrameInitial` child instead.
+  // svelte-ignore state_referenced_locally
+  const useInitialResolver = !initialComponent && !!page?.component && !!frameResolveComponent
 
+  const initialFrameResolver = useInitialResolver ? (frameResolveComponent as ComponentResolver) : null
+
+  const buildRenderProps = (resolved: ResolvedComponent, resolvedPage: Page): RenderProps =>
+    resolveRenderProps(resolved, resolvedPage, key)
 
   setFrameContext({
     id: frame,
@@ -404,6 +419,12 @@
   }
 
   function handleClick(event: MouseEvent): void {
+    // When interception is disabled the event is left to bubble, so the nearest
+    // ancestor frame (e.g. the top frame) can handle the click instead.
+    if (!interceptLinks) {
+      return
+    }
+
     // Find the closest anchor from the click target (handles clicks on child elements)
     const target = (event.target as HTMLElement).closest('a')
 
@@ -484,7 +505,9 @@
 </script>
 
 <div id={frame} class="frame" style="display: contents" {@attach attachClickHandler}>
-  {#if renderProps}
+  {#if initialFrameResolver && page}
+    <FrameInitial {page} {component} resolveComponent={initialFrameResolver} build={buildRenderProps} />
+  {:else if renderProps}
     <Render {...renderProps} />
   {:else}
     {@render children?.()}

@@ -14,7 +14,13 @@ export default defineConfig({
       refresh: true,
     }),
     inertia(),
-    svelte(),
+    svelte({
+      compilerOptions: {
+        // `Frame` uses top-level `await` to resolve a frame's `initialPage`
+        // component during SSR.
+        experimental: { async: true },
+      },
+    }),
     tailwindcss(),
   ],
 })

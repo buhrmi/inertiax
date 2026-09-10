@@ -75,6 +75,13 @@ app.get('/ssr/page2', (req, res) =>
   }),
 )
 
+app.get('/ssr/frame-initial-page', (req, res) =>
+  inertia.renderSSR(req, res, {
+    component: 'SSR/FrameInitialPage',
+    props: {},
+  }),
+)
+
 app.get('/ssr/page-with-script-element', (req, res) =>
   inertia.renderSSR(req, res, {
     component: 'SSR/PageWithScriptElement',
@@ -1913,6 +1920,18 @@ app.get('/svelte/multi-frame', (req, res) => inertia.render(req, res, { componen
 app.get('/svelte/frame-layout', (req, res) => inertia.render(req, res, { component: 'Svelte/FrameLayout', props: {} }))
 
 app.get('/svelte/frame-src-only', (req, res) => inertia.render(req, res, { component: 'Svelte/FrameSrcOnly', props: {} }))
+
+app.get('/svelte/frame-intercept-links', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameInterceptLinks', props: { interceptLinks: false } }),
+)
+
+app.get('/svelte/frame-intercept-links/enabled', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameInterceptLinks', props: { interceptLinks: true } }),
+)
+
+app.get('/svelte/frame-intercept-link-target', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameInterceptLinkTarget', props: {} }),
+)
 
 app.get('/svelte/frame-src-only/pane', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameSrcOnlyPane', props: {} }),
