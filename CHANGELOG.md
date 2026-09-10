@@ -6,6 +6,26 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.0]
+
+### Breaking
+- `Frame` now requires the Svelte compiler option `experimental.async: true`,
+  because resolving a frame's `initialPage` component uses top-level `await`.
+  Enable it in your Svelte plugin config:
+  `svelte({ compilerOptions: { experimental: { async: true } } })`.
+
+### Added
+- `Frame` prop `interceptLinks` (default `true`). Set it to `false` to disable a
+  frame's own plain-`<a>` click handler, so clicks bubble up and are handled by
+  the nearest ancestor frame instead.
+- Frames now render their `initialPage` during SSR even when no
+  `initialComponent` is passed. The component is resolved from the page (async
+  resolvers such as a non-eager `import.meta.glob` are supported) and awaited by
+  an internal `FrameInitial` component, keeping `Frame` itself synchronous and
+  hydration in sync with the server.
+
+---
+
 ## [11.0.59]
 
 ### Fixed
