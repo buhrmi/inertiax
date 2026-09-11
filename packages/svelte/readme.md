@@ -60,6 +60,8 @@ component required.
 
 When a frame navigates, the closest ancestor `[scroll-region]` element is scrolled to top. On back/forward, its position is restored. Outer scroll regions and document scroll are left alone.
 
+If a nested frame has no `[scroll-region]` ancestor, the document is scrolled to top on navigation instead. Mounting a frame never moves the document scroll position.
+
 If a nested frame triggers an Inertia location/version conflict response (`409`
 with `X-Inertia-Location`), Inertia X reloads the current top-level page
 instead of navigating the browser to the frame URL.

@@ -59,11 +59,19 @@ export class Scroll {
     window.scrollTo(0, 0)
   }
 
-  public static reset(frame = DEFAULT_FRAME): void {
+  public static reset(frame = DEFAULT_FRAME, { scrollDocument = true }: { scrollDocument?: boolean } = {}): void {
     const isTopFrame = frame === DEFAULT_FRAME
+    const regions = this.regionsForFrame(frame)
 
-    // Non-top frames should never touch the document scroll position.
-    if (isTopFrame) {
+    // The document is a frame's scroll container when the frame is the top
+    // frame, or when a nested frame isn't wrapped in its own `[scroll-region]`.
+    // In those cases navigating must reset the document scroll position.
+    // Nested frames that own a scroll-region must leave the document alone.
+    // `scrollDocument` is false for a frame's initial render, which must never
+    // move the document (e.g. mounting a frame into a scrolled page).
+    const scrollsDocument = isTopFrame || (scrollDocument && regions.length === 0)
+
+    if (scrollsDocument) {
       const anchorHash = isServer ? null : window.location.hash
 
       if (!anchorHash) {
@@ -72,7 +80,7 @@ export class Scroll {
       }
     }
 
-    this.regionsForFrame(frame).forEach((region) => {
+    regions.forEach((region) => {
       if (typeof region.scrollTo === 'function') {
         region.scrollTo(0, 0)
       } else {

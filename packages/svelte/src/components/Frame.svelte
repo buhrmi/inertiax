@@ -504,7 +504,12 @@
   }
 </script>
 
-<div id={frame} class="frame" style="display: contents" {@attach attachClickHandler}>
+<!--
+  `data-inertia-frame` is the anchor core's Scroll uses to locate the nearest
+  `[scroll-region]` ancestor when resetting/restoring scroll for this frame.
+  It must not be removed — `Scroll.regionsForFrame()` queries it.
+-->
+<div class="frame" data-inertia-frame={frame} style="display: contents" {@attach attachClickHandler}>
   {#if initialFrameResolver && page}
     <FrameInitial {page} {component} resolveComponent={initialFrameResolver} build={buildRenderProps} />
   {:else if renderProps}

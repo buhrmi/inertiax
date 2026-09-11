@@ -26,6 +26,31 @@ test('scroll-region around a Frame resets to top on frame navigation', async ({ 
   await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(0)
 })
 
+test('scroll-region resets to top on frame navigation even when the pane content does not collapse', async ({
+  page,
+}) => {
+  await page.goto('/svelte/frame-scroll-region')
+
+  await expect(page.getByTestId('pane-step')).toHaveText('0')
+
+  const scrollRegion = page.getByTestId('scroll-region')
+
+  await scrollElementTo(page, scrollRegion.evaluate((el) => el.scrollTo(0, 500)))
+  const scrolledTop = await scrollRegion.evaluate((el) => el.scrollTop)
+  expect(scrolledTop).toBeGreaterThan(0)
+
+  // `preserveState` keeps the pane component mounted, so the content height
+  // stays constant during the swap and the browser cannot clamp scrollTop to 0
+  // on its own — the reset has to come from Scroll.reset().
+  // Click via evaluate() so Playwright does not scroll the link into view
+  // (which would reset the scroll position itself and mask the bug).
+  await page.getByTestId('pane-next-link-preserve').evaluate((el) => (el as HTMLElement).click())
+
+  await expect(page.getByTestId('pane-step')).toHaveText('1')
+
+  await expect.poll(() => scrollRegion.evaluate((el) => el.scrollTop)).toBe(0)
+})
+
 test('scroll-region restores position on back navigation after frame visit', async ({ page }) => {
   test.setTimeout(15_000)
 

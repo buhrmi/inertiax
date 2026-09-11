@@ -1,6 +1,6 @@
 {
   "name": "inertiax-vite",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "license": "MIT",
   "description": "Vite plugin for Inertia.js with SSR dev mode support.",
   "contributors": [

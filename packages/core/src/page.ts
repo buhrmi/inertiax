@@ -161,7 +161,9 @@ class CurrentFramePage {
           if (preserveScroll) {
             window.requestAnimationFrame(() => Scroll.restoreScrollRegions(scrollRegions))
           } else {
-            Scroll.reset(this.frame)
+            // A frame's initial render must not move the document scroll
+            // position (e.g. mounting a frame into an already-scrolled page).
+            Scroll.reset(this.frame, { scrollDocument: !initialRender })
           }
 
           if (

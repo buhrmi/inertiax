@@ -139,6 +139,8 @@ When a frame navigates, the closest ancestor element with the `scroll-region` at
 
 On back/forward navigation, the scroll position is restored. Outer `scroll-region` ancestors and the document scroll position are not affected.
 
+If a nested frame has no ancestor with the `scroll-region` attribute, the document is treated as the frame's scroll container: navigating scrolls the document back to the top. Mounting a frame never moves the document scroll position.
+
 ### Targeting another frame
 
 Inertia X introduces a new `frame` visit option that tells the response which frame to update. This is useful when you want a navigation inside one frame to update a different one.

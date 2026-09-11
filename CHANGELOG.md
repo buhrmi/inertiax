@@ -6,6 +6,22 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.1]
+
+### Fixed
+- Nested frames without a wrapping `[scroll-region]` now scroll the document to
+  the top when navigating. `Scroll.reset()` falls back to the document scroll
+  position when the frame has no scroll-region ancestor, so a nested frame
+  behaves like a normal page. Mounting a frame still never moves the document
+  scroll position (the initial render is excluded).
+- Restored the `data-inertia-frame` attribute on `Frame`'s root `<div>` (and
+  dropped the redundant `id={frame}`, which was never read — the `id` prop
+  remains the frame's logical identity). The attribute had been dropped when the
+  invisible anchor `<span>` was replaced by the frame `<div>`, which broke
+  `Scroll.regionsForFrame()` for scroll-regions wrapping a frame.
+
+---
+
 ## [11.1.0]
 
 ### Breaking
