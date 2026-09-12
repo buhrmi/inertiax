@@ -228,30 +228,51 @@
     }
 
     const load = async () => {
+      // The asset version the server is currently on, as known from the page
+      // this document was booted with. This is what a fresh request would send.
+      const currentVersion =
+        page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
+
       // Try to restore from history state first — avoids an unnecessary
       // request when the frame's page data is already in the history stack.
+      let restoreUrl: string | undefined
+
       if (!forceRequest) {
         try {
           const historyPage = await frameRouter.decryptHistory()
 
           if (historyPage && historyPage.component) {
-            initRouter(historyPage)
-            pendingRestoreScroll = true
+            // A frame's history entry also stores the asset version it was
+            // rendered with. After a deploy, a full-document reload serves the
+            // top-level page at the new version while this frame's entry still
+            // holds the old one. Restoring it would pin the frame to the stale
+            // version: the next visit within the frame would 409 and reload the
+            // page again, restoring the same stale entry forever. So only
+            // restore when the versions match. Otherwise re-fetch, keeping the
+            // frame's own URL (which may have changed through in-frame
+            // navigation) so it isn't reset back to `src`.
+            if (historyPage.version === currentVersion) {
+              initRouter(historyPage)
+              pendingRestoreScroll = true
 
-            return
+              return
+            }
+
+            restoreUrl = historyPage.url || undefined
           }
         } catch {
           // No history state available, fall through to HTTP request.
         }
       }
 
-      const version = page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
+      const version = currentVersion
+      const url = restoreUrl ?? src
 
       let data: any
       try {
         const response = await http.getClient().request({
           method: 'get',
-          url: src,
+          url,
           headers: {
             Accept: 'text/html, application/xhtml+xml',
             'X-Requested-With': 'XMLHttpRequest',

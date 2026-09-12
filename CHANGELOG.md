@@ -6,6 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.2]
+
+### Fixed
+- Nested frames no longer get stuck on a stale asset version after a deploy.
+  A frame's history entry stores the asset version it was rendered with, so when
+  a version conflict reloaded the document, the frame restored that stale entry
+  instead of fetching fresh data — leaving it pinned to the old version. Its next
+  visit then triggered another conflict and reload, forever. The history entry is
+  now only restored when its version matches the current one; otherwise the frame
+  re-fetches (at its own URL, so in-frame navigation isn't reset back to `src`).
+
+---
+
 ## [11.1.1]
 
 ### Fixed

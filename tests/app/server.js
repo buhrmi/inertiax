@@ -2012,6 +2012,45 @@ app.get('/svelte/frame-scroll-history/pane', (req, res) => {
   })
 })
 
+// Simulates the server's asset version changing (a deploy) while a nested
+// frame still has the previous version stored in its history entry. Keyed by a
+// token so parallel tests don't clobber each other's version.
+const frameVersionStates = {}
+const frameVersion = (token) => frameVersionStates[token] ?? 'v1'
+
+app.get('/svelte/frame-version/:token/bump', (req, res) => {
+  frameVersionStates[req.params.token] = 'v2'
+  res.send('ok')
+})
+
+app.get('/svelte/frame-version/:token', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/FrameVersion',
+    props: { token: req.params.token },
+    version: frameVersion(req.params.token),
+  }),
+)
+
+app.get('/svelte/frame-version/:token/pane', (req, res) => {
+  const current = frameVersion(req.params.token)
+  const requested = req.get('X-Inertia-Version')
+
+  // A real Inertia backend rejects a stale asset version with a 409 location
+  // response, which drives the client's version-conflict recovery path.
+  if (requested && requested !== current) {
+    return inertia.location(res, req.originalUrl, current)
+  }
+
+  return inertia.render(req, res, {
+    component: 'Svelte/FrameVersionPane',
+    props: {
+      token: req.params.token,
+      label: req.query.step ? `step:${req.query.step}:${current}` : `initial:${current}`,
+    },
+    version: current,
+  })
+})
+
 app.get('/svelte/frame-remember', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRemember', props: {} }),
 )
