@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.3]
+
+### Breaking
+- Removed the `Frame` `forceRequest` prop. A frame now fetches fresh page data
+  on mount by default. To reuse the frame's page data from the history stack
+  instead — and skip the request when a matching entry exists — pass the new
+  `restore` prop (`<Frame ... restore />`).
+
+---
+
 ## [11.1.2]
 
 ### Fixed

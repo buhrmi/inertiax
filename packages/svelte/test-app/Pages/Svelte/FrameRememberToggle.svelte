@@ -22,9 +22,8 @@
   </button>
 
   {#if showFrame}
-    <!-- forceRequest: on remount the frame always does a fresh HTTP fetch
-         rather than restoring from history. The remembered on the fresh fetch
-         must survive via the frame's preserved page state. -->
-    <Frame id="remember-toggle" src="/svelte/frame-remember/pane-toggle" {resolveComponent} forceRequest />
+    <!-- A fresh HTTP fetch on remount (the default) must not lose the
+         remembered state; it survives via the frame's preserved page state. -->
+    <Frame id="remember-toggle" src="/svelte/frame-remember/pane-toggle" {resolveComponent} />
   {/if}
 </div>

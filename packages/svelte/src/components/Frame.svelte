@@ -11,8 +11,8 @@
     resolveComponent: ComponentResolver
     defaultLayout?: (name: string, page: Page) => unknown
     renderLayout?: boolean
-    /** When `true`, always fetches fresh page data on mount instead of restoring from the history stack. Defaults to `false`. */
-    forceRequest?: boolean
+    /** When `true`, restores the frame's page data from the history stack on mount instead of making a request. Falls back to a request when no matching history entry is available. Defaults to `false`. */
+    restore?: boolean
     /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Non-top frames default to `{ replace: true, updateBrowserUrl: false }`, top frame defaults to `{ replace: false, updateBrowserUrl: true }`. */
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
@@ -46,7 +46,7 @@
     resolveComponent?: InertiaFrameProps['resolveComponent']
     defaultLayout?: InertiaFrameProps['defaultLayout']
     renderLayout?: InertiaFrameProps['renderLayout']
-    forceRequest?: InertiaFrameProps['forceRequest']
+    restore?: InertiaFrameProps['restore']
     visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
     interceptLinks?: InertiaFrameProps['interceptLinks']
@@ -62,7 +62,7 @@
     resolveComponent = undefined,
     defaultLayout,
     renderLayout = undefined,
-    forceRequest = false,
+    restore = false,
     visitOptions,
     onClickLink,
     interceptLinks = true,
@@ -233,11 +233,12 @@
       const currentVersion =
         page?.version ?? globalPage.version ?? (window as any)?.initialPage?.version ?? null
 
-      // Try to restore from history state first — avoids an unnecessary
-      // request when the frame's page data is already in the history stack.
+      // A frame mounts with a fresh HTTP request by default. The `restore` prop
+      // opts into reusing the frame's page data from the history stack instead
+      // — avoiding a request when it's already there.
       let restoreUrl: string | undefined
 
-      if (!forceRequest) {
+      if (restore) {
         try {
           const historyPage = await frameRouter.decryptHistory()
 

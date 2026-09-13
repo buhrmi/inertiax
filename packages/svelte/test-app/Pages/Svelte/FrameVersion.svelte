@@ -9,5 +9,5 @@
 </script>
 
 <div data-testid="frame-version-page">
-  <Frame id="version-frame" src={`/svelte/frame-version/${token}/pane`} />
+  <Frame id="version-frame" src={`/svelte/frame-version/${token}/pane`} restore />
 </div>

@@ -65,7 +65,7 @@ That's it. Now you're ready to use all the new features.
 | `renderLayout` | `boolean` | Controls whether page layouts are applied inside this frame. Defaults to `true` for the top frame and `false` for nested frames. |
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
 | `interceptLinks` | `boolean` | When `false`, plain `<a>` clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. Defaults to `true`. |
-| `forceRequest` | `boolean` | When `true`, always fetches fresh data on mount instead of restoring from the history stack. Defaults to `false`. |
+| `restore` | `boolean` | When `true`, restores the frame's page data from the history stack on mount instead of making a request. Defaults to `false` (a fresh request is made). |
 | `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 

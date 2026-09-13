@@ -2055,19 +2055,11 @@ app.get('/svelte/frame-remember', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRemember', props: {} }),
 )
 
-app.get('/svelte/frame-remember-skip', (req, res) =>
-  inertia.render(req, res, { component: 'Svelte/FrameRememberSkip', props: {} }),
-)
-
 app.get('/svelte/frame-remember/toggle', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRememberToggle', props: {} }),
 )
 
 app.get('/svelte/frame-remember/pane', (req, res) =>
-  inertia.render(req, res, { component: 'Svelte/FrameRememberPane', props: {} }),
-)
-
-app.get('/svelte/frame-remember/pane-skip', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRememberPane', props: {} }),
 )
 

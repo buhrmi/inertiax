@@ -44,44 +44,6 @@ test('useRemember state survives back then forward navigation', async ({ page })
   await expect(page.getByTestId('remember-count')).toHaveText('2')
 })
 
-test('useRemember state survives back navigation with forceRequest', async ({ page }) => {
-  await page.goto('/svelte/frame-remember-skip')
-
-  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
-  await expect(page.getByTestId('remember-count')).toHaveText('0')
-
-  await page.getByTestId('remember-increment').click()
-  await page.getByTestId('remember-increment').click()
-  await expect(page.getByTestId('remember-count')).toHaveText('2')
-
-  // Navigate away, then go back — frame does fresh HTTP fetch due to
-  // forceRequest, but rememberedState should still survive.
-  await page.getByTestId('navigate-away').click()
-  await page.waitForURL('/dump/get')
-
-  await page.goBack()
-  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
-  await expect(page.getByTestId('remember-count')).toHaveText('2')
-})
-
-test('useRemember state survives back/forward with forceRequest', async ({ page }) => {
-  await page.goto('/dump/get')
-  await page.goto('/svelte/frame-remember-skip')
-
-  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
-
-  await page.getByTestId('remember-increment').click()
-  await page.getByTestId('remember-increment').click()
-  await expect(page.getByTestId('remember-count')).toHaveText('2')
-
-  await page.goBack()
-  await page.waitForURL('/dump/get')
-
-  await page.goForward()
-  await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })
-  await expect(page.getByTestId('remember-count')).toHaveText('2')
-})
-
 test('useRemember state survives inline frame unmount/remount with a fresh fetch', async ({ page }) => {
   await page.goto('/svelte/frame-remember/toggle')
 
@@ -99,7 +61,7 @@ test('useRemember state survives inline frame unmount/remount with a fresh fetch
   await page.getByTestId('toggle-frame').click()
   await expect(page.getByTestId('frame-remember-pane')).not.toBeAttached()
 
-  // Remount the frame — forceRequest does a fresh HTTP fetch, but the
+  // Remount the frame — a fresh HTTP fetch is the default, but the
   // remembered useRemember state should still survive.
   await page.getByTestId('toggle-frame').click()
   await expect(page.getByTestId('frame-remember-pane')).toBeVisible({ timeout: 10000 })

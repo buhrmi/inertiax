@@ -22,7 +22,7 @@ Each frame manages its own router, history, and component tree.
 | `visitOptions` | `VisitOptions` | `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top) | Default visit options applied to all navigations within the frame. Link/form-level options take precedence. |
 | `onClickLink` | `(event, href) => void` | — | Called when a plain `<a>` inside the frame is clicked. Call `event.preventDefault()` to prevent navigation. |
 | `interceptLinks` | `boolean` | `true` | When `false`, plain `<a>` clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. |
-| `forceRequest` | `boolean` | `false` | When `true`, always fetches fresh page data on mount instead of restoring from the history stack. |
+| `restore` | `boolean` | `false` | When `true`, restores the frame's page data from the history stack on mount instead of making a request. Falls back to a request when no matching history entry exists. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
 
 Resolving a frame's `initialPage` component uses top-level `await`, so using

@@ -10,6 +10,6 @@
     scroll-region
     style="height: 400px; overflow-y: auto; border: 2px solid red;"
   >
-    <Frame src="/svelte/frame-scroll-history/pane" />
+    <Frame src="/svelte/frame-scroll-history/pane" restore />
   </div>
 </div>
