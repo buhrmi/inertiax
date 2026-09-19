@@ -2051,6 +2051,17 @@ app.get('/svelte/frame-version/:token/pane', (req, res) => {
   })
 })
 
+app.get('/svelte/frame-preserve-url', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FramePreserveUrl', props: {} }),
+)
+
+app.get('/svelte/frame-preserve-url/pane/:frame', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/FramePreserveUrlPane',
+    props: { frame: req.params.frame, step: parseInt(req.query.step || '0', 10) },
+  }),
+)
+
 app.get('/svelte/frame-remember', (req, res) =>
   inertia.render(req, res, { component: 'Svelte/FrameRemember', props: {} }),
 )

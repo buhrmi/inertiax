@@ -240,6 +240,9 @@ Plain `<a>` clicks inside a frame are intercepted automatically — no `<Link>` 
 <!-- Replace history instead of push -->
 <a href="/settings" data-replace>Settings</a>
 
+<!-- Do not update the browser URL -->
+<a href="/filters/active" data-preserve-url>Active filters</a>
+
 <!-- Target a different frame -->
 <a href="/users/42" data-frame="details">View user</a>
 ```

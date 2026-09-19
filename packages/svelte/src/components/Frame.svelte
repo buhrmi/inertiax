@@ -500,12 +500,15 @@
 
     event.preventDefault()
 
-    // Support data-method, data-replace, data-preserve-scroll, data-preserve-state,
-    // and data-frame on plain <a> elements
+    // Support data-method, data-replace, data-preserve-url, data-preserve-scroll,
+    // data-preserve-state, and data-frame on plain <a> elements
     const dataMethod = target.getAttribute('data-method')
     const method = dataMethod ? (dataMethod.toLowerCase() as 'get' | 'post' | 'put' | 'patch' | 'delete') : undefined
     const replace = target.hasAttribute('data-replace')
       ? target.getAttribute('data-replace') !== 'false'
+      : undefined
+    const preserveUrl = target.hasAttribute('data-preserve-url')
+      ? target.getAttribute('data-preserve-url') !== 'false'
       : undefined
     const preserveScroll = target.hasAttribute('data-preserve-scroll')
       ? target.getAttribute('data-preserve-scroll') !== 'false'
@@ -519,6 +522,7 @@
       ...frameVisitOptions,
       ...(method ? { method } : {}),
       ...(replace !== undefined ? { replace } : {}),
+      ...(preserveUrl !== undefined ? { updateBrowserUrl: !preserveUrl } : {}),
       ...(preserveScroll !== undefined ? { preserveScroll } : {}),
       ...(preserveState !== undefined ? { preserveState } : {}),
       ...(dataFrame ? { frame: dataFrame } : {}),

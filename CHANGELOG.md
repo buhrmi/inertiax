@@ -6,6 +6,17 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.4]
+
+### Added
+- `Frame`'s global click handler now supports a `data-preserve-url` attribute on
+  plain `<a>` elements. When present, the visit is made with
+  `updateBrowserUrl: false`, so the browser URL stays at the current page while
+  the frame still navigates. Set `data-preserve-url="false"` to explicitly opt
+  out (e.g. to update the browser URL from a non-top frame).
+
+---
+
 ## [11.1.3]
 
 ### Breaking
