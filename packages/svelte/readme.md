@@ -47,6 +47,7 @@ component required.
 | `data-method` | HTTP method for the request (`get`, `post`, `put`, `patch`, `delete`). |
 | `data-replace` | Replace the current history entry instead of pushing. Omit or set to `"true"`. Use `"false"` to explicitly opt out. |
 | `data-preserve-url` | Do not update the browser URL to the link's URL (sets `updateBrowserUrl: false`). Omit or set to `"true"`. Use `"false"` to explicitly opt out. |
+| `data-frame` | Target another frame for the visit. That frame's `visitOptions` are used as the defaults. |
 | `data-inertia-ignore` | Skip Inertia interception entirely — the link behaves as a normal browser navigation. |
 
 **Example**
@@ -55,6 +56,7 @@ component required.
 <a href="/logout" data-method="post">Logout</a>
 <a href="/settings" data-replace>Settings</a>
 <a href="/filters/active" data-preserve-url>Active filters</a>
+<a href="/users/42" data-frame="details">View user</a>
 <a href="/external" data-inertia-ignore>External site</a>
 ```
 

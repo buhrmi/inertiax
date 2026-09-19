@@ -17,6 +17,24 @@ export type FrameContext = {
 const FRAME_CONTEXT_KEY = Symbol('inertia:frame-context')
 let globalResolveComponent: ComponentResolver | undefined
 
+// Resolved visit options per frame id. Lets a link that targets another frame
+// via `data-frame` use that frame's options as its defaults.
+const registeredFrameVisitOptions = new Map<string, VisitOptions>()
+
+export function registerFrameVisitOptions(id: string, options: VisitOptions): () => void {
+  registeredFrameVisitOptions.set(id, options)
+
+  return () => {
+    if (registeredFrameVisitOptions.get(id) === options) {
+      registeredFrameVisitOptions.delete(id)
+    }
+  }
+}
+
+export function useFrameVisitOptions(id: string): VisitOptions | undefined {
+  return registeredFrameVisitOptions.get(id)
+}
+
 export function setFrameContext(context: FrameContext): void {
   setContext(FRAME_CONTEXT_KEY, context)
 }

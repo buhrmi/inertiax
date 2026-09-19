@@ -30,7 +30,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { toStore } from 'svelte/store'
   import type { Component } from 'svelte'
-  import { DEFAULT_FRAME, setFrameContext, useFrameContext, useGlobalResolveComponent } from '../frameContext.svelte'
+  import { DEFAULT_FRAME, registerFrameVisitOptions, setFrameContext, useFrameContext, useFrameVisitOptions, useGlobalResolveComponent } from '../frameContext.svelte'
   import { resetLayoutProps, storeState } from '../layoutProps.svelte'
   import globalPage, { setPage } from '../page.svelte'
   import type { LayoutResolver, LayoutType } from '../types'
@@ -110,6 +110,10 @@
     ? { replace: true, updateBrowserUrl: false }
     : { replace: false, updateBrowserUrl: true }
   const frameVisitOptions = $derived({ ...defaultFrameVisitOptions, ...visitOptions })
+
+  // Expose this frame's resolved visit options so links targeting it via
+  // `data-frame` can use them as their defaults.
+  $effect(() => registerFrameVisitOptions(frame, frameVisitOptions))
 
   const emptyPage: Page = {
     component: '',
@@ -518,8 +522,13 @@
       : undefined
     const dataFrame = target.getAttribute('data-frame')
 
+    // When a link targets another frame, use that frame's visit options as the
+    // defaults (falling back to this frame's options when the target isn't
+    // mounted) so e.g. a nested target doesn't adopt the top frame's defaults.
+    const baseVisitOptions = dataFrame ? (useFrameVisitOptions(dataFrame) ?? frameVisitOptions) : frameVisitOptions
+
     frameRouter.visit(href, {
-      ...frameVisitOptions,
+      ...baseVisitOptions,
       ...(method ? { method } : {}),
       ...(replace !== undefined ? { replace } : {}),
       ...(preserveUrl !== undefined ? { updateBrowserUrl: !preserveUrl } : {}),

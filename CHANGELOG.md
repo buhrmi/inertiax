@@ -6,6 +6,18 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.5]
+
+### Changed
+- `Frame`'s global click handler now takes the default visit options from the
+  frame named by a link's `data-frame` attribute (when set) instead of from the
+  frame the link lives in. An `<a data-frame="details">` in the top frame now
+  inherits the `details` frame's `visitOptions` (its `replace`,
+  `updateBrowserUrl`, etc.) rather than the top frame's defaults. Falls back to
+  the current frame's options when the target frame isn't mounted.
+
+---
+
 ## [11.1.4]
 
 ### Added

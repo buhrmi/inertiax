@@ -5,6 +5,8 @@
   }
 
   let { frame, step = 0 }: Props = $props()
+
+  const otherFrame = frame === 'updates' ? 'preserves' : 'updates'
 </script>
 
 <div data-testid={frame + '-pane'}>
@@ -29,5 +31,13 @@
     data-preserve-url="false"
   >
     Preserve URL false link ({frame})
+  </a>
+
+  <a
+    data-testid={frame + '-cross-frame-link'}
+    href={`/svelte/frame-preserve-url/pane/${otherFrame}?step=${step + 1}`}
+    data-frame={otherFrame}
+  >
+    Cross to {otherFrame}
   </a>
 </div>
