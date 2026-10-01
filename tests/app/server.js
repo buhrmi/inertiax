@@ -2012,6 +2012,17 @@ app.get('/svelte/frame-scroll-history/pane', (req, res) => {
   })
 })
 
+app.get('/svelte/frame-history-options', (req, res) =>
+  inertia.render(req, res, { component: 'Svelte/FrameHistoryOptions', props: {} }),
+)
+
+app.get('/svelte/frame-history-options/pane', (req, res) =>
+  inertia.render(req, res, {
+    component: 'Svelte/FrameHistoryOptionsPane',
+    props: { frame: req.query.frame || '', step: parseInt(req.query.step || '0', 10) },
+  }),
+)
+
 // Simulates the server's asset version changing (a deploy) while a nested
 // frame still has the previous version stored in its history entry. Keyed by a
 // token so parallel tests don't clobber each other's version.

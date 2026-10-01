@@ -66,10 +66,31 @@ That's it. Now you're ready to use all the new features.
 | `onClickLink` | `(event: MouseEvent, href: string) => void` | Called when a plain same-origin `<a>` inside the frame is clicked. Call `event.preventDefault()` to stop the default frame navigation. |
 | `interceptLinks` | `boolean` | When `false`, plain `<a>` clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. Defaults to `true`. |
 | `restore` | `boolean` | When `true`, restores the frame's page data from the history stack on mount instead of making a request. Defaults to `false` (a fresh request is made). |
+| `historyState` | `boolean` | When `false`, the frame's page is never written to (or read from) the browser history entry, and back/forward navigation leaves it untouched. Defaults to `true`. |
+| `historyNavigation` | `boolean` | When `false`, back/forward navigation does not update this frame, though it still stores and restores its own page. Defaults to `true`. |
 | `visitOptions` | `VisitOptions` | Default visit options applied to all navigations within this frame. Link/form-level options take precedence. Defaults per frame: `{ replace: true, updateBrowserUrl: false }` (non-top) / `{ replace: false, updateBrowserUrl: true }` (top). |
 | `children` | `Snippet` | Fallback/loading content rendered when no frame page is available yet. |
 
 All other props (restProps) are forwarded to the rendered page component.
+
+### Frame history
+
+By default each frame stores its page in the browser history entry and follows
+back/forward navigation. Two props opt a frame out of that:
+
+- `historyState={false}` — the frame is invisible to history state. Its page is
+  never written to (or read from) `window.history.state`, so it can't be restored
+  on reload and back/forward navigation has nothing to do with it. Use this for
+  transient regions (e.g. a command palette or preview pane) that shouldn't
+  accumulate history state.
+- `historyNavigation={false}` — the frame still stores and restores its page, but
+  back/forward navigation does not update it. Use this when a region should
+  survive reloads but stay put while the user navigates history.
+
+```svelte
+<Frame id="preview" src="/preview" historyState={false} />
+<Frame id="sidebar" src="/sidebar" restore historyNavigation={false} />
+```
 
 ### Server-side rendering `initialPage`
 

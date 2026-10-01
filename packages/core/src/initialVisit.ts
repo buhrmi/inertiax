@@ -52,6 +52,13 @@ export class InitialVisit {
    * @link https://inertiajs.com/redirects#external-redirects
    */
   protected static handleLocation(frame = '_top'): boolean {
+    // Only frames that store history state can recover a location visit;
+    // otherwise the frame would consume the (global) pending location visit
+    // that belongs to another frame.
+    if (!history.hasHistoryState(frame)) {
+      return false
+    }
+
     if (!SessionStorage.exists(SessionStorage.locationVisitKey)) {
       return false
     }

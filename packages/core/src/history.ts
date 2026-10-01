@@ -27,6 +27,10 @@ class History {
   public preserveUrl = false
   protected current = new Map<string, Partial<Page>>()
   protected initialState = new Map<string, Partial<Page> | null>()
+  // Frames that opt out of storing their page in `window.history.state`.
+  protected noHistoryStateFrames = new Set<string>()
+  // Frames that opt out of reacting to back/forward navigation.
+  protected noHistoryNavigationFrames = new Set<string>()
 
   protected getCurrent(frame: string): Partial<Page> {
     return this.current.get(frame) ?? {}
@@ -64,6 +68,57 @@ class History {
     return this.getWindowState().frames[frame] ?? null
   }
 
+  /**
+   * Control whether a frame's page is stored in (and restored from) the current
+   * browser history entry. When disabled, the frame never writes its page to
+   * `window.history.state`; any state already stored for it is dropped.
+   */
+  public setHistoryState(frame = DEFAULT_FRAME, enabled = true): void {
+    if (enabled) {
+      this.noHistoryStateFrames.delete(frame)
+      return
+    }
+
+    this.noHistoryStateFrames.add(frame)
+    this.current.delete(frame)
+    this.initialState.delete(frame)
+    this.dropStoredFrameState(frame)
+  }
+
+  /** Whether the frame's page is stored in the browser history entry. */
+  public hasHistoryState(frame = DEFAULT_FRAME): boolean {
+    return !this.noHistoryStateFrames.has(frame)
+  }
+
+  /**
+   * Control whether a frame reacts to back/forward navigation. When disabled,
+   * popstate/pageshow leave the frame untouched. The frame still stores its
+   * page in the history entry unless {@link setHistoryState} is disabled too.
+   */
+  public setHistoryNavigation(frame = DEFAULT_FRAME, enabled = true): void {
+    if (enabled) {
+      this.noHistoryNavigationFrames.delete(frame)
+    } else {
+      this.noHistoryNavigationFrames.add(frame)
+    }
+  }
+
+  /** Whether back/forward navigation should update the frame. */
+  public followsHistoryNavigation(frame = DEFAULT_FRAME): boolean {
+    return this.hasHistoryState(frame) && !this.noHistoryNavigationFrames.has(frame)
+  }
+
+  /** Remove the frame's page from the current browser history entry, if any. */
+  protected dropStoredFrameState(frame: string): void {
+    if (isServer || !window.history.state?.frames?.[frame]) {
+      return
+    }
+
+    const { [frame]: _removed, ...frames } = window.history.state.frames
+
+    window.history.replaceState({ ...window.history.state, frames }, '')
+  }
+
   public remember(data: unknown, key: string, frame = DEFAULT_FRAME): void {
     this.replaceState(
       {
@@ -94,7 +149,7 @@ class History {
       return
     }
 
-    if (this.preserveUrl) {
+    if (this.preserveUrl || !this.hasHistoryState(frame)) {
       cb && cb()
       return
     }
@@ -221,7 +276,7 @@ class History {
       return
     }
 
-    if (this.preserveUrl) {
+    if (this.preserveUrl || !this.hasHistoryState(frame)) {
       cb && cb()
       return
     }

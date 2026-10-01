@@ -13,6 +13,10 @@
     renderLayout?: boolean
     /** When `true`, restores the frame's page data from the history stack on mount instead of making a request. Falls back to a request when no matching history entry is available. Defaults to `false`. */
     restore?: boolean
+    /** When `false`, the frame's page is never written to (or read from) the browser history entry, and back/forward navigation leaves it untouched. Defaults to `true`. */
+    historyState?: boolean
+    /** When `false`, back/forward navigation does not update this frame. The frame still stores and restores its own state. Defaults to `true`. */
+    historyNavigation?: boolean
     /** Visit options applied to all navigations within this frame. Link/form-level options take precedence. Non-top frames default to `{ replace: true, updateBrowserUrl: false }`, top frame defaults to `{ replace: false, updateBrowserUrl: true }`. */
     visitOptions?: import('inertiax-core').VisitOptions
     /** Called when a plain <a> inside the frame is clicked. Call event.preventDefault() to prevent the default Inertia navigation. */
@@ -47,6 +51,8 @@
     defaultLayout?: InertiaFrameProps['defaultLayout']
     renderLayout?: InertiaFrameProps['renderLayout']
     restore?: InertiaFrameProps['restore']
+    historyState?: InertiaFrameProps['historyState']
+    historyNavigation?: InertiaFrameProps['historyNavigation']
     visitOptions?: InertiaFrameProps['visitOptions']
     onClickLink?: InertiaFrameProps['onClickLink']
     interceptLinks?: InertiaFrameProps['interceptLinks']
@@ -63,6 +69,8 @@
     defaultLayout,
     renderLayout = undefined,
     restore = false,
+    historyState = true,
+    historyNavigation = true,
     visitOptions,
     onClickLink,
     interceptLinks = true,
@@ -104,6 +112,11 @@
   }
 
   const frameRouter = router ?? createRouter(frame)
+
+  // Frame-level history participation. Applied before the router boots so it
+  // can decide whether to register popstate/pageshow handlers.
+  frameRouter.setHistoryState(historyState)
+  frameRouter.setHistoryNavigation(historyNavigation)
 
   // Frame-level visit options: non-top frames default to { replace: true, updateBrowserUrl: false }
   const defaultFrameVisitOptions = frame !== DEFAULT_FRAME
@@ -242,7 +255,7 @@
       // — avoiding a request when it's already there.
       let restoreUrl: string | undefined
 
-      if (restore) {
+      if (restore && historyState) {
         try {
           const historyPage = await frameRouter.decryptHistory()
 

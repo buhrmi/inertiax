@@ -6,6 +6,19 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.1.6]
+
+### Added
+- Two `Frame` props for opting out of browser history (both default to the
+  existing behaviour):
+  - `historyState` (default `true`) — when `false`, the frame's page is never
+    written to (or read from) the browser history entry. It can't be restored on
+    reload and back/forward navigation leaves it untouched.
+  - `historyNavigation` (default `true`) — when `false`, back/forward navigation
+    does not update the frame, though it still stores and restores its own page.
+
+---
+
 ## [11.1.5]
 
 ### Changed

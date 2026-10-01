@@ -72,6 +72,7 @@ export class Router {
   protected pendingOptimisticCallback: OptimisticCallback | undefined = undefined
   protected removePopstateHandler?: VoidFunction
   protected removePageshowHandler?: VoidFunction
+  protected initialized = false
 
   constructor(frame = '_top') {
     this.frame = frame
@@ -94,16 +95,11 @@ export class Router {
 
     eventHandler.init()
 
-    this.removePopstateHandler?.()
-    this.removePageshowHandler?.()
+    if (history.followsHistoryNavigation(this.frame)) {
+      this.registerHistoryHandlers()
+    }
 
-    this.removePopstateHandler = eventHandler.registerPopstateHandler(this.frame, (state) => {
-      this.handleHistoryPopstate(state)
-    })
-
-    this.removePageshowHandler = eventHandler.registerPageshowHandler(this.frame, () => {
-      history.decrypt(null, this.frame).catch(() => eventHandler.onMissingHistoryItem(this.frame))
-    })
+    this.initialized = true
 
     eventHandler.on('missingHistoryItem', (frame?: string) => {
       if (frame && frame !== this.frame) {
@@ -130,6 +126,59 @@ export class Router {
 
       window.location.href = url
     })
+  }
+
+  /**
+   * Control whether this frame stores its page in the browser history entry
+   * (and restores it from there on mount). When disabled the frame is invisible
+   * to history state, so back/forward navigation also leaves it untouched.
+   */
+  public setHistoryState(enabled: boolean): void {
+    history.setHistoryState(this.frame, enabled)
+    this.syncHistoryHandlers()
+  }
+
+  /**
+   * Control whether this frame reacts to back/forward navigation. When disabled
+   * the frame still stores/restores its page, but popstate/pageshow no longer
+   * update it.
+   */
+  public setHistoryNavigation(enabled: boolean): void {
+    history.setHistoryNavigation(this.frame, enabled)
+    this.syncHistoryHandlers()
+  }
+
+  /** Register/unregister history handlers to match the frame's options. */
+  protected syncHistoryHandlers(): void {
+    if (!this.initialized) {
+      return
+    }
+
+    if (history.followsHistoryNavigation(this.frame)) {
+      this.registerHistoryHandlers()
+    } else {
+      this.unregisterHistoryHandlers()
+    }
+  }
+
+  protected registerHistoryHandlers(): void {
+    this.removePopstateHandler?.()
+    this.removePageshowHandler?.()
+
+    this.removePopstateHandler = eventHandler.registerPopstateHandler(this.frame, (state) => {
+      this.handleHistoryPopstate(state)
+    })
+
+    this.removePageshowHandler = eventHandler.registerPageshowHandler(this.frame, () => {
+      history.decrypt(null, this.frame).catch(() => eventHandler.onMissingHistoryItem(this.frame))
+    })
+  }
+
+  protected unregisterHistoryHandlers(): void {
+    this.removePopstateHandler?.()
+    this.removePageshowHandler?.()
+    this.removePopstateHandler = undefined
+    this.removePageshowHandler = undefined
   }
 
   protected handleHistoryPopstate(state: any): void {

@@ -23,6 +23,8 @@ Each frame manages its own router, history, and component tree.
 | `onClickLink` | `(event, href) => void` | — | Called when a plain `<a>` inside the frame is clicked. Call `event.preventDefault()` to prevent navigation. |
 | `interceptLinks` | `boolean` | `true` | When `false`, plain `<a>` clicks inside this frame are not intercepted by this frame — the event bubbles to the nearest ancestor frame, which handles it. |
 | `restore` | `boolean` | `false` | When `true`, restores the frame's page data from the history stack on mount instead of making a request. Falls back to a request when no matching history entry exists. |
+| `historyState` | `boolean` | `true` | When `false`, the frame's page is never written to (or read from) the browser history entry, and back/forward navigation leaves it untouched. |
+| `historyNavigation` | `boolean` | `true` | When `false`, back/forward navigation does not update the frame. The frame still stores and restores its own state. |
 | `children` | `Snippet` | — | Fallback content rendered while the frame loads. |
 
 Resolving a frame's `initialPage` component uses top-level `await`, so using
