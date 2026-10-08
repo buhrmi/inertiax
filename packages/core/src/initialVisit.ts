@@ -34,11 +34,16 @@ export class InitialVisit {
     history
       .decrypt(null, frame)
       .then((data) => {
+        if (currentPage.get().version !== data.version) {
+          this.handleDefault()
+          return
+        }
+
         const visitId = uid()
 
         currentPage.set(data, { preserveScroll: true, preserveState: true, visitId }, frame).then(() => {
           Scroll.restore(scrollRegions, frame)
-          fireNavigateEvent(currentPage.get(frame), frame, { visitId })
+          fireNavigateEvent(currentPage.get(frame), frame, { type: 'history', visitId })
         })
       })
       .catch(() => {
@@ -128,7 +133,7 @@ export class InitialVisit {
   protected static fireInitialEvents(frame: string, visitId: string): void {
     const page = currentPage.get(frame)
 
-    fireNavigateEvent(page, frame, { visitId })
+    fireNavigateEvent(page, frame, { type: 'initial', visitId })
 
     if (Object.keys(page.flash).length > 0) {
       queueMicrotask(() => fireFlashEvent(page.flash, frame))

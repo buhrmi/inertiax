@@ -9,6 +9,7 @@ import {
 import { http } from './http'
 import { HttpCancelledError, HttpResponseError } from './httpErrors'
 import { interceptors } from './interceptors'
+import { containsBigInt, stringifyJson } from './json'
 import { page as currentPage } from './page'
 import { RequestParams } from './requestParams'
 import { Response } from './response'
@@ -22,21 +23,25 @@ export class Request {
   protected cancelToken!: AbortController
   protected requestParams: RequestParams
   protected requestHasFinished = false
-  protected optimistic: boolean
+  protected optimisticId: number | null
   protected router?: Router
 
   constructor(
     params: ActiveVisit,
     protected page: Page,
-    { optimistic = false, router }: { optimistic?: boolean; router?: Router } = {},
+    { optimisticId = null, router }: { optimisticId?: number | null; router?: Router } = {},
   ) {
     this.requestParams = RequestParams.create(params)
     this.cancelToken = new AbortController()
-    this.optimistic = optimistic
+    this.optimisticId = optimisticId
     this.router = router
   }
 
-  public static create(params: ActiveVisit, page: Page, options?: { optimistic?: boolean; router?: Router }): Request {
+  public static create(
+    params: ActiveVisit,
+    page: Page,
+    options?: { optimisticId?: number | null; router?: Router },
+  ): Request {
     return new Request(params, page, options)
   }
 
@@ -49,7 +54,7 @@ export class Request {
   }
 
   public isOptimistic(): boolean {
-    return this.optimistic
+    return this.optimisticId !== null
   }
 
   public isPendingOptimistic(): boolean {
@@ -88,20 +93,26 @@ export class Request {
       onUploadProgress: this.onProgress.bind(this),
     }
 
+    // The HTTP clients would throw on a BigInt, so those bodies are encoded here
+    if (containsBigInt(config.data)) {
+      config.data = stringifyJson(config.data)
+      config.headers = { 'Content-Type': 'application/json', ...config.headers }
+    }
+
     const processedConfig = await interceptors.processRequest(this.requestParams.all(), config)
 
     return http
       .getClient()
       .request(processedConfig)
       .then((response) => {
-        this.response = Response.create(this.requestParams, response, this.page, this.router)
+        this.response = Response.create(this.requestParams, response, this.page, this.router, this.optimisticId)
 
         return this.response.handle()
       })
       .catch((error) => {
         // Handle HTTP error responses (4xx/5xx)
         if (error instanceof HttpResponseError) {
-          this.response = Response.create(this.requestParams, error.response, this.page, this.router)
+          this.response = Response.create(this.requestParams, error.response, this.page, this.router, this.optimisticId)
 
           return this.response.handle()
         }

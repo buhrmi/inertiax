@@ -31,8 +31,8 @@ export const fireBeforeUpdateEvent = (page: any, frame: string) => {
   return fireEvent('beforeUpdate', { detail: { page, frame } })
 }
 
-export const fireNavigateEvent = (page: any, frame: string, { cached = false, visitId }: any = {}) => {
-  return fireEvent('navigate', { detail: { page, frame, cached, visitId } })
+export const fireNavigateEvent = (page: any, frame: string, { type, cached = false, visitId }: any = {}) => {
+  return fireEvent('navigate', { detail: { page, frame, type, cached, visitId } })
 }
 
 export const fireClientVisitEvent = (page: any, frame: string, { replace, visitId }: any) => {

@@ -12,6 +12,7 @@ import {
 } from './events'
 import { history } from './history'
 import { interceptors } from './interceptors'
+import { parsePage } from './json'
 import { page as currentPage } from './page'
 import { partialReloadRequestsProp } from './partialReload'
 import Queue from './queue'
@@ -32,10 +33,17 @@ export class Response {
     protected response: HttpResponse,
     protected originatingPage: Page,
     protected router?: Router,
-  ) { }
+    protected optimisticId: number | null = null,
+  ) {}
 
-  public static create(params: RequestParams, response: HttpResponse, originatingPage: Page, router?: Router): Response {
-    return new Response(params, response, originatingPage, router)
+  public static create(
+    params: RequestParams,
+    response: HttpResponse,
+    originatingPage: Page,
+    router?: Router,
+    optimisticId: number | null = null,
+  ): Response {
+    return new Response(params, response, originatingPage, router, optimisticId)
   }
 
   public isProcessed(): boolean {
@@ -293,7 +301,7 @@ export class Response {
     }
 
     try {
-      return JSON.parse(response)
+      return parsePage(response)
     } catch (error) {
       return response
     }
@@ -342,7 +350,7 @@ export class Response {
   protected preserveOptimisticProps(pageResponse: Page): void {
     const frame = this.requestParams.all().frame
 
-    if (!this.router?.hasPendingOptimistic()) {
+    if (!this.router?.hasPendingOptimistic() && !this.isStaleOptimisticResponse()) {
       return
     }
 
@@ -352,6 +360,12 @@ export class Response {
         pageResponse.props[key] = currentPage.get(frame).props[key]
       }
     }
+  }
+
+  protected isStaleOptimisticResponse(): boolean {
+    // An optimistic request that started later has already been confirmed, so these
+    // props were read before that write and would roll it back on screen
+    return this.optimisticId !== null && currentPage.hasConfirmedOptimisticAfter(this.optimisticId, this.requestParams.all().frame)
   }
 
   protected preserveEqualProps(pageResponse: Page): void {

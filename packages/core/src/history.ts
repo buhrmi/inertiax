@@ -345,7 +345,17 @@ class History {
         },
       }
 
-      window.history.replaceState(nextState, '', url)
+      try {
+        window.history.replaceState(nextState, '', url)
+      } catch (error) {
+        if (!this.isQuotaExceededError(error)) {
+          throw error
+        }
+
+        // Unlike pushState, we don't reload here. replaceState runs on scroll, remember()
+        // and partial reloads, so a reload would discard client state mid-interaction.
+        console.error(error.message)
+      }
     })
   }
 

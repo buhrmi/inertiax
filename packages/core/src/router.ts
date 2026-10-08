@@ -233,7 +233,7 @@ export class Router {
           .setQuietly(data, { preserveState: this.frame === DEFAULT_FRAME }, this.frame)
           .then(() => {
           Scroll.restore(history.getScrollRegions(), this.frame)
-          fireNavigateEvent(currentPage.get(this.frame), this.frame)
+          fireNavigateEvent(currentPage.get(this.frame), this.frame, { type: 'history' })
 
           const pendingDeferred: Record<string, string[]> = {}
           const pageProps = currentPage.get(this.frame).props
@@ -441,6 +441,7 @@ export class Router {
       },
       {
         autoStart: options.autoStart ?? true,
+        background: options.background,
         keepAlive: options.keepAlive ?? false,
         mode: options.mode,
       },
@@ -497,8 +498,12 @@ export class Router {
       this.syncRequestStream.interruptInFlight()
     }
 
+    let optimisticId: number | null = null
+
     if (options.optimistic) {
-      this.applyOptimisticUpdate(options.optimistic, events)
+      optimisticId = currentPage.nextOptimisticId(this.frame)
+
+      this.applyOptimisticUpdate(options.optimistic, events, optimisticId)
     }
 
     const requestParams: PendingVisit & VisitCallbacks = {
@@ -516,7 +521,7 @@ export class Router {
         progress.reveal(true)
         const requestStream = visit.async ? this.asyncRequestStream : this.syncRequestStream
         requestStream.send(Request.create(requestParams, currentPage.get(this.frame), {
-          optimistic: !!options.optimistic,
+          optimisticId,
           router: this,
         }))
       }
@@ -644,6 +649,7 @@ export class Router {
 
   public clearHistory(): void {
     history.clear()
+    prefetchedRequests.removeAll()
   }
 
   public decryptHistory(): Promise<Page> {
@@ -995,7 +1001,7 @@ export class Router {
     }
   }
 
-  protected applyOptimisticUpdate(optimistic: OptimisticCallback, events: VisitCallbacks): void {
+  protected applyOptimisticUpdate(optimistic: OptimisticCallback, events: VisitCallbacks, id: number): void {
     const currentProps = currentPage.get(this.frame).props
     const optimisticProps = optimistic(cloneDeep(currentProps))
 
@@ -1015,7 +1021,6 @@ export class Router {
       return
     }
 
-    const id = currentPage.nextOptimisticId(this.frame)
     const component = currentPage.get(this.frame).component
 
     for (const key of changedKeys) {
@@ -1030,6 +1035,8 @@ export class Router {
     const originalOnSuccess = events.onSuccess
     events.onSuccess = (page) => {
       shouldRestore = false
+      currentPage.markOptimisticConfirmed(id, this.frame)
+
       return originalOnSuccess(page)
     }
 

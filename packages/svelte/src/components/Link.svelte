@@ -49,6 +49,9 @@
     oncancel?: () => void
     onsuccess?: () => void
     onerror?: () => void
+    onhttpException?: () => void
+    onnetworkError?: () => void
+    onflash?: () => void
     onprefetching?: () => void
     onprefetched?: () => void
   }

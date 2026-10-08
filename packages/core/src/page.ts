@@ -27,6 +27,7 @@ class CurrentFramePage {
   protected optimisticBaseline: Partial<Page['props']> = {}
   protected pendingOptimistics: { id: number; callback: (props: Page['props']) => Partial<Page['props']> | void }[] = []
   protected optimisticCounter = 0
+  protected confirmedOptimisticId = 0
 
   constructor(protected readonly frame: string) {}
 
@@ -99,6 +100,7 @@ class CurrentFramePage {
 
     if (page.clearHistory) {
       history.clear()
+      prefetchedRequests.removeAll()
     }
 
     return this.resolve(page.component, page).then((component) => {
@@ -177,7 +179,7 @@ class CurrentFramePage {
           this.pendingDeferredProps = null
 
           if (!replace) {
-            fireNavigateEvent(page, this.frame, { cached, visitId })
+            fireNavigateEvent(page, this.frame, { type: 'visit', cached, visitId })
           }
         })
       })
@@ -192,6 +194,9 @@ class CurrentFramePage {
       preserveState?: boolean
     } = {},
   ) {
+    // A restored history entry supersedes any page update still resolving its component
+    this.componentId = {}
+
     history.setCurrent(page, this.frame)
 
     if (!this.cleared && isEqual(this.page, page)) {
@@ -273,12 +278,23 @@ class CurrentFramePage {
 
     const viewTransitionCallback = typeof viewTransition === 'boolean' ? () => null : viewTransition
 
+    // The browser skips this transition when a newer one supersedes it, when the tab goes hidden
+    // mid-flight, or when the swap times out, always rejecting with a DOMException. That's
+    // expected, so swallow it and let a failing swap reject as it normally would.
+    const ignoreSkippedTransition = (promise: Promise<unknown>) => {
+      promise.catch((error) => {
+        if (!(error instanceof DOMException)) {
+          throw error
+        }
+      })
+    }
+
     return new Promise((resolve) => {
       const transitionResult = document.startViewTransition(() => doSwap().then(resolve))
 
-      // A newer transition aborts this one, rejecting `ready` with an AbortError.
-      // That's expected, so swallow it to avoid an unhandled rejection.
-      transitionResult.ready.catch(() => {})
+      ignoreSkippedTransition(transitionResult.ready)
+      ignoreSkippedTransition(transitionResult.finished)
+      ignoreSkippedTransition(transitionResult.updateCallbackDone)
 
       viewTransitionCallback(transitionResult)
     })
@@ -290,6 +306,14 @@ class CurrentFramePage {
 
   public nextOptimisticId(): number {
     return ++this.optimisticCounter
+  }
+
+  public markOptimisticConfirmed(id: number): void {
+    this.confirmedOptimisticId = Math.max(this.confirmedOptimisticId, id)
+  }
+
+  public hasConfirmedOptimisticAfter(id: number): boolean {
+    return this.confirmedOptimisticId > id
   }
 
   public setBaseline(key: string, value: unknown): void {
@@ -353,6 +377,7 @@ class CurrentFramePage {
   public clearOptimisticState(): void {
     this.optimisticBaseline = {}
     this.pendingOptimistics = []
+    this.confirmedOptimisticId = 0
   }
 
   public isTheSame(page: Page): boolean {
@@ -464,6 +489,14 @@ class PageStore {
 
   public nextOptimisticId(frame = DEFAULT_FRAME): number {
     return this.forFrame(frame).nextOptimisticId()
+  }
+
+  public markOptimisticConfirmed(id: number, frame = DEFAULT_FRAME): void {
+    this.forFrame(frame).markOptimisticConfirmed(id)
+  }
+
+  public hasConfirmedOptimisticAfter(id: number, frame = DEFAULT_FRAME): boolean {
+    return this.forFrame(frame).hasConfirmedOptimisticAfter(id)
   }
 
   public setBaseline(key: string, value: unknown, frame = DEFAULT_FRAME): void {

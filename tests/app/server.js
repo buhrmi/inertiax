@@ -82,11 +82,28 @@ app.get('/ssr/frame-initial-page', (req, res) =>
   }),
 )
 
+app.get('/ssr/bigint', (req, res) =>
+  inertia.renderSSR(req, res, {
+    component: 'SSR/BigInt',
+    props: {
+      big: 900719925474099988n,
+      nested: { deep: [900719925474099988n, 2n] },
+    },
+  }),
+)
+
+app.get('/ssr/when-mounted', (req, res) =>
+  inertia.renderSSR(req, res, {
+    component: 'SSR/WhenMounted',
+    props: {},
+  }),
+)
+
 app.get('/ssr/page-with-script-element', (req, res) =>
   inertia.renderSSR(req, res, {
     component: 'SSR/PageWithScriptElement',
     props: {
-      message: 'Hello from script element! Escape </script>.',
+      message: 'Hello from script element! Escape </script> and <!--<script>.',
     },
   }),
 )
@@ -124,6 +141,17 @@ app.get('/ssr/head-with-xss-title', (req, res) =>
     component: 'SSR/HeadWithXssTitle',
     props: {
       title: "Safe Title\n</title><script>alert('xss')</script>",
+    },
+  }),
+)
+
+app.get('/ssr/multibyte-body', (req, res) =>
+  inertia.renderSSR(req, res, {
+    component: 'SSR/MultiByteBody',
+    props: {
+      // Large enough that the JSON body sent to the SSR server spans many chunks,
+      // so a chunk boundary is guaranteed to land inside a multi-byte character
+      text: '日本語のテスト'.repeat(25000),
     },
   }),
 )
@@ -184,6 +212,86 @@ app.get('/ssr/infinite-scroll', (req, res) => {
     scrollProps: { users: scrollProp },
   })
 })
+
+app.get('/when-mounted', (req, res) =>
+  inertia.render(req, res, {
+    component: 'WhenMounted',
+    props: {},
+  }),
+)
+
+// Big integer test routes
+app.get('/bigint', (req, res) =>
+  inertia.render(req, res, {
+    component: 'BigInt',
+    props: {
+      safe: 42,
+      big: 900719925474099988n,
+      negative: -900719925474099988n,
+      nested: { deep: [900719925474099988n, 2n] },
+      huge: 9223372036854775807n,
+    },
+    encryptHistory: req.query.encrypt !== 'false',
+  }),
+)
+
+app.get('/bigint/reload', (req, res) =>
+  inertia.render(req, res, {
+    component: 'BigInt',
+    props: {
+      safe: 100,
+      big: 123456789012345678n,
+      negative: -900719925474099988n,
+      nested: { deep: [900719925474099988n, 2n] },
+      huge: 9223372036854775807n,
+    },
+    encryptHistory: req.query.encrypt !== 'false',
+  }),
+)
+
+app.get('/bigint/collision', (req, res) =>
+  inertia.render(req, res, {
+    component: 'BigInt',
+    props: {
+      safe: 42,
+      big: 1,
+      negative: -1,
+      huge: 2,
+      nested: { deep: [1, 2] },
+      collision: { $bigint: '123' },
+    },
+  }),
+)
+
+app.get('/bigint/unflagged', (req, res) =>
+  inertia.render(req, res, {
+    component: 'BigInt',
+    props: {
+      safe: 42,
+      big: 1,
+      negative: -1,
+      huge: 2,
+      nested: { deep: [1, 2] },
+      collision: { $bigint: '123' },
+    },
+    preserveBigIntegers: false,
+    encryptHistory: true,
+  }),
+)
+
+app.post('/bigint/echo', (req, res) =>
+  inertia.render(req, res, {
+    component: 'BigInt',
+    props: {
+      safe: 42,
+      big: req.body.value,
+      echoedType: typeof req.body.value,
+      negative: -900719925474099988n,
+      nested: { deep: [900719925474099988n, 2n] },
+      huge: 9223372036854775807n,
+    },
+  }),
+)
 
 // createInertiaApp (unified) test routes
 app.get('/unified', (req, res) =>
@@ -973,6 +1081,7 @@ app.get('/layout-props/callback-component-prop', (req, res) => inertia.render(re
 app.post('/events/errors', (req, res) =>
   inertia.render(req, res, { component: 'Events', props: { errors: { foo: 'bar' } } }),
 )
+app.post('/events/flash', (req, res) => inertia.render(req, res, { component: 'Events', flash: { foo: 'bar' } }))
 
 app.get('/poll/overlap/:mode', (req, res) => {
   const mode = req.params.mode
@@ -1053,6 +1162,7 @@ app.get('/prefetch/preserve-state', (req, res) => {
 
 // Registered explicitly to prevent the :pageNumber catch-all below from matching
 app.get('/prefetch/after-error', (req, res) => inertia.render(req, res, { component: 'Prefetch/AfterError' }))
+app.get('/prefetch/cancelled', (req, res) => inertia.render(req, res, { component: 'Prefetch/Cancelled' }))
 app.get('/prefetch/test-page', (req, res) => inertia.render(req, res, { component: 'Prefetch/TestPage' }))
 app.get('/prefetch/wayfinder', (req, res) => inertia.render(req, res, { component: 'Prefetch/Wayfinder' }))
 app.get('/prefetch/navigate-event', (req, res) => inertia.render(req, res, { component: 'Prefetch/NavigateEvent' }))
@@ -1114,6 +1224,22 @@ app.get('/history/:pageNumber', (req, res) => {
   })
 })
 
+app.get('/history/prefetch/:page', (req, res) => {
+  setTimeout(
+    () =>
+      inertia.render(req, res, {
+        component: 'History/Prefetch',
+        props: {
+          page: req.params.page,
+          loadedAt: Date.now(),
+        },
+        encryptHistory: true,
+        clearHistory: req.params.page === 'signed-out',
+      }),
+    req.params.page === 'reports' ? 500 : 0,
+  )
+})
+
 app.get('/history/version/:pageNumber', (req, res) => {
   inertia.render(req, res, {
     component: 'History/Version',
@@ -1121,6 +1247,46 @@ app.get('/history/version/:pageNumber', (req, res) => {
       pageNumber: req.params.pageNumber,
     },
     version: req.params.pageNumber === '1' ? 'version-1' : 'version-2',
+  })
+})
+
+let historyVersionReloadDeploy = '1'
+
+app.get('/history-version-reload/deploy/:deploy', (req, res) => {
+  historyVersionReloadDeploy = req.params.deploy
+
+  res.json({ deploy: historyVersionReloadDeploy })
+})
+
+app.get('/history-version-reload', (req, res) => {
+  // Prevents the browser from serving this document from cache on a back navigation
+  res.header('Cache-Control', 'no-store')
+
+  inertia.render(req, res, {
+    component: 'HistoryVersionReload',
+    props: {
+      deploy: historyVersionReloadDeploy,
+    },
+    version: `deploy-${historyVersionReloadDeploy}`,
+  })
+})
+
+app.get('/history-quota/deferred', (req, res) => {
+  if (!req.headers['x-inertia-partial-data']) {
+    return inertia.render(req, res, {
+      component: 'HistoryQuota/Deferred',
+      deferredProps: {
+        default: ['largeData'],
+      },
+      props: {},
+    })
+  }
+
+  inertia.render(req, res, {
+    component: 'HistoryQuota/Deferred',
+    props: {
+      largeData: 'x'.repeat(16 * 1024 * 1024),
+    },
   })
 })
 
@@ -2411,6 +2577,9 @@ app.post('/form-component/events/errors', async (req, res) =>
     props: { errors: { field: 'Something went wrong' } },
   }),
 )
+app.post('/form-component/events/flash', async (req, res) =>
+  inertia.render(req, res, { component: 'FormComponent/Events', flash: { message: 'Form was submitted' } }),
+)
 
 app.post('/form-component/progress', async (req, res) =>
   setTimeout(() => inertia.render(req, res, { component: 'FormComponent/Progress' }), 500),
@@ -2585,7 +2754,8 @@ app.get('/infinite-scroll/navigate-away', (req, res) => {
   const page = req.query.page ? parseInt(req.query.page) : 1
   const partialReload = !!req.headers['x-inertia-partial-data']
   const shouldAppend = req.headers['x-inertia-infinite-scroll-merge-intent'] !== 'prepend'
-  const { paginated, scrollProp } = paginateUsers(page, 15, 40, false)
+  const orderByDesc = req.query.order === 'desc'
+  const { paginated, scrollProp } = paginateUsers(page, 15, 40, orderByDesc)
 
   const render = () =>
     inertia.render(req, res, {
@@ -2595,8 +2765,17 @@ app.get('/infinite-scroll/navigate-away', (req, res) => {
       scrollProps: { users: scrollProp },
     })
 
-  partialReload ? setTimeout(render, 1000) : render()
+  if (partialReload) {
+    setTimeout(render, 1000)
+  } else if (orderByDesc) {
+    setTimeout(render, 500)
+  } else {
+    render()
+  }
 })
+app.get('/infinite-scroll/navigate-away/slow-article', (req, res) =>
+  setTimeout(() => inertia.render(req, res, { component: 'Article', props: {} }), 500),
+)
 app.get('/infinite-scroll/invisible-first-child', (req, res) =>
   renderInfiniteScroll(req, res, 'InfiniteScroll/InvisibleFirstChild'),
 )
@@ -3799,7 +3978,31 @@ app.get('/optimistic/rollback', (req, res) => {
 
 app.post('/optimistic/rollback/toggle/:id', (req, res) => {
   const delay = parseInt(req.query.delay || '500')
+  const hold = parseInt(req.query.hold || '0')
   const simulateError = req.query.error === '1'
+
+  if (hold > 0) {
+    // Commit the write and snapshot the props right away, but hold the
+    // response on the wire so it lands after later requests have settled
+    const session = getOptimisticSession(req)
+    const contact = session.contacts.find((c) => c.id === parseInt(req.params.id))
+
+    if (contact) {
+      contact.is_favorite = !contact.is_favorite
+    }
+
+    const contacts = session.contacts.map((c) => ({ ...c }))
+
+    setTimeout(() => {
+      inertia.render(req, res, {
+        component: 'Optimistic/Rollback',
+        url: '/optimistic/rollback',
+        props: { contacts },
+      })
+    }, hold)
+
+    return
+  }
 
   setTimeout(() => {
     if (simulateError) {
