@@ -107,7 +107,14 @@ export class Router {
       }
 
       if (typeof window !== 'undefined') {
-        this.visit(window.location.href, { preserveState: true, preserveScroll: true, replace: true })
+        // Only the top frame's page lives at the document URL. A nested frame
+        // has its own URL: visiting the document URL there swaps the top page
+        // into the frame, and when that page embeds the same frame (a frame
+        // keyed by its src), the frame renders its own ancestor chain - itself
+        // included - without end.
+        const url = this.frame === DEFAULT_FRAME ? window.location.href : currentPage.get(this.frame).url
+
+        this.visit(url, { preserveState: true, preserveScroll: true, replace: true })
       }
     })
 

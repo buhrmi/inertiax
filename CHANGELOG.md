@@ -6,6 +6,16 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.2.1]
+
+### Fixed
+- A nested frame that receives a `missingHistoryItem` event now visits its own
+  URL instead of the document URL. Previously it visited the document URL,
+  which could swap the top-level page into the frame and, when that page embeds
+  the same frame, render its own ancestor chain — itself included — without end.
+
+---
+
 ## [11.2.0]
 
 Merge of upstream `3.x` through `v3.8.0` (plus the commits just after it),
