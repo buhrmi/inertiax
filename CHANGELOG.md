@@ -6,6 +6,43 @@ This fork of Inertia.js removes Vue and React adapters, replaces Axios with
 
 ---
 
+## [11.2.0]
+
+Merge of upstream `3.x` through `v3.8.0` (plus the commits just after it),
+keeping the Svelte-only, `inertiax-*` fork intact.
+
+### Added
+- Native `BigInt` support. Integers outside the safe range are transferred as
+  `BigInt` instead of losing precision, on pages that opt in with
+  `preserveBigIntegers`.
+- A `WhenMounted` component that renders a `fallback` during the initial
+  hydration render and its children everywhere else.
+- A `background` option for polling that can `pause` or `throttle` while the tab
+  is hidden.
+- A `type` (`initial` | `visit` | `history`) on the `navigate` event detail.
+
+### Fixed
+- Requests that outlive their component are discarded instead of resolving
+  against unmounted state.
+- A history restore now supersedes a page update that is still resolving, and
+  asset versions are compared before restoring history on a back/forward reload.
+- `QuotaExceededError` from `history.replaceState` is handled instead of thrown.
+- A stale optimistic response no longer reverts a newer optimistic update.
+- In-flight cancelled prefetches are cleaned up, the prefetch cache is flushed
+  when history is cleared, and the prefetch hover timer is cleared on click.
+- Tasks added while the request queue is settling are now drained.
+- Already-aborted signals are handled in the XHR client, and aborted view
+  transitions no longer produce unhandled rejections.
+- Multi-byte UTF-8 bodies are no longer corrupted during SSR request parsing,
+  `<` is escaped in the initial page JSON, and SSR CSS link URLs prefer
+  `server.origin`.
+- Vite entry transforms preserve sourcemaps, and the generated SSR bundle no
+  longer relies on top-level await.
+- Svelte no longer throws when a focused field unmounts.
+- `Form` visit callbacks that had been dropped are forwarded again.
+
+---
+
 ## [11.1.6]
 
 ### Added
